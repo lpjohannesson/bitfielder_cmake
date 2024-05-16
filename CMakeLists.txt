@@ -1,7 +1,5 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 project(bitfielder)
-
-file(COPY assets DESTINATION ./)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
@@ -19,6 +17,12 @@ add_executable(bitfielder
     src/gfx/texture_atlas.cpp
 
     src/main.cpp)
+
+add_custom_command(TARGET bitfielder POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets
+    $<TARGET_FILE_DIR:bitfielder>/assets
+)
 
 find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries(bitfielder PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
