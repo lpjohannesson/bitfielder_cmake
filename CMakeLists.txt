@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 project(bitfielder)
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
-
 file(COPY assets DESTINATION ./)
+
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 add_executable(bitfielder
     src/engine.cpp
