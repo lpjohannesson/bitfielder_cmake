@@ -3,7 +3,7 @@ project(bitfielder)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-add_executable(bitfielder
+add_executable(${PROJECT_NAME}
     src/engine.cpp
     src/file_loader.cpp
     src/main_scene.cpp
@@ -18,18 +18,18 @@ add_executable(bitfielder
 
     src/main.cpp)
 
-add_custom_command(TARGET bitfielder POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:bitfielder>/assets
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
 )
 
 find_package(SDL2 CONFIG REQUIRED)
-target_link_libraries(bitfielder PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 
 find_package(SDL2_image CONFIG REQUIRED)
-target_link_libraries(bitfielder PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 
 find_package(GLEW REQUIRED)
-target_link_libraries(bitfielder PRIVATE GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW)
 
