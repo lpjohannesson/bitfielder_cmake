@@ -16,7 +16,7 @@ namespace bf {
 		inline GLuint getGLVertexArray() const { return glVertexArray; }
 		inline GLuint getGLVertexBuffer() const { return glVertexBuffer; }
 
-		void start(const SpriteRenderer &spriteRenderer);
+		void start(const SpriteRenderer &renderer);
 		void end();
 	};
 }

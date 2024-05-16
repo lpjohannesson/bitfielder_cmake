@@ -110,7 +110,7 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 
 		// Map section to entry data
 		TextureSection section;
-		section.size = box.size;
+		section.size = size;
 
 		// Normalize UV box
 		glm::vec2 atlasSizeF = atlasSize;

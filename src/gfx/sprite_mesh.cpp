@@ -15,7 +15,7 @@ void SpriteMesh::startAttributes() {
 	glEnableVertexAttribArray(1);
 }
 
-void SpriteMesh::start(const SpriteRenderer &spriteRenderer) {
+void SpriteMesh::start(const SpriteRenderer &renderer) {
 	// Create objects
 	glGenVertexArrays(1, &glVertexArray);
 	glGenBuffers(1, &glVertexBuffer);
@@ -25,7 +25,7 @@ void SpriteMesh::start(const SpriteRenderer &spriteRenderer) {
 	glBindBuffer(GL_ARRAY_BUFFER, glVertexBuffer);
 
 	// Bind renderer's index buffer, same for every mesh
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, spriteRenderer.getGLIndexBuffer());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer.getGLIndexBuffer());
 
 	// Assign vertex attrbutes
 	startAttributes();

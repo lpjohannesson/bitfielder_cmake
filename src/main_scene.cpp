@@ -31,13 +31,21 @@ void MainScene::start() {
 
 	textureAtlas.loadAtlas(texturePaths);
 
-	Sprite sprite;
-	sprite.box = { { 0.0f, 0.0f }, { 1.0f, -1.0f } };
+	Sprite sprite1;
+	sprite1.box = { { 0.0f, 0.0f }, { 1.0f, -1.0f } };
+	sprite1.uvBox = { { 0.0f, 0.0f }, { 1.0f, 1.0f } };
 
-	sprite.uvBox = { { 0.0f, 0.0f }, { 1.0f, 1.0f } };
-	//sprite.uvBox = textureAtlas.getSection("assets/textures/8.png").uvBox.section({ { 0.0f, 0.0f }, { 0.5f, 1.0f } });
+	Sprite sprite2;
+	sprite2.box = { { 0.0f, 1.0f }, { 1.0f, -1.0f } };
+	sprite2.uvBox = textureAtlas.getSection("assets/textures/8.png").uvBox.section({ { 0.0f, 0.0f }, { 0.5f, 1.0f } });
 
-	spriteBatch.drawSprite(sprite);
+	Sprite sprite3;
+	sprite3.box = { { -1.0f, 1.0f }, { 1.0f, -1.0f } };
+	sprite3.uvBox = textureAtlas.getSection("assets/textures/1.png").uvBox;
+
+	spriteBatch.drawSprite(sprite1);
+	spriteBatch.drawSprite(sprite2);
+	spriteBatch.drawSprite(sprite3);
 
 	spriteBatch.uploadMesh(spriteMesh);
 }
