@@ -1,6 +1,5 @@
 #include "sprite_renderer.h"
 #include "shader.h"
-#include "sprite_vertex.h"
 
 using namespace bf;
 

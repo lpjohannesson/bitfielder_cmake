@@ -1,6 +1,5 @@
 #include "sprite_mesh.h"
 #include "sprite_renderer.h"
-#include "sprite_vertex.h"
 #include "texture.h"
 
 using namespace bf;

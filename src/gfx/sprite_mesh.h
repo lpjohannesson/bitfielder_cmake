@@ -1,8 +1,14 @@
 #pragma once
+#include <glm/glm.hpp>
 #include <GL/glew.h>
 
 namespace bf {
 	class SpriteRenderer;
+
+	struct SpriteVertex {
+		glm::vec2 position;
+		glm::vec2 uv;
+	};
 
 	class SpriteMesh {
 	private:

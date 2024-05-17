@@ -1,7 +1,6 @@
 #include "sprite_batch.h"
 #include <glm/glm.hpp>
 #include "sprite_renderer.h"
-#include "sprite_vertex.h"
 
 using namespace bf;
 
