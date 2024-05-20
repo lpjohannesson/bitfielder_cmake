@@ -3,6 +3,7 @@
     "sdl2",
     "sdl2-image",
     "glew",
-    "glm"
+    "glm",
+    "entt"
   ]
 }

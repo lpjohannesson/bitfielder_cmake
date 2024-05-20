@@ -1,6 +1,6 @@
 #include "sprite_mesh.h"
 #include "sprite_renderer.h"
-#include "texture.h"
+#include "engine.h"
 
 using namespace bf;
 
@@ -14,7 +14,7 @@ void SpriteMesh::startAttributes() {
 	glEnableVertexAttribArray(1);
 }
 
-void SpriteMesh::start(const SpriteRenderer &renderer) {
+SpriteMesh::SpriteMesh(const SpriteRenderer &renderer) {
 	// Create objects
 	glGenVertexArrays(1, &glVertexArray);
 	glGenBuffers(1, &glVertexBuffer);
@@ -33,7 +33,7 @@ void SpriteMesh::start(const SpriteRenderer &renderer) {
 	glBindVertexArray(0);
 }
 
-void SpriteMesh::end() {
+SpriteMesh::~SpriteMesh() {
 	glDeleteVertexArrays(1, &glVertexArray);
 	glDeleteBuffers(1, &glVertexBuffer);
 }

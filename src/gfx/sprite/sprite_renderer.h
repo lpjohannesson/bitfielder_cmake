@@ -1,7 +1,8 @@
 #pragma once
+#include <glm/glm.hpp>
 #include <GL/glew.h>
 #include "sprite_mesh.h"
-#include "texture.h"
+#include "gfx/core/texture.h"
 
 namespace bf {
 	class SpriteRenderer {
@@ -16,9 +17,9 @@ namespace bf {
 
 		inline GLuint getGLIndexBuffer() const { return glIndexBuffer; }
 
-		void renderMesh(const SpriteMesh &mesh, const Texture &texture);
+		void renderMesh(const SpriteMesh &mesh, const Texture &texture, glm::mat4 transform) const;
 
-		void start();
-		void end();
+		SpriteRenderer();
+		~SpriteRenderer();
 	};
 }

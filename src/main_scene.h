@@ -1,19 +1,18 @@
 #pragma once
 #include "scene.h"
-#include "gfx/sprite_renderer.h"
-#include "gfx/sprite_mesh.h"
-#include "gfx/sprite_batch.h"
-#include "gfx/texture_atlas.h"
+#include "world/world.h"
+#include "client/world/world_renderer.h"
+#include "client/world/content/client_content.h"
 
 namespace bf {
 	class MainScene : public Scene {
 	public:
-		SpriteRenderer spriteRenderer;
-		SpriteMesh spriteMesh;
+		World world;
+		WorldRenderer worldRenderer;
 
-		TextureAtlas textureAtlas;
+		ClientContent clientContent;
 
-		SpriteBatch spriteBatch;
+		void updateSize(glm::ivec2 size) override;
 
 		void update() override;
 		void render() override;

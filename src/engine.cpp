@@ -3,21 +3,26 @@
 
 using namespace bf;
 
-Engine bf::engine;
+Engine *bf::engine;
 
-void Engine::changeScene(Scene *scene) {
-	// End old scene
+void Engine::endCurrentScene() {
 	if (currentScene != nullptr) {
 		currentScene->end();
 		delete currentScene;
 	}
+}
+
+void Engine::changeScene(Scene *scene) {
+	endCurrentScene();
 
 	// Start new scene
 	currentScene = scene;
 	currentScene->start();
+	currentScene->updateSize(windowSize);
 }
 
 bool Engine::update() {
+	// Window events
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
@@ -28,8 +33,9 @@ bool Engine::update() {
 
 		case SDL_WINDOWEVENT:
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-				glm::ivec2 windowSize = { event.window.data1, event.window.data2 };
+				windowSize = { event.window.data1, event.window.data2 };
 				renderer.updateSize(windowSize);
+				currentScene->updateSize(windowSize);
 			}
 			break;
 		}
@@ -49,10 +55,12 @@ bool Engine::update() {
 	return true;
 }
 
-void Engine::start() {
+Engine::Engine() {
+	engine = this;
+
 	SDL_Init(SDL_INIT_VIDEO);
 
-	constexpr glm::ivec2 windowSize = { 640, 480 };
+	windowSize = { 640, 480 };
 
 	// Create window
 	window = SDL_CreateWindow(
@@ -78,7 +86,9 @@ void Engine::start() {
 	renderer.updateSize(windowSize);
 }
 
-void Engine::end() {
+Engine::~Engine() {
+	endCurrentScene();
+
 	SDL_DestroyWindow(window);
 	SDL_GL_DeleteContext(glContext);
 

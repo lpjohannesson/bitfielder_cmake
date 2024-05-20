@@ -22,7 +22,7 @@ namespace bf {
 		inline GLuint getGLVertexArray() const { return glVertexArray; }
 		inline GLuint getGLVertexBuffer() const { return glVertexBuffer; }
 
-		void start(const SpriteRenderer &renderer);
-		void end();
+		SpriteMesh(const SpriteRenderer &renderer);
+		~SpriteMesh();
 	};
 }

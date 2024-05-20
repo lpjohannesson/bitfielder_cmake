@@ -34,8 +34,5 @@ namespace bf {
 
 		void loadAtlas(const std::vector<std::string> &paths);
 		TextureSection getSection(const std::string path) const;
-
-		void start();
-		void end();
 	};
 }

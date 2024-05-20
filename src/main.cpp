@@ -2,12 +2,11 @@
 #include "main_scene.h"
 
 int main(int argc, char **argv) {
-	bf::engine.start();
-	bf::engine.changeScene(new bf::MainScene());
+	bf::Engine e;
 
-	while (bf::engine.update());
+	e.changeScene(new bf::MainScene());
 
-	bf::engine.end();
+	while (e.update());
 
 	return 0;
 }

@@ -1,5 +1,6 @@
 #include "sprite_renderer.h"
-#include "shader.h"
+#include <glm/gtc/type_ptr.hpp>
+#include "gfx/core/shader.h"
 
 using namespace bf;
 
@@ -48,21 +49,28 @@ void SpriteRenderer::createShaderProgram() {
 	glDeleteShader(glFragmentShader);
 }
 
-void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const Texture &texture) {
+void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const Texture &texture, glm::mat4 transform) const {
 	glUseProgram(glProgram);
 	glBindVertexArray(mesh.getGLVertexArray());
 
+	// Bind texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
 
+	// Set transform
+	GLint glTransformLocation = glGetUniformLocation(glProgram, "transform");
+	glUniformMatrix4fv(glTransformLocation, 1, GL_FALSE, glm::value_ptr(transform));
+
+	// Draw
 	glDrawElements(GL_TRIANGLES, mesh.elementCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void SpriteRenderer::start() {
+SpriteRenderer::SpriteRenderer() {
 	createIndexBuffer();
 	createShaderProgram();
 }
 
-void SpriteRenderer::end() {
+SpriteRenderer::~SpriteRenderer() {
+	glDeleteProgram(glProgram);
 	glDeleteBuffers(1, &glIndexBuffer);
 }

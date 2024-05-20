@@ -7,7 +7,7 @@ void Texture::loadSurface(SDL_Surface *surface) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void Texture::start() {
+Texture::Texture() {
 	// Create texture
 	glGenTextures(1, &glTexture);
 	glBindTexture(GL_TEXTURE_2D, glTexture);
@@ -19,6 +19,6 @@ void Texture::start() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-void Texture::end() {
+Texture::~Texture() {
 	glDeleteTextures(1, &glTexture);
 }

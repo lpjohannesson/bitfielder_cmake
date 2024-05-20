@@ -108,7 +108,7 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 		SDL_BlitSurface(entry.surface, NULL, atlasSurface, &rect);
 		SDL_FreeSurface(entry.surface);
 
-		// Map section to entry data
+		// Create section
 		TextureSection section;
 		section.size = size;
 
@@ -116,6 +116,7 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 		glm::vec2 atlasSizeF = atlasSize;
 		section.uvBox = { glm::vec2(start) / atlasSizeF, glm::vec2(size) / atlasSizeF };
 
+		// Map section to image path
 		sections.emplace(entry.path, section);
 	}
 
@@ -128,12 +129,4 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 
 TextureSection TextureAtlas::getSection(const std::string path) const {
 	return sections.at(path);
-}
-
-void TextureAtlas::start() {
-	texture.start();
-}
-
-void TextureAtlas::end() {
-	texture.end();
 }

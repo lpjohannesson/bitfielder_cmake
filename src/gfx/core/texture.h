@@ -13,7 +13,7 @@ namespace bf {
 
 		void loadSurface(SDL_Surface *surface);
 
-		void start();
-		void end();
+		Texture();
+		~Texture();
 	};
 }

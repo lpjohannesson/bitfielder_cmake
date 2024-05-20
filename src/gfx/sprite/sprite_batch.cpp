@@ -15,7 +15,7 @@ void SpriteBatch::uploadMesh(SpriteMesh &mesh) {
 
 	// Store vertices for all sprites
 	std::vector<SpriteVertex> vertices;
-	vertices.resize(vertexCount);
+	vertices.reserve(vertexCount);
 
 	for (int spriteIndex = 0; spriteIndex < spriteCount; spriteIndex++) {
 		const Sprite &sprite = sprites[spriteIndex];
@@ -30,10 +30,10 @@ void SpriteBatch::uploadMesh(SpriteMesh &mesh) {
 		// Push vertices
 		int vertexStart = spriteIndex * 4;
 
-		vertices[vertexStart + 0] = { start, uvStart };
-		vertices[vertexStart + 1] = { { end.x, start.y }, { uvEnd.x, uvStart.y } };
-		vertices[vertexStart + 2] = { { start.x, end.y }, { uvStart.x, uvEnd.y } };
-		vertices[vertexStart + 3] = { end, uvEnd };
+		vertices.push_back({ start, uvStart });
+		vertices.push_back({ { end.x, start.y }, { uvEnd.x, uvStart.y } });
+		vertices.push_back({ { start.x, end.y }, { uvStart.x, uvEnd.y } });
+		vertices.push_back({ end, uvEnd });
 	}
 
 	// Upload mesh
