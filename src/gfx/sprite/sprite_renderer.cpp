@@ -49,19 +49,18 @@ void SpriteRenderer::createShaderProgram() {
 	glDeleteShader(glFragmentShader);
 }
 
-void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const Texture &texture, glm::mat4 transform) const {
-	glUseProgram(glProgram);
-	glBindVertexArray(mesh.getGLVertexArray());
+void SpriteRenderer::setTransform(glm::mat4 transform) {
+	GLint glTransformLocation = glGetUniformLocation(glProgram, "transform");
+	glUniformMatrix4fv(glTransformLocation, 1, GL_FALSE, glm::value_ptr(transform));
+}
 
-	// Bind texture
+void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const Texture &texture) const {
+	glUseProgram(glProgram);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
 
-	// Set transform
-	GLint glTransformLocation = glGetUniformLocation(glProgram, "transform");
-	glUniformMatrix4fv(glTransformLocation, 1, GL_FALSE, glm::value_ptr(transform));
-
-	// Draw
+	glBindVertexArray(mesh.getGLVertexArray());
 	glDrawElements(GL_TRIANGLES, mesh.elementCount, GL_UNSIGNED_INT, nullptr);
 }
 

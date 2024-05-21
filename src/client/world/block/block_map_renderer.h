@@ -9,15 +9,10 @@ namespace bf {
     class WorldRenderer;
 
     class BlockMapRenderer {
-    private:
-        std::vector<BlockMesh*> meshes;
-
     public:
         SpriteBatch spriteBatch;
 
-        void createMesh(const WorldRenderer &renderer, World &world, entt::entity chunk);
+        void createMesh(const WorldRenderer &renderer, const World &world, BlockChunk &chunk);
         void render(const WorldRenderer &renderer, const World &world);
-
-        ~BlockMapRenderer();
     };
 }

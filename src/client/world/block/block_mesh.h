@@ -6,6 +6,6 @@ namespace bf {
     public:
         SpriteMesh mesh;
 
-        inline BlockMesh(const SpriteRenderer &renderer) : mesh(renderer) {};
+        inline BlockMesh(const SpriteRenderer &renderer) : mesh(renderer) {}
     };
 }

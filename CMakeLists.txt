@@ -3,10 +3,11 @@ project(bitfielder)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
+add_compile_definitions(BF_CLIENT)
+
 add_executable(${PROJECT_NAME}
-    src/engine.cpp
-    src/file_loader.cpp
-    src/main_scene.cpp
+    src/engine/engine.cpp
+    src/engine/file_loader.cpp
 
     src/gfx/core/renderer.cpp
     src/gfx/core/shader.cpp
@@ -29,6 +30,8 @@ add_executable(${PROJECT_NAME}
 
     src/world/content/content.cpp
     src/client/world/content/client_content.cpp
+
+    src/main_scene.cpp
 
     src/main.cpp)
 

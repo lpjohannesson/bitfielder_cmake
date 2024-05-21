@@ -11,5 +11,7 @@ namespace bf {
 
 		inline virtual void start() {}
 		inline virtual void end() {}
+
+		inline virtual ~Scene() {}
 	};
 }

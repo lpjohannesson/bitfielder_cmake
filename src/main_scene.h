@@ -1,5 +1,5 @@
 #pragma once
-#include "scene.h"
+#include "engine/scene.h"
 #include "world/world.h"
 #include "client/world/world_renderer.h"
 #include "client/world/content/client_content.h"

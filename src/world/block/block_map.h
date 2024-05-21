@@ -1,16 +1,13 @@
 #pragma once
-#include <entt/entt.hpp>
+#include <unordered_map>
 #include "block_chunk.h"
 
 namespace bf {
 	class BlockMap {
-	private:
-		std::unordered_map<int, entt::entity> chunkMap;
-
 	public:
-		entt::registry registry;
+		std::unordered_map<int, BlockChunk> chunks;
 
-        entt::entity *getChunk(int index) const;
-        entt::entity createChunk(int index);
+        BlockChunk *getChunk(int index) const;
+        BlockChunk &createChunk(int index);
 	};
 }

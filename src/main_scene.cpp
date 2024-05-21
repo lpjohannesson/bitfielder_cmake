@@ -1,5 +1,5 @@
 #include "main_scene.h"
-#include "engine.h"
+#include "engine/engine.h"
 
 using namespace bf;
 
@@ -19,10 +19,10 @@ void MainScene::render() {
 void MainScene::start() {
 	clientContent.loadContent(world, worldRenderer);
 
-	entt::entity chunk = world.map.createChunk(0);
+	BlockChunk &chunk = world.map.createChunk(0);
 	worldRenderer.map.createMesh(worldRenderer, world, chunk);
 }
 
 void MainScene::end() {
-	this->~MainScene();
+
 }

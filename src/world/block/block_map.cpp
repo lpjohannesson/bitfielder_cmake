@@ -2,21 +2,18 @@
 
 using namespace bf;
 
-entt::entity *BlockMap::getChunk(int index) const {
+BlockChunk *BlockMap::getChunk(int index) const {
     // Find chunk by index
-    auto foundChunk = chunkMap.find(index);
+    auto foundChunk = chunks.find(index);
 
-    if (foundChunk == chunkMap.end()) {
+    if (foundChunk == chunks.end()) {
         return nullptr;
     }
 
-    return (entt::entity*)foundChunk->second;
+    return (BlockChunk*)&foundChunk->second;
 }
 
-entt::entity BlockMap::createChunk(int index) {
-    entt::entity chunk = registry.create();
-    registry.emplace<BlockChunk*>(chunk, new BlockChunk());
-
-    chunkMap.emplace(index, chunk);
-    return chunk;
+BlockChunk &BlockMap::createChunk(int index) {
+    chunks.emplace(index, BlockChunk());
+    return chunks.at(index);
 }
