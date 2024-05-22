@@ -1,7 +1,12 @@
 #pragma once
 #include "block/block_map.h"
 #include "block/block_types.h"
+#include "entity/entities.h"
 #include "world/content/content.h"
+
+#ifdef BF_CLIENT
+#include "client/world/world_renderer.h"
+#endif
 
 namespace bf {
 	class World {
@@ -9,7 +14,13 @@ namespace bf {
         BlockMap map;
         BlockTypes blocks;
 
+        Entities entities;
+
         Content content;
+
+#ifdef BF_CLIENT
+        WorldRenderer renderer;
+#endif
 
         World();
     };

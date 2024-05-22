@@ -10,5 +10,5 @@ void WorldRenderer::updateSize(glm::ivec2 size) {
 void WorldRenderer::render(const World &world) {
     spriteRenderer.setTransform(getViewTransform());
 
-    map.render(*this, world);
+    map.render(world);
 }

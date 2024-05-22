@@ -3,9 +3,10 @@
 #include "gfx/sprite/sprite_renderer.h"
 #include "gfx/core/texture_atlas.h"
 #include "block/block_map_renderer.h"
-#include "world/world.h"
 
 namespace bf {
+    class World;
+
 	class WorldRenderer {
     private:
         glm::mat4 viewTransform;

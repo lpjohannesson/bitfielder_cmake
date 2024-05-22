@@ -11,17 +11,19 @@ namespace bf {
 		static constexpr glm::ivec2 SIZE{ 16, 16 };
 
 	private:
+		int mapIndex;
 		unsigned int data[SIZE.y][SIZE.x];
 
 	public:
 #ifdef BF_CLIENT
 		BlockMesh *blockMesh = nullptr;
 #endif
+		inline int getMapIndex() const { return mapIndex; }
 
-		int getIndex(glm::ivec2 position) const;
-		void setIndex(glm::ivec2 position, int index);
+		int getBlockIndex(glm::ivec2 position) const;
+		void setBlockIndex(glm::ivec2 position, int index);
 
-		BlockChunk();
+		BlockChunk(int mapIndex);
 		~BlockChunk();
 	};
 }

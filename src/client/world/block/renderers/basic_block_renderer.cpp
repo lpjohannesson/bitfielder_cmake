@@ -3,6 +3,6 @@
 using namespace bf;
 
 void BasicBlockRenderer::render(const BlockRenderData &renderData) {
-    sprite.box.start = renderData.renderPosition;
+    sprite.box.start = renderData.position;
     renderData.renderer->spriteBatch.drawSprite(sprite);
 }

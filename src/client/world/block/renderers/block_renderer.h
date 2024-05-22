@@ -8,7 +8,7 @@ namespace bf {
     public:
         BlockMapRenderer *renderer;
 
-        glm::vec2 renderPosition;
+        glm::ivec2 position;
     };
 
     class BlockRenderer {

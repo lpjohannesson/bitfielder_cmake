@@ -8,6 +8,6 @@ namespace bf {
     public:
         BasicBlockRenderer testBlockRenderer;
 
-        void loadContent(World &world, WorldRenderer &renderer);
+        void loadContent(World &world);
     };
 }

@@ -3,7 +3,7 @@
 
 using namespace bf;
 
-void ClientContent::loadContent(World &world, WorldRenderer &renderer) {
+void ClientContent::loadContent(World &world) {
     std::vector<std::string> texturePaths = {
 		"assets/textures/1.png",
 		"assets/textures/2.png",
@@ -15,10 +15,10 @@ void ClientContent::loadContent(World &world, WorldRenderer &renderer) {
 		"assets/textures/8.png",
 	};
 
-	renderer.textureAtlas.loadAtlas(texturePaths);
+	world.renderer.textureAtlas.loadAtlas(texturePaths);
 
     testBlockRenderer.sprite.box.size = glm::vec2(1.0f);
-    testBlockRenderer.sprite.uvBox = renderer.textureAtlas.getSection("assets/textures/3.png").uvBox;
+    testBlockRenderer.sprite.uvBox = world.renderer.textureAtlas.getSection("assets/textures/3.png").uvBox;
 
     world.blocks.registry.emplace<BlockRenderer*>(world.content.testBlock, &testBlockRenderer);
 }
