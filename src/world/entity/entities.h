@@ -7,5 +7,9 @@ namespace bf {
     public:
         entt::registry registry;
         std::vector<EntitySystem*> systems;
+
+        entt::entity player;
+
+        Entities();
     };
 }

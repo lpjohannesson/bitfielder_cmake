@@ -11,4 +11,5 @@ void WorldRenderer::render(const World &world) {
     spriteRenderer.setTransform(getViewTransform());
 
     map.render(world);
+    entities.render(world);
 }

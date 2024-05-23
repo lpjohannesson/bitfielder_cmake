@@ -16,5 +16,3 @@ namespace bf {
         inline virtual void render(const BlockRenderData &renderData) {}
     };
 }
-
-#include "client/world/block/block_map_renderer.h"

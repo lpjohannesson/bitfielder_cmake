@@ -24,11 +24,18 @@ add_executable(${PROJECT_NAME}
     src/world/block/block_map.cpp
     src/world/block/block_types.cpp
 
+    src/world/entity/entities.cpp
+
+    src/world/content/content.cpp
+    
     src/client/world/world_renderer.cpp
+
     src/client/world/block/block_map_renderer.cpp
     src/client/world/block/renderers/basic_block_renderer.cpp
 
-    src/world/content/content.cpp
+    src/client/world/entity/entity_renderer.cpp
+    src/client/world/entity/systems/sprite_system.cpp
+
     src/client/world/content/client_content.cpp
 
     src/main_scene.cpp

@@ -3,6 +3,7 @@
 #include "gfx/sprite/sprite_renderer.h"
 #include "gfx/core/texture_atlas.h"
 #include "block/block_map_renderer.h"
+#include "entity/entity_renderer.h"
 
 namespace bf {
     class World;
@@ -16,10 +17,14 @@ namespace bf {
 
         SpriteRenderer spriteRenderer;
         TextureAtlas textureAtlas;
+
         BlockMapRenderer map;
+        EntityRenderer entities;
 
         void updateSize(glm::ivec2 size);
 
         void render(const World &world); 
+
+        inline WorldRenderer() : entities(spriteRenderer) {}
 	};
 }

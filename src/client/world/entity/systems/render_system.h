@@ -4,8 +4,8 @@
 namespace bf {
     class World;
     
-	class EntitySystem {
+	class RenderSystem {
     public:
-        inline virtual void call(World &world) {}
+        inline virtual void render(const World &world) {}
     };
 }

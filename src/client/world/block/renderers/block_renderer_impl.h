@@ -1,0 +1,1 @@
+#include "client/world/block/block_map_renderer.h"
