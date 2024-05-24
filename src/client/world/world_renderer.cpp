@@ -5,11 +5,11 @@
 using namespace bf;
 
 void WorldRenderer::updateSize(glm::ivec2 size) {
-    viewTransform = glm::scale(glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f), glm::vec3(32.0f));
+    viewTransform = glm::scale(glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f), glm::vec3(48.0f));
 }
 
 void WorldRenderer::render(const World &world) {
-    client->spriteRenderer.setTransform(getViewTransform());
+    client->spriteRenderer.setTransform(viewTransform);
 
     map.render(world);
     entities.render(world);

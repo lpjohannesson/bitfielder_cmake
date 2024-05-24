@@ -1,5 +1,6 @@
 #include "main_scene.h"
 #include "engine/engine.h"
+#include <iostream>
 
 using namespace bf;
 
@@ -8,7 +9,7 @@ void MainScene::updateSize(glm::ivec2 size) {
 }
 
 void MainScene::update() {
-
+	world.update();
 }
 
 void MainScene::render() {

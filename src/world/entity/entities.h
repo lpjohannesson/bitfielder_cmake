@@ -8,8 +8,8 @@ namespace bf {
         entt::registry registry;
         std::vector<EntitySystem*> systems;
 
-        entt::entity player;
+        void addSystem(EntitySystem &system);
 
-        Entities();
+        void update(World &world);
     };
 }

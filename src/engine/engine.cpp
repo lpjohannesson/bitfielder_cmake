@@ -22,6 +22,13 @@ void Engine::changeScene(Scene *scene) {
 }
 
 bool Engine::update() {
+	// Get delta time
+	static Uint32 lastTime = 0;
+	Uint32 currentTime = SDL_GetTicks();
+
+	deltaTime = (currentTime - lastTime) / 1000.0f;
+	lastTime = currentTime;
+
 	// Window events
 	SDL_Event event;
 

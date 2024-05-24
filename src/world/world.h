@@ -22,6 +22,8 @@ namespace bf {
         WorldRenderer renderer;
 #endif
 
+        void update();
+
         World();
     };
 }

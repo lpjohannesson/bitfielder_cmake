@@ -6,6 +6,6 @@ namespace bf {
     
 	class EntitySystem {
     public:
-        inline virtual void call(World &world) {}
+        inline virtual void update(World &world) {}
     };
 }

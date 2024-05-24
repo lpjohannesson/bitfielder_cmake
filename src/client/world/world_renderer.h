@@ -12,8 +12,6 @@ namespace bf {
         glm::mat4 viewTransform;
 
     public:
-        inline glm::mat4 getViewTransform() const { return viewTransform; }
-
         TextureAtlas textureAtlas;
 
         BlockMapRenderer map;

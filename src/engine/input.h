@@ -8,12 +8,12 @@ namespace bf {
 
     class InputAction {
     public:
-        bool pressed, lastPressed;
+        bool pressed = false, lastPressed = false;
 
         bool justPressed() const;
         bool justReleased() const;
 
-        InputAction(Input &input);
+        InputAction();
     };
 
 	class Input {
@@ -24,7 +24,7 @@ namespace bf {
         std::vector<InputAction*> actions;
 
         InputAction *getKeyboardAction(SDL_Keycode key) const;
-        void addKeyboardAction(InputAction *action, SDL_Keycode key);
+        void addKeyboardAction(InputAction &action, SDL_Keycode key);
 
         void keyDown(SDL_Keycode key);
         void keyUp(SDL_Keycode key);

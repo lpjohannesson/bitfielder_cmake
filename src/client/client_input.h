@@ -6,10 +6,6 @@ namespace bf {
 	public:
         InputAction up, down, left, right;
 
-        inline ClientInput(Input &input) :
-            up(input),
-            down(input),
-            left(input),
-            right(input) {}
+        ClientInput();
 	};
 }

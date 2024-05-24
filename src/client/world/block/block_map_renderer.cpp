@@ -1,6 +1,7 @@
 #include "block_map_renderer.h"
 #include "world/world.h"
 #include "client/client.h"
+#include "components/block_renderer_component.h"
 
 using namespace bf;
 
@@ -18,11 +19,11 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
 			entt::entity block = world.blocks.getBlock(index);
 
             // Get renderer or skip
-            if (!blocksRegistry.all_of<BlockRenderer*>(block)) {
+            if (!blocksRegistry.all_of<BlockRendererComponent>(block)) {
                 continue;
             }
 
-            BlockRenderer* blockRenderer = blocksRegistry.get<BlockRenderer*>(block);
+            BlockRenderer* blockRenderer = blocksRegistry.get<BlockRendererComponent>(block).renderer;
 
             // Render block
             BlockRenderData renderData;

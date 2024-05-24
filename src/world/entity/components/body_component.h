@@ -1,10 +1,9 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "core/box2.h"
 
 namespace bf {
-	struct SpriteComponent {
+	struct BodyComponent {
+		glm::vec2 velocity;
 		glm::vec2 size;
-        Box2 uvBox;
 	};
 }

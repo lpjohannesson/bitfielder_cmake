@@ -27,9 +27,12 @@ add_executable(${PROJECT_NAME}
 
     src/world/entity/entities.cpp
 
+    src/world/entity/systems/body_system.cpp
+
     src/world/content/content.cpp
 
     src/client/client.cpp
+    src/client/client_input.cpp
     
     src/client/world/world_renderer.cpp
 
@@ -37,7 +40,9 @@ add_executable(${PROJECT_NAME}
     src/client/world/block/renderers/basic_block_renderer.cpp
 
     src/client/world/entity/entity_renderer.cpp
+
     src/client/world/entity/systems/sprite_system.cpp
+    src/client/world/entity/systems/client_player_system.cpp
 
     src/client/world/content/client_content.cpp
 

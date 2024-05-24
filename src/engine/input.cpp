@@ -1,4 +1,5 @@
 #include "input.h"
+#include "engine/engine.h"
 
 using namespace bf;
 
@@ -10,8 +11,8 @@ bool InputAction::justReleased() const {
     return !pressed && lastPressed;
 }
 
-InputAction::InputAction(Input &input) {
-    input.actions.push_back(this);
+InputAction::InputAction() {
+    engine->input.actions.push_back(this);
 }
 
 InputAction *Input::getKeyboardAction(SDL_Keycode key) const {
@@ -24,8 +25,8 @@ InputAction *Input::getKeyboardAction(SDL_Keycode key) const {
     return foundKeyboardAction->second;
 }
 
-void Input::addKeyboardAction(InputAction *action, SDL_Keycode key) {
-    keyboardActions.emplace(key, action);
+void Input::addKeyboardAction(InputAction &action, SDL_Keycode key) {
+    keyboardActions.emplace(key, &action);
 }
 
 void Input::keyDown(SDL_Keycode key) {

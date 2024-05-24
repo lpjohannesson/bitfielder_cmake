@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <SDL2/SDL.h>
-#include "engine/box2.h"
+#include "core/box2.h"
 #include "texture.h"
 
 namespace bf {
