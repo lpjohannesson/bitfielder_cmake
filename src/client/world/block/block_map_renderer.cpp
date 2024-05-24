@@ -34,22 +34,13 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
 		}
 	}
 
-    // Create mesh
-    if (chunk.blockMesh == nullptr) {
-        chunk.blockMesh = new BlockMesh();
-    }
-
-    spriteBatch.uploadMesh(chunk.blockMesh->mesh);
+    spriteBatch.uploadMesh(chunk.blockMesh.mesh);
 }
 
 void BlockMapRenderer::render(const World &world) {
     for (const auto &[chunkIndex, chunk] : world.map.chunks) {
         // Draw sprite mesh
-        if (chunk.blockMesh == nullptr) {
-            continue;
-        }
-
         client->spriteRenderer.renderMesh(
-            chunk.blockMesh->mesh, world.renderer.textureAtlas.texture);
+            chunk.blockMesh.mesh, world.renderer.textureAtlas.texture);
     }
 }

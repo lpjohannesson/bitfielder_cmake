@@ -16,7 +16,7 @@ namespace bf {
 
 	public:
 #ifdef BF_CLIENT
-		BlockMesh *blockMesh = nullptr;
+		BlockMesh blockMesh;
 #endif
 
 		inline int getMapIndex() const { return mapIndex; }
@@ -25,6 +25,5 @@ namespace bf {
 		void setBlockIndex(glm::ivec2 position, int index);
 
 		BlockChunk(int mapIndex);
-		~BlockChunk();
 	};
 }

@@ -31,12 +31,3 @@ BlockChunk::BlockChunk(int mapIndex) {
 		}
 	}
 }
-
-BlockChunk::~BlockChunk() {
-#ifdef BF_CLIENT
-	// Delete mesh
-    if (blockMesh != nullptr) {
-        delete blockMesh;
-    }
-#endif
-}
