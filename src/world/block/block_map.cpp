@@ -14,6 +14,6 @@ BlockChunk *BlockMap::getChunk(int index) const {
 }
 
 BlockChunk &BlockMap::createChunk(int index) {
-    chunks.emplace(index, BlockChunk(index));
+    chunks.emplace(index, index);
     return chunks.at(index);
 }
