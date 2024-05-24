@@ -1,5 +1,6 @@
 #include "world_renderer.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "client/client.h"
 
 using namespace bf;
 
@@ -8,7 +9,7 @@ void WorldRenderer::updateSize(glm::ivec2 size) {
 }
 
 void WorldRenderer::render(const World &world) {
-    spriteRenderer.setTransform(getViewTransform());
+    client->spriteRenderer.setTransform(getViewTransform());
 
     map.render(world);
     entities.render(world);

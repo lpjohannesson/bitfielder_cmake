@@ -38,6 +38,14 @@ bool Engine::update() {
 				currentScene->updateSize(windowSize);
 			}
 			break;
+
+		case SDL_KEYDOWN:
+			input.keyDown(event.key.keysym.sym);
+			break;
+		
+		case SDL_KEYUP:
+			input.keyUp(event.key.keysym.sym);
+			break;
 		}
 	}
 
@@ -47,6 +55,9 @@ bool Engine::update() {
 
 	// Update scene
 	currentScene->update();
+
+	// Update input
+	input.update();
 
 	// Render
 	currentScene->render();

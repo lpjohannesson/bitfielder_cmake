@@ -1,12 +1,11 @@
 #include "engine/engine.h"
-#include "main_scene.h"
+#include "client/client.h"
 
 int main(int argc, char **argv) {
-	bf::Engine e;
+	bf::Engine engine;
+	bf::Client client(engine);
 
-	e.changeScene(new bf::MainScene());
-
-	while (e.update());
+	while (engine.update());
 
 	return 0;
 }

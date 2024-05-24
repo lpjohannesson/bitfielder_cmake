@@ -4,18 +4,18 @@
 #include <glm/glm.hpp>
 #include "gfx/core/renderer.h"
 #include "scene.h"
+#include "input.h"
 
 namespace bf {
 	class Engine {
 	private:
 		bool quitting = false;
+		glm::ivec2 windowSize;
 
 		SDL_Window *window;
 		SDL_GLContext glContext;
 
 		Scene *currentScene = nullptr;
-
-		glm::ivec2 windowSize;
 
 		void endCurrentScene();
 
@@ -23,6 +23,7 @@ namespace bf {
 		inline glm::ivec2 getWindowSize() const { return windowSize; }
 
 		Renderer renderer;
+		Input input;
 
 		void changeScene(Scene *scene);
 

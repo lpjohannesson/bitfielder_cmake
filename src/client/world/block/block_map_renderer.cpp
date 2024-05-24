@@ -1,5 +1,6 @@
 #include "block_map_renderer.h"
 #include "world/world.h"
+#include "client/client.h"
 
 using namespace bf;
 
@@ -34,7 +35,7 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
 
     // Create mesh
     if (chunk.blockMesh == nullptr) {
-        chunk.blockMesh = new BlockMesh(world.renderer.spriteRenderer);
+        chunk.blockMesh = new BlockMesh();
     }
 
     spriteBatch.uploadMesh(chunk.blockMesh->mesh);
@@ -47,7 +48,7 @@ void BlockMapRenderer::render(const World &world) {
             continue;
         }
 
-        world.renderer.spriteRenderer.renderMesh(
+        client->spriteRenderer.renderMesh(
             chunk.blockMesh->mesh, world.renderer.textureAtlas.texture);
     }
 }

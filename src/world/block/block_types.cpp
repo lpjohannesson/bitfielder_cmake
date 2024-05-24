@@ -3,6 +3,11 @@
 using namespace bf;
 
 entt::entity BlockTypes::getBlock(int index) const {
+    // Default if out of range
+    if (index < 0 || index >= blocks.size()) {
+        return blocks.at(0);
+    }
+
     return blocks.at(index);
 }
 

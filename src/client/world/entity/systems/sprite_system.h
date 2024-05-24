@@ -1,6 +1,7 @@
 #pragma once
 #include "render_system.h"
 #include "gfx/sprite/sprite_batch.h"
+#include "client/client.h"
 
 namespace bf {
 	class SpriteSystem : public RenderSystem {
@@ -10,6 +11,6 @@ namespace bf {
 
         void render(const World &world) override;
 
-        inline SpriteSystem(const SpriteRenderer &renderer) : mesh(renderer) {}
+        inline SpriteSystem() : mesh(client->spriteRenderer) {}
 	};
 }

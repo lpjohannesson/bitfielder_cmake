@@ -8,6 +8,7 @@ add_compile_definitions(BF_CLIENT)
 add_executable(${PROJECT_NAME}
     src/engine/engine.cpp
     src/engine/file_loader.cpp
+    src/engine/input.cpp
 
     src/gfx/core/renderer.cpp
     src/gfx/core/shader.cpp
@@ -27,6 +28,8 @@ add_executable(${PROJECT_NAME}
     src/world/entity/entities.cpp
 
     src/world/content/content.cpp
+
+    src/client/client.cpp
     
     src/client/world/world_renderer.cpp
 
@@ -38,7 +41,7 @@ add_executable(${PROJECT_NAME}
 
     src/client/world/content/client_content.cpp
 
-    src/main_scene.cpp
+    src/client/scenes/main_scene.cpp
 
     src/main.cpp)
 

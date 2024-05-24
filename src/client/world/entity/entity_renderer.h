@@ -9,7 +9,5 @@ namespace bf {
         SpriteSystem spriteSystem;
 
         void render(const World &world);
-
-        inline EntityRenderer(const SpriteRenderer &spriteRenderer) : spriteSystem(spriteRenderer) {}
     };
 }
