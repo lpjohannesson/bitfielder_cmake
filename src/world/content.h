@@ -1,6 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
-#include "world/entity/systems/body_system.h"
+#include "entity/systems/body_system.h"
 
 namespace bf {
     class World;

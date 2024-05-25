@@ -1,7 +1,7 @@
 #include "content.h"
-#include "world/world.h"
-#include "world/entity/components/position_component.h"
-#include "world/entity/components/body_component.h"
+#include "world.h"
+#include "entity/components/position_component.h"
+#include "entity/components/body_component.h"
 
 using namespace bf;
 
