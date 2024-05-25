@@ -1,7 +1,7 @@
 #include "client_content.h"
-#include "client/world/block/components/block_renderer_component.h"
-#include "client/world/entity/components/sprite_component.h"
-#include "client/world/entity/components/client_player_component.h"
+#include "block/components/block_renderer_component.h"
+#include "entity/components/sprite_component.h"
+#include "entity/components/client_player_component.h"
 
 using namespace bf;
 
