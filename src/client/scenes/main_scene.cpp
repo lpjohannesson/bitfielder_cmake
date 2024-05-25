@@ -21,7 +21,7 @@ void MainScene::start() {
 	clientContent.loadContent(world);
 
 	BlockChunk &chunk = world.map.createChunk(0);
-	BlockChunk &chunk2 = world.map.createChunk(1);
+	BlockChunk &chunk2 = world.map.createChunk(2);
 
 	world.renderer.map.createMesh(world, chunk);
 	world.renderer.map.createMesh(world, chunk2);

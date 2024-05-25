@@ -76,12 +76,12 @@ using namespace bf;
     int blockForwardStart, blockForwardEnd;\
     \
     if (body.velocity.AXIS < 0.0f) {\
-        blockForwardStart = glm::ceil(position.AXIS);\
+        blockForwardStart = glm::floor(position.AXIS);\
         blockForwardEnd = glm::floor(endPosition);\
     }\
     else {\
         blockForwardStart = glm::floor(position.AXIS + body.size.AXIS);\
-        blockForwardEnd = glm::ceil(endPosition + body.size.AXIS);\
+        blockForwardEnd = glm::floor(endPosition + body.size.AXIS);\
     }\
     \
     int blockForwardSign = glm::sign(blockForwardEnd - blockForwardStart);\

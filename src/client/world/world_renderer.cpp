@@ -5,7 +5,7 @@
 using namespace bf;
 
 void WorldRenderer::updateSize(glm::ivec2 size) {
-    viewTransform = glm::scale(glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f), glm::vec3(48.0f));
+    viewTransform = glm::scale(glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f), glm::vec3(32.0f));
 }
 
 void WorldRenderer::render(const World &world) {
