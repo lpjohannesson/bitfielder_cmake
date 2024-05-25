@@ -88,7 +88,7 @@ using namespace bf;
     \
     /* Find extents along other axis */\
     int blockSideStart = glm::floor(mover.start.OTHER_AXIS);\
-    int blockSideEnd = glm::ceil(mover.start.OTHER_AXIS + mover.size.OTHER_AXIS);\
+    int blockSideEnd = glm::floor(mover.start.OTHER_AXIS + mover.size.OTHER_AXIS);\
     \
     /* Get block sample */\
     int blockSampleStart = glm::min(BLOCK_SAMPLE_START, BLOCK_SAMPLE_END);\
