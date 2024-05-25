@@ -15,6 +15,7 @@ using namespace bf;
         /* Other axis not aligned */\
         return false;\
     }\
+    \
     float wall;\
     \
     if (endPosition - mover.start.AXIS < 0.0f) {\

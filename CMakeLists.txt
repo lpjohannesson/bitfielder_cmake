@@ -19,6 +19,7 @@ add_executable(${PROJECT_NAME}
     src/gfx/sprite/sprite_mesh.cpp
     src/gfx/sprite/sprite_renderer.cpp
 
+    src/world/content.cpp
     src/world/world.cpp
 
     src/world/block/block_chunk.cpp
@@ -30,11 +31,10 @@ add_executable(${PROJECT_NAME}
 
     src/world/entity/systems/body_system.cpp
 
-    src/world/content/content.cpp
-
     src/client/client.cpp
     src/client/client_input.cpp
     
+    src/client/world/client_content.cpp
     src/client/world/world_renderer.cpp
 
     src/client/world/block/block_map_renderer.cpp
@@ -44,9 +44,7 @@ add_executable(${PROJECT_NAME}
 
     src/client/world/entity/systems/sprite_system.cpp
     src/client/world/entity/systems/client_player_system.cpp
-
-    src/client/world/content/client_content.cpp
-
+    
     src/client/scenes/main_scene.cpp
 
     src/main.cpp)

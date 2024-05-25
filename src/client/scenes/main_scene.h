@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/scene.h"
 #include "world/world.h"
-#include "client/world/content/client_content.h"
+#include "client/world/client_content.h"
 
 namespace bf {
 	class MainScene : public Scene {
