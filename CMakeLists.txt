@@ -23,6 +23,7 @@ add_executable(${PROJECT_NAME}
 
     src/world/block/block_chunk.cpp
     src/world/block/block_map.cpp
+    src/world/block/block_sample.cpp
     src/world/block/block_types.cpp
 
     src/world/entity/entities.cpp

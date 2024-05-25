@@ -22,6 +22,8 @@ namespace bf {
 		inline int getMapIndex() const { return mapIndex; }
 
 		int getBlockIndex(glm::ivec2 position) const;
+		int sampleBlockIndex(glm::ivec2 position) const;
+
 		void setBlockIndex(glm::ivec2 position, int index);
 
 		BlockChunk(int mapIndex);

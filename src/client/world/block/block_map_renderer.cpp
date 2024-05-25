@@ -15,8 +15,8 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
             // Get block data for position
 			glm::ivec2 position = { x, y };
 
-            int index = chunk.getBlockIndex(position);
-			entt::entity block = world.blocks.getBlock(index);
+            int blockIndex = chunk.getBlockIndex(position);
+			entt::entity block = world.blocks.getBlock(blockIndex);
 
             // Get renderer or skip
             if (!blocksRegistry.all_of<BlockRendererComponent>(block)) {

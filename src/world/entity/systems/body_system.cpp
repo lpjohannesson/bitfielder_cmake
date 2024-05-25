@@ -1,166 +1,160 @@
 #include "body_system.h"
 #include "entity_system_impl.h"
-#include "../components/position_component.h"
-#include "../components/body_component.h"
 #include "engine/engine.h"
+#include "world/block/block_sample.h"
 
 using namespace bf;
 
-bool BodySystem::getCollisionX(const BodyMovement &movement, BodyCollision &collision) {
-    if (movement.distance == 0.0f) {
-        // Not moving
-        return false;
-    }
-
-    const Box2
-        &mover = movement.mover,
-        &collider = movement.collider;
-
-    if (mover.start.y >= collider.start.y + collider.size.y ||
-        mover.start.y + mover.size.y <= collider.start.y)
-    {
-        // Other axis not aligned
-        return false;
-    }
-
-    float wall;
-
-    if (movement.distance < 0.0f) {
-        // Move negative
-
-        if (mover.start.x + mover.size.x < collider.start.x + collider.size.x) {
-            // Already beyond
-            return false;
-        }
-
-        wall = collider.start.x + collider.size.x;
-
-        if (mover.start.x + movement.distance > wall) {
-            // Not far enough
-            return false;
-        }
-    }
-    else {
-        // Move positive
-        
-        if (mover.start.x > collider.start.x) {
-            // Already beyond
-            return false;
-        }
-
-        wall = collider.start.x - mover.size.x;
-
-        if (mover.start.x + movement.distance < wall) {
-            // Not far enough
-            return false;
-        }
-    }
-
-    // Success
-    collision.endPosition = wall;
-
+#define GET_COLLISION_AXIS(AXIS, OTHER_AXIS)\
+    const Box2\
+        &mover = movement.mover,\
+        &collider = movement.collider;\
+    \
+    if (mover.start.OTHER_AXIS >= collider.start.OTHER_AXIS + collider.size.OTHER_AXIS ||\
+        mover.start.OTHER_AXIS + mover.size.OTHER_AXIS <= collider.start.OTHER_AXIS) {\
+        /* Other axis not aligned */\
+        return false;\
+    }\
+    float wall;\
+    \
+    if (endPosition - mover.start.AXIS < 0.0f) {\
+        /* Move negative */\
+    \
+        if (mover.start.AXIS + mover.size.AXIS < collider.start.AXIS + collider.size.AXIS) {\
+            /* Already beyond */\
+            return false;\
+        }\
+    \
+        wall = collider.start.AXIS + collider.size.AXIS;\
+    \
+        if (endPosition > wall) {\
+            /* Not far enough */\
+            return false;\
+        }\
+    }\
+    else {\
+        /* Move positive */\
+        \
+        if (mover.start.AXIS > collider.start.AXIS) {\
+            /* Already beyond */\
+            return false;\
+        }\
+    \
+        wall = collider.start.AXIS - mover.size.AXIS;\
+    \
+        if (endPosition < wall) {\
+            /* Not far enough */\
+            return false;\
+        }\
+    }\
+    \
+    /* Success */\
+    endPosition = wall;\
+    \
     return true;
+
+#define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_POSITION, GET_COLLISION)\
+    if (body.velocity.AXIS == 0.0f) {\
+        return;\
+    }\
+    \
+    BodyMovement movement;\
+    \
+    Box2\
+        &mover = movement.mover,\
+        &collider = movement.collider;\
+    \
+    mover = { position, body.size };\
+    \
+    float endPosition = position.AXIS + body.velocity.AXIS * engine->getDeltaTime();\
+    bool collided = false;\
+    \
+    /* Collide blocks */\
+    int blockForwardStart, blockForwardEnd;\
+    \
+    if (body.velocity.AXIS < 0.0f) {\
+        blockForwardStart = glm::ceil(position.AXIS);\
+        blockForwardEnd = glm::floor(endPosition);\
+    }\
+    else {\
+        blockForwardStart = glm::floor(position.AXIS + body.size.AXIS);\
+        blockForwardEnd = glm::ceil(endPosition + body.size.AXIS);\
+    }\
+    \
+    int blockForwardSign = glm::sign(blockForwardEnd - blockForwardStart);\
+    \
+    int blockSideStart = glm::floor(mover.start.OTHER_AXIS);\
+    int blockSideEnd = glm::ceil(mover.start.OTHER_AXIS + mover.size.OTHER_AXIS);\
+    \
+    /* Get block sample */\
+    int blockSampleStart = glm::min(BLOCK_SAMPLE_START, BLOCK_SAMPLE_END);\
+    int blockSampleEnd = glm::max(BLOCK_SAMPLE_START, BLOCK_SAMPLE_END);\
+    \
+    BlockSample blockSample(world.map, blockSampleStart, blockSampleEnd);\
+    \
+    /* Move forward until end */\
+    int blockForward = blockForwardStart;\
+    \
+    while (true) {\
+        for (int blockSide = blockSideStart; blockSide <= blockSideEnd; blockSide++) {\
+            glm::ivec2 blockPosition = BLOCK_POSITION;\
+    \
+            int blockIndex = blockSample.sampleBlockIndex(blockPosition);\
+            entt::entity block = world.blocks.getBlock(blockIndex);\
+    \
+            /* TODO: add collision component to blocks */\
+            if (blockIndex == 0) {\
+                continue;\
+            }\
+    \
+            collider = { blockPosition, { 1.0f, 1.0f } };\
+    \
+            collided |= GET_COLLISION(movement, endPosition);\
+    \
+            if (collided) {\
+                break;\
+            }\
+        }\
+    \
+        if (collided) {\
+            break;\
+        }\
+    \
+        if (blockForward == blockForwardEnd) {\
+            break;\
+        }\
+    \
+        blockForward += blockForwardSign;\
+    }\
+    \
+    /* End */\
+    position.AXIS = endPosition;\
+    \
+    if (collided) {\
+        body.velocity.AXIS = 0;\
+    }
+
+bool BodySystem::getCollisionX(const BodyMovement &movement, float &endPosition) {
+    GET_COLLISION_AXIS(x, y)
 }
 
-bool BodySystem::getCollisionY(const BodyMovement &movement, BodyCollision &collision) {
-    if (movement.distance == 0.0f) {
-        // Not moving
-        return false;
-    }
+bool BodySystem::getCollisionY(const BodyMovement &movement, float &endPosition) {
+    GET_COLLISION_AXIS(y, x)
+}
 
-    const Box2
-        &mover = movement.mover,
-        &collider = movement.collider;
+void BodySystem::moveX(World &world, glm::vec2 &position, BodyComponent &body) {
+    MOVE_AXIS(x, y, blockForwardStart, blockForwardEnd, glm::vec2(blockForward, blockSide), getCollisionX)
+}
 
-    if (mover.start.x >= collider.start.x + collider.size.x ||
-        mover.start.x + mover.size.x <= collider.start.x)
-    {
-        // Other axis not aligned
-        return false;
-    }
-
-    float wall;
-
-    if (movement.distance < 0.0f) {
-        // Move negative
-
-        if (mover.start.y + mover.size.y < collider.start.y + collider.size.y) {
-            // Already beyond
-            return false;
-        }
-
-        wall = collider.start.y + collider.size.y;
-
-        if (mover.start.y + movement.distance > wall) {
-            // Not far enough
-            return false;
-        }
-    }
-    else {
-        // Move positive
-        
-        if (mover.start.y > collider.start.y) {
-            // Already beyond
-            return false;
-        }
-
-        wall = collider.start.y - mover.size.y;
-
-        if (mover.start.y + movement.distance < wall) {
-            // Not far enough
-            return false;
-        }
-    }
-
-    // Success
-    collision.endPosition = wall;
-
-    return true;
+void BodySystem::moveY(World &world, glm::vec2 &position, BodyComponent &body) {
+    MOVE_AXIS(y, x, blockSideStart, blockSideEnd, glm::vec2(blockSide, blockForward), getCollisionY)
 }
 
 void BodySystem::update(World &world) {
     auto view = world.entities.registry.view<PositionComponent, BodyComponent>();
 
     for (auto [entity, position, body] : view.each()) {
-        glm::vec2 distance = body.velocity * engine->getDeltaTime();
-        
-        BodyMovement movement;
-        movement.mover = { position.position, body.size };
-        movement.collider = { { 2.0f, 2.0f }, { 2.0f, 2.0f } };
-
-        BodyCollision collision;
-        bool collided;
-
-        // Move X
-        movement.distance = distance.x;
-        collided = false;
-
-        if (getCollisionX(movement, collision)) {
-            collided = true;
-            position.position.x = collision.endPosition;
-        }
-
-        if (collided) {
-            body.velocity.x = 0;
-        }
-        else {
-            position.position.x += distance.x;
-        }
-        
-        // Move Y
-        movement.distance = distance.y;
-        collided = false;
-
-        if (getCollisionY(movement, collision)) {
-            collided = true;
-            position.position.y = collision.endPosition;
-        }
-
-        if (collided) {
-            body.velocity.y = 0;
-        }
-        else {
-            position.position.y += distance.y;
-        }
+        moveX(world, position.position, body);
+        moveY(world, position.position, body);
     }
 }
