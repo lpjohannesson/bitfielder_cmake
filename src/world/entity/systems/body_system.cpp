@@ -19,14 +19,14 @@ using namespace bf;
     \
     if (endPosition - mover.start.AXIS < 0.0f) {\
         /* Move negative */\
-    \
+        \
         if (mover.start.AXIS + mover.size.AXIS < collider.start.AXIS + collider.size.AXIS) {\
             /* Already beyond */\
             return false;\
         }\
-    \
+        \
         wall = collider.start.AXIS + collider.size.AXIS;\
-    \
+        \
         if (endPosition > wall) {\
             /* Not far enough */\
             return false;\
@@ -39,9 +39,9 @@ using namespace bf;
             /* Already beyond */\
             return false;\
         }\
-    \
+        \
         wall = collider.start.AXIS - mover.size.AXIS;\
-    \
+        \
         if (endPosition < wall) {\
             /* Not far enough */\
             return false;\
@@ -53,8 +53,9 @@ using namespace bf;
     \
     return true;
 
-#define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_POSITION, GET_COLLISION)\
+#define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_X, BLOCK_Y, GET_COLLISION_FUNCTION)\
     if (body.velocity.AXIS == 0.0f) {\
+        /* Not moving */\
         return;\
     }\
     \
@@ -70,6 +71,8 @@ using namespace bf;
     bool collided = false;\
     \
     /* Collide blocks */\
+    \
+    /* Find extents along axis */\
     int blockForwardStart, blockForwardEnd;\
     \
     if (body.velocity.AXIS < 0.0f) {\
@@ -83,6 +86,7 @@ using namespace bf;
     \
     int blockForwardSign = glm::sign(blockForwardEnd - blockForwardStart);\
     \
+    /* Find extents along other axis */\
     int blockSideStart = glm::floor(mover.start.OTHER_AXIS);\
     int blockSideEnd = glm::ceil(mover.start.OTHER_AXIS + mover.size.OTHER_AXIS);\
     \
@@ -97,33 +101,34 @@ using namespace bf;
     \
     while (true) {\
         for (int blockSide = blockSideStart; blockSide <= blockSideEnd; blockSide++) {\
-            glm::ivec2 blockPosition = BLOCK_POSITION;\
-    \
+            glm::ivec2 blockPosition = { BLOCK_X, BLOCK_Y };\
+            \
             int blockIndex = blockSample.sampleBlockIndex(blockPosition);\
             entt::entity block = world.blocks.getBlock(blockIndex);\
-    \
+            \
             /* TODO: add collision component to blocks */\
             if (blockIndex == 0) {\
                 continue;\
             }\
-    \
+            \
             collider = { blockPosition, { 1.0f, 1.0f } };\
-    \
-            collided |= GET_COLLISION(movement, endPosition);\
-    \
+            \
+            collided |= GET_COLLISION_FUNCTION(movement, endPosition);\
+            \
             if (collided) {\
                 break;\
             }\
         }\
-    \
+        \
         if (collided) {\
             break;\
         }\
-    \
+        \
+        /* Advance or stop if reached end */\
         if (blockForward == blockForwardEnd) {\
             break;\
         }\
-    \
+        \
         blockForward += blockForwardSign;\
     }\
     \
@@ -131,7 +136,7 @@ using namespace bf;
     position.AXIS = endPosition;\
     \
     if (collided) {\
-        body.velocity.AXIS = 0;\
+        body.velocity.AXIS = 0.0f;\
     }
 
 bool BodySystem::getCollisionX(const BodyMovement &movement, float &endPosition) {
@@ -143,11 +148,11 @@ bool BodySystem::getCollisionY(const BodyMovement &movement, float &endPosition)
 }
 
 void BodySystem::moveX(World &world, glm::vec2 &position, BodyComponent &body) {
-    MOVE_AXIS(x, y, blockForwardStart, blockForwardEnd, glm::vec2(blockForward, blockSide), getCollisionX)
+    MOVE_AXIS(x, y, blockForwardStart, blockForwardEnd, blockForward, blockSide, getCollisionX)
 }
 
 void BodySystem::moveY(World &world, glm::vec2 &position, BodyComponent &body) {
-    MOVE_AXIS(y, x, blockSideStart, blockSideEnd, glm::vec2(blockSide, blockForward), getCollisionY)
+    MOVE_AXIS(y, x, blockSideStart, blockSideEnd, blockSide, blockForward, getCollisionY)
 }
 
 void BodySystem::update(World &world) {

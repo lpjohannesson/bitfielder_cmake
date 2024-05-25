@@ -15,6 +15,6 @@ void ClientPlayerSystem::update(World &world) {
     };
 
     for (auto [entity, body] : view.each()) {
-        body.velocity += movement * 2.0f * engine->getDeltaTime();
+        body.velocity += movement * 4.0f * engine->getDeltaTime();
     }
 }

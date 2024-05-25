@@ -19,5 +19,5 @@ void Content::loadContent(World &world) {
     player = entityRegistry.create();
 
     entityRegistry.emplace<PositionComponent>(player, PositionComponent { });
-    entityRegistry.emplace<BodyComponent>(player, BodyComponent { { 1.0f, 1.0f } });
+    entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(14.0f, 14.0f) / 16.0f });
 }
