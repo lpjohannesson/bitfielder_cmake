@@ -1,18 +1,26 @@
 #include "world_scene.h"
+#include <cstring>
 #include "engine/engine.h"
 #include <iostream>
 
 using namespace bf;
 
 void WorldScene::readPacket(Packet &packet) {
-	int i1, i2;
-	packet << i1 << i2;
+	int chunkIndex;
+	packet << chunkIndex;
 
-	std::cout << i1 << std::endl << i2 << std::endl;
+	char* chunkData;
+	packet.read(chunkData, sizeof(BlockChunk::data));
+
+	BlockChunk &chunk = world.map.createChunk(chunkIndex);
+
+	std::memcpy(chunk.data, chunkData, sizeof(BlockChunk::data));
+
+	worldRenderer.map.createMesh(world, chunk);
 }
 
 void WorldScene::updateSize(glm::ivec2 size) {
-	world.renderer.updateSize(size);
+	worldRenderer.updateSize(size);
 }
 
 void WorldScene::update() {
@@ -21,20 +29,11 @@ void WorldScene::update() {
 
 void WorldScene::render() {
 	engine->renderer.clearScreen({ 0.0f, 0.0f, 0.5f, 0.0f });
-	world.renderer.render(world);
+	worldRenderer.render(*this);
 }
 
 void WorldScene::start() {
-	// Connect to server
-	server.addClient(&localClientConnection);
-
-	clientContent.loadContent(world);
-
-	BlockChunk &chunk = world.map.createChunk(0);
-	BlockChunk &chunk2 = world.map.createChunk(2);
-
-	world.renderer.map.createMesh(world, chunk);
-	world.renderer.map.createMesh(world, chunk2);
+	clientContent.loadContent(*this);
 }
 
 void WorldScene::end() {

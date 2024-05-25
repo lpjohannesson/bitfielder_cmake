@@ -12,12 +12,13 @@ namespace bf {
 
 	private:
 		int mapIndex;
-		unsigned int data[SIZE.y][SIZE.x];
 
 	public:
 #ifdef BF_CLIENT
 		BlockMesh blockMesh;
 #endif
+
+		unsigned int data[SIZE.y][SIZE.x];
 
 		inline int getMapIndex() const { return mapIndex; }
 

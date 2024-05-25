@@ -1,11 +1,15 @@
 #include "client_content.h"
+#include "client/scenes/world_scene.h"
 #include "block/components/block_renderer_component.h"
 #include "entity/components/sprite_component.h"
 #include "entity/components/client_player_component.h"
 
 using namespace bf;
 
-void ClientContent::loadContent(World &world) {
+void ClientContent::loadContent(WorldScene &scene) {
+	World &world = scene.world;
+	WorldRenderer &worldRenderer = scene.worldRenderer;
+
 	// Add entity systems
 	world.entities.addSystem(clientPlayerSystem);
 
@@ -15,11 +19,11 @@ void ClientContent::loadContent(World &world) {
 		"assets/textures/tile.png",
 	};
 
-	world.renderer.textureAtlas.loadAtlas(texturePaths);
+	worldRenderer.textureAtlas.loadAtlas(texturePaths);
 
 	// Load test block renderer
     testBlockRenderer.sprite.box.size = glm::vec2(1.0f);
-    testBlockRenderer.sprite.uvBox = world.renderer.textureAtlas.getSection("assets/textures/tile.png").uvBox;
+    testBlockRenderer.sprite.uvBox = worldRenderer.textureAtlas.getSection("assets/textures/tile.png").uvBox;
 
     world.blocks.registry.emplace<BlockRendererComponent>(world.content.testBlock, BlockRendererComponent { &testBlockRenderer });
 
@@ -29,7 +33,7 @@ void ClientContent::loadContent(World &world) {
 	entityRegistry.emplace<ClientPlayerComponent>(
 		world.content.player, ClientPlayerComponent { });
 
-	TextureSection playerTextureSection = world.renderer.textureAtlas.getSection("assets/textures/player.png");
+	TextureSection playerTextureSection = worldRenderer.textureAtlas.getSection("assets/textures/player.png");
 
 	entityRegistry.emplace<SpriteComponent>(
 		world.content.player, SpriteComponent { glm::vec2(playerTextureSection.size) / 16.0f, playerTextureSection.uvBox });

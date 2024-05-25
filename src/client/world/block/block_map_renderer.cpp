@@ -1,5 +1,5 @@
 #include "block_map_renderer.h"
-#include "world/world.h"
+#include "client/scenes/world_scene.h"
 #include "client/client.h"
 #include "components/block_renderer_component.h"
 
@@ -37,10 +37,13 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
     spriteBatch.uploadMesh(chunk.blockMesh.mesh);
 }
 
-void BlockMapRenderer::render(const World &world) {
+void BlockMapRenderer::render(const WorldScene &scene) {
+    const World &world = scene.world;
+	const WorldRenderer &worldRenderer = scene.worldRenderer;
+
     for (const auto &[chunkIndex, chunk] : world.map.chunks) {
         // Draw sprite mesh
         client->spriteRenderer.renderMesh(
-            chunk.blockMesh.mesh, world.renderer.textureAtlas.texture);
+            chunk.blockMesh.mesh, worldRenderer.textureAtlas.texture);
     }
 }

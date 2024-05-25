@@ -9,7 +9,7 @@ namespace bf {
         SpriteBatch spriteBatch;
         SpriteMesh mesh;
 
-        void render(const World &world) override;
+        void render(const WorldScene &scene) override;
 
         inline SpriteSystem() : mesh(client->spriteRenderer) {}
 	};

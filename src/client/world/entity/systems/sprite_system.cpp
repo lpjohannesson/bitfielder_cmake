@@ -6,7 +6,10 @@
 
 using namespace bf;
 
-void SpriteSystem::render(const World &world) {
+void SpriteSystem::render(const WorldScene &scene) {
+    const World &world = scene.world;
+    const WorldRenderer &worldRenderer = scene.worldRenderer;
+
     auto view = world.entities.registry.view<SpriteComponent, PositionComponent>();
 
     for (auto [entity, sprite, position] : view.each()) {
@@ -23,5 +26,5 @@ void SpriteSystem::render(const World &world) {
     spriteBatch.uploadMesh(mesh);
 
     client->spriteRenderer.renderMesh(
-        mesh, world.renderer.textureAtlas.texture);
+        mesh, worldRenderer.textureAtlas.texture);
 }

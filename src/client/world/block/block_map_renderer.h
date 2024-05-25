@@ -4,12 +4,13 @@
 
 namespace bf {
     class World;
+    class WorldScene;
 
     class BlockMapRenderer {
     public:
         SpriteBatch spriteBatch;
 
         void createMesh(const World &world, BlockChunk &chunk);
-        void render(const World &world);
+        void render(const WorldScene &scene);
     };
 }

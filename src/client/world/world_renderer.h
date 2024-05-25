@@ -5,7 +5,7 @@
 #include "entity/entity_renderer.h"
 
 namespace bf {
-    class World;
+    class WorldScene;
 
 	class WorldRenderer {
     private:
@@ -19,6 +19,6 @@ namespace bf {
 
         void updateSize(glm::ivec2 size);
 
-        void render(const World &world);
+        void render(const WorldScene &scene);
 	};
 }

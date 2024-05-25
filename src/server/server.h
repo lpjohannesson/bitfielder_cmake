@@ -14,6 +14,8 @@ namespace bf {
 
         void addClient(ClientConnection *client);
 
+        void sendChunk(ClientConnection *client, BlockChunk *chunk);
+
         Server();
 	};
 }

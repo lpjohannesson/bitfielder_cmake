@@ -3,6 +3,6 @@
 
 using namespace bf;
 
-void EntityRenderer::render(const World &world) {
-    spriteSystem.render(world);
+void EntityRenderer::render(const WorldScene &scene) {
+    spriteSystem.render(scene);
 }

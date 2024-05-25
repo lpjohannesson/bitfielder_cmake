@@ -2,10 +2,10 @@
 #include <entt/entt.hpp>
 
 namespace bf {
-    class World;
+    class WorldScene;
     
 	class RenderSystem {
     public:
-        inline virtual void render(const World &world) {}
+        inline virtual void render(const WorldScene &scene) {}
     };
 }

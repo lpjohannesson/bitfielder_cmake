@@ -52,6 +52,7 @@ add_executable(${PROJECT_NAME}
     src/client/world/entity/systems/client_player_system.cpp
     
     src/client/scenes/world_scene.cpp
+    src/client/scenes/local_world_scene.cpp
 
     src/main.cpp)
 

@@ -8,6 +8,6 @@ namespace bf {
     public:
         SpriteSystem spriteSystem;
 
-        void render(const World &world);
+        void render(const WorldScene &scene);
     };
 }

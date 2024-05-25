@@ -5,11 +5,18 @@ using namespace bf;
 void Server::addClient(ClientConnection *client) {
     clients.push_back(client);
 
-    // Test packet
-    Packet testPacket;
-    testPacket >> 2024 >> 1234;
+    sendChunk(client, world.map.getChunk(0));
+}
 
-    client->writePacket(testPacket);
+void Server::sendChunk(ClientConnection *client, BlockChunk *chunk) {
+    Packet packet;
+
+    // Send map index
+    packet >> chunk->getMapIndex();
+
+    packet.write((char*)&chunk->data, sizeof(BlockChunk::data));
+
+    client->writePacket(packet);
 }
 
 Server::Server() {

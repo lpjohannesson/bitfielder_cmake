@@ -4,10 +4,6 @@
 #include "entity/entities.h"
 #include "world/content.h"
 
-#ifdef BF_CLIENT
-#include "client/world/world_renderer.h"
-#endif
-
 namespace bf {
 	class World {
     public:
@@ -17,10 +13,6 @@ namespace bf {
         Entities entities;
 
         Content content;
-
-#ifdef BF_CLIENT
-        WorldRenderer renderer;
-#endif
 
         void update();
 
