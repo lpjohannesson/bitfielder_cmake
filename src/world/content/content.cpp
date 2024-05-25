@@ -13,10 +13,11 @@ void Content::loadContent(World &world) {
     airBlock = world.blocks.createBlock();
     testBlock = world.blocks.createBlock();
 
-    // Create player
     entt::registry &entityRegistry = world.entities.registry;
 
+    // Create player
     player = entityRegistry.create();
+
     entityRegistry.emplace<PositionComponent>(player, PositionComponent { });
-    entityRegistry.emplace<BodyComponent>(player, BodyComponent { });
+    entityRegistry.emplace<BodyComponent>(player, BodyComponent { { 1.0f, 1.0f } });
 }

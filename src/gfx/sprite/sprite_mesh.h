@@ -17,7 +17,7 @@ namespace bf {
 		void startAttributes();
 
 	public:
-		int elementCount;
+		int elementCount = 0;
 
 		inline GLuint getGLVertexArray() const { return glVertexArray; }
 		inline GLuint getGLVertexBuffer() const { return glVertexBuffer; }
