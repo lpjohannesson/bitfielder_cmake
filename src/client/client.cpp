@@ -1,5 +1,5 @@
 #include "client.h"
-#include "scenes/main_scene.h"
+#include "scenes/world_scene.h"
 
 using namespace bf;
 
@@ -9,5 +9,5 @@ Client::Client(Engine &engine) {
     client = this;
 
     // Change scene
-    engine.changeScene(new MainScene());
+    engine.changeScene(new WorldScene());
 }

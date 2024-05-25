@@ -1,23 +1,33 @@
-#include "main_scene.h"
+#include "world_scene.h"
 #include "engine/engine.h"
 #include <iostream>
 
 using namespace bf;
 
-void MainScene::updateSize(glm::ivec2 size) {
+void WorldScene::readPacket(Packet &packet) {
+	int i1, i2;
+	packet << i1 << i2;
+
+	std::cout << i1 << std::endl << i2 << std::endl;
+}
+
+void WorldScene::updateSize(glm::ivec2 size) {
 	world.renderer.updateSize(size);
 }
 
-void MainScene::update() {
+void WorldScene::update() {
 	world.update();
 }
 
-void MainScene::render() {
+void WorldScene::render() {
 	engine->renderer.clearScreen({ 0.0f, 0.0f, 0.5f, 0.0f });
 	world.renderer.render(world);
 }
 
-void MainScene::start() {
+void WorldScene::start() {
+	// Connect to server
+	server.addClient(&localClientConnection);
+
 	clientContent.loadContent(world);
 
 	BlockChunk &chunk = world.map.createChunk(0);
@@ -27,6 +37,6 @@ void MainScene::start() {
 	world.renderer.map.createMesh(world, chunk2);
 }
 
-void MainScene::end() {
+void WorldScene::end() {
 
 }

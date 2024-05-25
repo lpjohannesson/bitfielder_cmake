@@ -6,6 +6,8 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 add_compile_definitions(BF_CLIENT)
 
 add_executable(${PROJECT_NAME}
+    src/core/packet.cpp
+
     src/engine/engine.cpp
     src/engine/file_loader.cpp
     src/engine/input.cpp
@@ -31,8 +33,12 @@ add_executable(${PROJECT_NAME}
 
     src/world/entity/systems/body_system.cpp
 
+    src/server/server.cpp
+    src/server/block_map_generator.cpp
+
     src/client/client.cpp
     src/client/client_input.cpp
+    src/client/local_client_connection.cpp
     
     src/client/world/client_content.cpp
     src/client/world/world_renderer.cpp
@@ -45,7 +51,7 @@ add_executable(${PROJECT_NAME}
     src/client/world/entity/systems/sprite_system.cpp
     src/client/world/entity/systems/client_player_system.cpp
     
-    src/client/scenes/main_scene.cpp
+    src/client/scenes/world_scene.cpp
 
     src/main.cpp)
 
@@ -67,4 +73,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW)
 set(EnTT_DIR vcpkg_installed/x64-windows/share/entt)
 find_package(EnTT CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE EnTT::EnTT)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
 

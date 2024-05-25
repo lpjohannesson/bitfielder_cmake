@@ -23,7 +23,7 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
                 continue;
             }
 
-            BlockRenderer* blockRenderer = blocksRegistry.get<BlockRendererComponent>(block).renderer;
+            BlockRenderer *blockRenderer = blocksRegistry.get<BlockRendererComponent>(block).renderer;
 
             // Render block
             BlockRenderData renderData;

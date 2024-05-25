@@ -4,6 +4,7 @@
     "sdl2-image",
     "glew",
     "glm",
-    "entt"
+    "entt",
+    "winsock2"
   ]
 }

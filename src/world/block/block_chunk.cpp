@@ -30,13 +30,4 @@ BlockChunk::BlockChunk(int mapIndex) {
 			setBlockIndex(position, 0);
 		}
 	}
-
-	// Generate chunk
-	for (int y = 2; y < SIZE.y; y++) {
-		for (int x = 0; x < SIZE.x; x++) {
-			glm::ivec2 position = { x, y };
-			
-			setBlockIndex(position, rand() % 2);
-		}
-	}
 }
