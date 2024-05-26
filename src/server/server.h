@@ -13,6 +13,7 @@ namespace bf {
         BlockMapGenerator mapGenerator;
 
         void addClient(ClientConnection *client);
+        void removeClient(ClientConnection *client);
 
         void sendChunk(ClientConnection *client, BlockChunk *chunk);
 

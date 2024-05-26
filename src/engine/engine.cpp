@@ -1,5 +1,6 @@
 #include "engine.h"
 #include <GL/glew.h>
+#include "core/game_time.h"
 
 using namespace bf;
 
@@ -22,12 +23,7 @@ void Engine::changeScene(Scene *scene) {
 }
 
 bool Engine::update() {
-	// Get delta time
-	static Uint32 lastTime = 0;
-	Uint32 currentTime = SDL_GetTicks();
-
-	deltaTime = (currentTime - lastTime) / 1000.0f;
-	lastTime = currentTime;
+	gameTime.update();
 
 	// Window events
 	SDL_Event event;

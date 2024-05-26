@@ -19,7 +19,7 @@ Packet& Packet::read(char *&value, int size) {
     return *this;
 }
 
-Packet& Packet::operator>>(int value) {
+Packet& Packet::operator<<(int value) {
     // Convert to network value
     int networkValue = htonl(value);
 
@@ -29,7 +29,7 @@ Packet& Packet::operator>>(int value) {
     return *this;
 }
 
-Packet& Packet::operator<<(int &value) {
+Packet& Packet::operator>>(int &value) {
     // Read pointer to network value
     int* networkValue;
     read((char*&)networkValue, sizeof(value));

@@ -15,15 +15,12 @@ namespace bf {
 		SDL_Window *window;
 		SDL_GLContext glContext;
 
-		float deltaTime = 0.0f;
-
 		Scene *currentScene = nullptr;
 
 		void endCurrentScene();
 
 	public:
 		inline glm::ivec2 getWindowSize() const { return windowSize; }
-		inline float getDeltaTime() const { return deltaTime; }
 
 		Renderer renderer;
 		Input input;

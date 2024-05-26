@@ -2,7 +2,7 @@
 #include "world/entity/systems/entity_system_impl.h"
 #include "../components/client_player_component.h"
 #include "world/entity/components/body_component.h"
-#include <iostream>
+#include "core/game_time.h"
 
 using namespace bf;
 
@@ -15,6 +15,6 @@ void ClientPlayerSystem::update(World &world) {
     };
 
     for (auto [entity, body] : view.each()) {
-        body.velocity += movement * 4.0f * engine->getDeltaTime();
+        body.velocity += movement * 4.0f * gameTime.getDeltaTime();
     }
 }

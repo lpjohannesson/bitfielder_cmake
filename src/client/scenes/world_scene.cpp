@@ -6,16 +6,18 @@
 using namespace bf;
 
 void WorldScene::readPacket(Packet &packet) {
+	// Chunk index
 	int chunkIndex;
-	packet << chunkIndex;
+	packet >> chunkIndex;
 
+	// Chunk data
 	char* chunkData;
 	packet.read(chunkData, sizeof(BlockChunk::data));
 
 	BlockChunk &chunk = world.map.createChunk(chunkIndex);
-
 	std::memcpy(chunk.data, chunkData, sizeof(BlockChunk::data));
 
+	// Create mesh
 	worldRenderer.map.createMesh(world, chunk);
 }
 

@@ -1,6 +1,6 @@
 #include "body_system.h"
 #include "entity_system_impl.h"
-#include "engine/engine.h"
+#include "core/game_time.h"
 #include "world/block/block_sample.h"
 
 using namespace bf;
@@ -68,7 +68,7 @@ using namespace bf;
     \
     mover = { position, body.size };\
     \
-    float endPosition = position.AXIS + body.velocity.AXIS * engine->getDeltaTime();\
+    float endPosition = position.AXIS + body.velocity.AXIS * gameTime.getDeltaTime();\
     bool collided = false;\
     \
     /* Collide blocks */\

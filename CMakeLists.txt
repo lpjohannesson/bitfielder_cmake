@@ -3,10 +3,9 @@ project(bitfielder)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-add_compile_definitions(BF_CLIENT)
-
-add_executable(${PROJECT_NAME}
+add_executable(client
     src/core/packet.cpp
+    src/core/game_time.cpp
 
     src/engine/engine.cpp
     src/engine/file_loader.cpp
@@ -53,27 +52,60 @@ add_executable(${PROJECT_NAME}
     
     src/client/scenes/world_scene.cpp
     src/client/scenes/local_world_scene.cpp
+    src/client/scenes/remote_world_scene.cpp
 
-    src/main.cpp)
+    src/client/main.cpp)
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+target_compile_definitions(client PRIVATE BF_CLIENT)
+
+add_executable(server
+    src/core/packet.cpp
+    src/core/game_time.cpp
+
+    src/world/content.cpp
+    src/world/world.cpp
+
+    src/world/block/block_chunk.cpp
+    src/world/block/block_map.cpp
+    src/world/block/block_sample.cpp
+    src/world/block/block_types.cpp
+
+    src/world/entity/entities.cpp
+
+    src/world/entity/systems/body_system.cpp
+
+    src/server/server.cpp
+    src/server/block_map_generator.cpp
+    src/server/remote_client_connection.cpp
+    src/server/server_host.cpp
+
+    src/server/main.cpp)
+
+add_custom_command(TARGET client POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
-)
+    $<TARGET_FILE_DIR:client>/assets)
 
 find_package(SDL2 CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+target_link_libraries(server PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 
 find_package(SDL2_image CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 
 find_package(GLEW REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW)
+target_link_libraries(client PRIVATE GLEW::GLEW)
 
 set(EnTT_DIR vcpkg_installed/x64-windows/share/entt)
 find_package(EnTT CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE EnTT::EnTT)
+target_link_libraries(client PRIVATE EnTT::EnTT)
+target_link_libraries(server PRIVATE EnTT::EnTT)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
+set(unofficial-enet_DIR vcpkg_installed/x64-windows/share/unofficial-enet)
+find_package(unofficial-enet CONFIG REQUIRED)
+target_link_libraries(client PRIVATE unofficial::enet::enet)
+target_link_libraries(server PRIVATE unofficial::enet::enet)
+
+target_link_libraries(client PRIVATE ws2_32)
+target_link_libraries(server PRIVATE ws2_32)
 

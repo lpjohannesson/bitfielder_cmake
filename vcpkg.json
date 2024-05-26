@@ -5,6 +5,7 @@
     "glew",
     "glm",
     "entt",
+    "enet",
     "winsock2"
   ]
 }

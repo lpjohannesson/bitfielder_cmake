@@ -8,12 +8,17 @@ void Server::addClient(ClientConnection *client) {
     sendChunk(client, world.map.getChunk(0));
 }
 
+void Server::removeClient(ClientConnection *client) {
+    std::remove(clients.begin(), clients.end(), client);
+}
+
 void Server::sendChunk(ClientConnection *client, BlockChunk *chunk) {
     Packet packet;
 
-    // Send map index
-    packet >> chunk->getMapIndex();
+    // Chunk index
+    packet << chunk->getMapIndex();
 
+    // Chunk data
     packet.write((char*)&chunk->data, sizeof(BlockChunk::data));
 
     client->writePacket(packet);
