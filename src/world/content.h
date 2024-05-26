@@ -1,6 +1,6 @@
 #pragma once
-#include <glm/glm.hpp>
 #include <entt/entt.hpp>
+#include <glm/glm.hpp>
 #include "entity/systems/body_system.h"
 
 namespace bf {

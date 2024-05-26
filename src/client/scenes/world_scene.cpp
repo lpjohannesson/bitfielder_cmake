@@ -49,7 +49,7 @@ void WorldScene::update() {
 	world.update();
 
 	Packet packet;
-	packet << 12345;
+	packet << 246810;
 	server->writePacket(packet);
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include "entity/systems/client_player_system.h"
 #include "block/renderers/basic_block_renderer.h"
