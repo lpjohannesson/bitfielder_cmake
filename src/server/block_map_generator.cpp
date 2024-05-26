@@ -3,6 +3,7 @@
 using namespace bf;
 
 void BlockMapGenerator::generateChunk(World &world, BlockChunk &chunk) {
+    srand(time(NULL));
     for (int y = 2; y < BlockChunk::SIZE.y; y++) {
         for (int x = 0; x < BlockChunk::SIZE.x; x++) {
             glm::ivec2 position = { x, y };

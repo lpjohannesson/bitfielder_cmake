@@ -6,6 +6,37 @@
 
 using namespace bf;
 
+entt::entity ClientContent::spawnRemotePlayer(WorldScene &scene, glm::vec2 position) {
+	World &world = scene.world;
+	WorldRenderer &worldRenderer = scene.worldRenderer;
+	entt::registry &entityRegistry = world.entities.registry;
+
+	entt::entity player = world.content.spawnPlayer(world, position);
+	
+	// Load sprite
+	TextureSection playerTextureSection = worldRenderer.textureAtlas.getSection("assets/textures/player.png");
+
+	entityRegistry.emplace<SpriteComponent>(
+		player, SpriteComponent { glm::vec2(playerTextureSection.size) / 16.0f, playerTextureSection.uvBox });
+
+	return player;
+}
+
+entt::entity ClientContent::spawnLocalPlayer(WorldScene &scene, glm::vec2 position) {
+	World &world = scene.world;
+	entt::registry &entityRegistry = world.entities.registry;
+
+	// Spawn remote player with extra attributes
+	entt::entity player = spawnRemotePlayer(scene, position);
+
+	entityRegistry.emplace<ClientPlayerComponent>(
+		player, ClientPlayerComponent { });
+	
+	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(14.0f, 14.0f) / 16.0f });
+
+	return player;
+}
+
 void ClientContent::loadContent(WorldScene &scene) {
 	World &world = scene.world;
 	WorldRenderer &worldRenderer = scene.worldRenderer;
@@ -27,14 +58,5 @@ void ClientContent::loadContent(WorldScene &scene) {
 
     world.blocks.registry.emplace<BlockRendererComponent>(world.content.testBlock, BlockRendererComponent { &testBlockRenderer });
 
-	// Load player
-	entt::registry &entityRegistry = world.entities.registry;
-
-	entityRegistry.emplace<ClientPlayerComponent>(
-		world.content.player, ClientPlayerComponent { });
-
-	TextureSection playerTextureSection = worldRenderer.textureAtlas.getSection("assets/textures/player.png");
-
-	entityRegistry.emplace<SpriteComponent>(
-		world.content.player, SpriteComponent { glm::vec2(playerTextureSection.size) / 16.0f, playerTextureSection.uvBox });
+	spawnLocalPlayer(scene, { 0.0f, 0.0f });
 }

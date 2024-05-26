@@ -5,6 +5,16 @@
 
 using namespace bf;
 
+entt::entity Content::spawnPlayer(World &world, glm::vec2 position) {
+    entt::registry &entityRegistry = world.entities.registry;
+
+    entt::entity player = entityRegistry.create();
+
+    entityRegistry.emplace<PositionComponent>(player, PositionComponent { position });
+
+    return player;
+}
+
 void Content::loadContent(World &world) {
     // Add entity systems
     world.entities.addSystem(bodySystem);
@@ -12,12 +22,4 @@ void Content::loadContent(World &world) {
     // Create blocks
     airBlock = world.blocks.createBlock();
     testBlock = world.blocks.createBlock();
-
-    entt::registry &entityRegistry = world.entities.registry;
-
-    // Create player
-    player = entityRegistry.create();
-
-    entityRegistry.emplace<PositionComponent>(player, PositionComponent { });
-    entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(14.0f, 14.0f) / 16.0f });
 }

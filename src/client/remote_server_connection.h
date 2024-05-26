@@ -1,9 +1,9 @@
 #pragma once
 #include <enet/enet.h>
-#include "client_connection.h"
+#include "server_connection.h"
 
 namespace bf {
-        class RemoteClientConnection : public ClientConnection {
+        class RemoteServerConnection : public ServerConnection {
         public:
                 ENetPeer *networkPeer;
 

@@ -6,5 +6,13 @@ void LocalWorldScene::start() {
     WorldScene::start();
 
     // Connect to server
-    server.addClient(&localClientConnection);
+    server = &localServerConnection;
+    localServer.addClient(&localClientConnection);
+}
+
+void LocalWorldScene::end() {
+    // Disconnect from server
+    localServer.removeClient(&localClientConnection);
+
+    WorldScene::end();
 }

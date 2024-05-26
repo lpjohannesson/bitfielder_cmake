@@ -14,6 +14,7 @@ namespace bf {
 		int mapIndex;
 
 	public:
+	// TODO: Move mesh
 #ifdef BF_CLIENT
 		BlockMesh blockMesh;
 #endif

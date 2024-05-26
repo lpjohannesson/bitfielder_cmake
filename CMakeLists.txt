@@ -38,6 +38,8 @@ add_executable(client
     src/client/client.cpp
     src/client/client_input.cpp
     src/client/local_client_connection.cpp
+    src/client/local_server_connection.cpp
+    src/client/remote_server_connection.cpp
     
     src/client/world/client_content.cpp
     src/client/world/world_renderer.cpp

@@ -5,18 +5,20 @@
 
 namespace bf {
 	class Server {
-    private:
-        std::vector<ClientConnection*> clients;
-
 	public:
-        World world;
-        BlockMapGenerator mapGenerator;
+                std::vector<ClientConnection*> clients;
 
-        void addClient(ClientConnection *client);
-        void removeClient(ClientConnection *client);
+                World world;
+                BlockMapGenerator mapGenerator;
 
-        void sendChunk(ClientConnection *client, BlockChunk *chunk);
+                void addClient(ClientConnection *client);
+                void removeClient(ClientConnection *client);
 
-        Server();
+                void writeChunk(ClientConnection *client, BlockChunk *chunk);
+                void writeRemotePlayer(ClientConnection *client, entt::entity player);
+
+                void readPacket(ClientConnection *client, Packet &packet);
+
+                Server();
 	};
 }

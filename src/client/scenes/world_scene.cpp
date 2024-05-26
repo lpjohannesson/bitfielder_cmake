@@ -5,7 +5,7 @@
 
 using namespace bf;
 
-void WorldScene::readPacket(Packet &packet) {
+void WorldScene::readChunk(Packet &packet) {
 	// Chunk index
 	int chunkIndex;
 	packet >> chunkIndex;
@@ -21,12 +21,36 @@ void WorldScene::readPacket(Packet &packet) {
 	worldRenderer.map.createMesh(world, chunk);
 }
 
+void WorldScene::readRemotePlayer(Packet &packet) {
+	clientContent.spawnRemotePlayer(*this, { 0.0f, 0.0f });
+}
+
+void WorldScene::readPacket(Packet &packet) {
+	// Packet ID
+	int packetID;
+	packet >> packetID;
+
+	switch (packetID) {
+	case 0:
+		readChunk(packet);
+		break;
+
+	case 1:
+		readRemotePlayer(packet);
+		break;
+	}
+}
+
 void WorldScene::updateSize(glm::ivec2 size) {
 	worldRenderer.updateSize(size);
 }
 
 void WorldScene::update() {
 	world.update();
+
+	Packet packet;
+	packet << 12345;
+	server->writePacket(packet);
 }
 
 void WorldScene::render() {

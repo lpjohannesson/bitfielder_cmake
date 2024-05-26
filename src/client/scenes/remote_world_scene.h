@@ -1,8 +1,9 @@
 #pragma once
 #include <enet/enet.h>
+#include <memory>
 #include "world_scene.h"
 #include "server/server.h"
-#include "client/local_client_connection.h"
+#include "client/remote_server_connection.h"
 
 namespace bf {
 	class RemoteWorldScene : public WorldScene {
@@ -10,6 +11,8 @@ namespace bf {
 		ENetHost *networkHost;
 		ENetAddress networkAddress;
 		ENetPeer *networkServer;
+
+		RemoteServerConnection remoteServerConnection;
 
 		void update() override;
 

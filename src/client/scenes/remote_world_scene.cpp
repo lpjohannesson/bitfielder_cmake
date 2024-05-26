@@ -56,6 +56,10 @@ RemoteWorldScene::RemoteWorldScene(const char *ip, int port) {
         std::cout << "Failed." << std::endl;
         enet_peer_reset(networkServer);
     }
+
+    // Create server connection
+    server = &remoteServerConnection;
+    remoteServerConnection.networkPeer = networkServer;
 }
 
 RemoteWorldScene::~RemoteWorldScene() {
