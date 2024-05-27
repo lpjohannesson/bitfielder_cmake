@@ -55,7 +55,7 @@ ServerHost::ServerHost(int port) {
             }
         
             case ENET_EVENT_TYPE_RECEIVE: {
-                ClientConnection *client = (ClientConnection*)event.peer->data;;
+                RemoteClientConnection *client = (RemoteClientConnection*)event.peer->data;;
 
                 // Read packet
                 Packet packet;
