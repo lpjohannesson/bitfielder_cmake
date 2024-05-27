@@ -5,7 +5,7 @@
 
 using namespace bf;
 
-void Content::spawnPlayer(entt::entity player, World &world, glm::vec2 position) {
+void Content::createPlayer(entt::entity player, World &world, glm::vec2 position) {
     entt::registry &entityRegistry = world.entities.registry;
 
     entityRegistry.emplace<PositionComponent>(player, PositionComponent { position });

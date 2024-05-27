@@ -26,13 +26,19 @@ void WorldScene::readRemotePlayer(Packet &packet) {
 	int playerID;
 	packet >> playerID;
 
-	clientContent.spawnPlayer(*this, playerID, { 0.0f, 0.0f });
+	std::cout << "Added: " << playerID << std::endl;
+
+	// Spawn player entity
+	entt::entity player = world.entities.spawnEntity(playerID);
+	clientContent.createPlayer(player, *this, { 0.0f, 0.0f });
 }
 
 void WorldScene::readDespawnRemotePlayer(Packet &packet) {
 	// Player ID
 	int playerID;
 	packet >> playerID;
+
+	std::cout << "Removed: " << playerID << std::endl;
 
 	world.entities.despawnEntity(playerID);
 }

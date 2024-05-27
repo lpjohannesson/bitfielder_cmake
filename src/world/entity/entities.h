@@ -12,7 +12,7 @@ namespace bf {
         entt::registry registry;
         std::vector<EntitySystem*> systems;
 
-        entt::entity *getEntity(int id);
+        bool getEntity(int id, entt::entity &entity);
 
         entt::entity spawnEntity(int id);
         entt::entity spawnEntity();

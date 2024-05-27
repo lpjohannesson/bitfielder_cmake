@@ -12,7 +12,7 @@ namespace bf {
 
         entt::entity airBlock, testBlock;
 
-        void spawnPlayer(entt::entity player, World &world, glm::vec2 position);
+        void createPlayer(entt::entity player, World &world, glm::vec2 position);
 
         void loadContent(World &world);
     };

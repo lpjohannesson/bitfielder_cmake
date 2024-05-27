@@ -3,14 +3,15 @@
 
 using namespace bf;
 
-entt::entity *Entities::getEntity(int id) {
+bool Entities::getEntity(int id, entt::entity &entity) {
     auto foundEntity = entityIDs.find(id);
 
     if (foundEntity == entityIDs.end()) {
-        return nullptr;
+        return false;
     }
 
-    return &foundEntity->second;
+    entity = foundEntity->second;
+    return true;
 }
 
 entt::entity Entities::spawnEntity(int id) {
@@ -32,14 +33,14 @@ entt::entity Entities::spawnEntity() {
 }
 
 void Entities::despawnEntity(int id) {
-    entt::entity *entity = getEntity(id);
+    entt::entity entity;
 
-    if (entity == nullptr) {
+    if (!getEntity(id, entity)) {
         return;
     }
 
+    registry.destroy(entity);
     entityIDs.erase(id);
-    registry.destroy(*entity);
 }
 
 void Entities::addSystem(EntitySystem &system) {

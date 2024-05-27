@@ -7,7 +7,7 @@ using namespace bf;
 void Server::addClient(ClientConnection *client) {
     // Create new player object
     client->player = world.entities.spawnEntity();
-    world.content.spawnPlayer(client->player, world, { 0.0f, 0.0f });
+    world.content.createPlayer(client->player, world, { 0.0f, 0.0f });
 
     // Send new player between clients
     for (ClientConnection *otherClient : clients) {
@@ -24,19 +24,17 @@ void Server::addClient(ClientConnection *client) {
 void Server::removeClient(ClientConnection *client) {
     entt::registry &entityRegistry = world.entities.registry;
 
-    // Send disconnect packet to others
+    // Destroy entity, keep ID
     int playerID = entityRegistry.get<IDComponent>(client->player).id;
-
-    for (ClientConnection *otherClient : clients) {
-        if (client == otherClient) {
-            continue;
-        }
-
-        writeDespawnRemotePlayer(otherClient, playerID);
-    }
+    world.entities.despawnEntity(playerID);
 
     // Erase from client list
     clients.erase(std::remove(clients.begin(), clients.end(), client));
+
+    // Send disconnect packet to others
+    for (ClientConnection *otherClient : clients) {
+        writeDespawnRemotePlayer(otherClient, playerID);
+    }
 }
 
 void Server::writeChunk(ClientConnection *client, BlockChunk *chunk) {

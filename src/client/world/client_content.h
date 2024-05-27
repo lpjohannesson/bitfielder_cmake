@@ -13,8 +13,8 @@ namespace bf {
 
         BasicBlockRenderer testBlockRenderer;
 
-        entt::entity spawnPlayer(WorldScene &scene, int id, glm::vec2 position);
-        entt::entity spawnLocalPlayer(WorldScene &scene, glm::vec2 position);
+        void createPlayer(entt::entity player, WorldScene &scene, glm::vec2 position);
+        void createLocalPlayer(entt::entity player, WorldScene &scene, glm::vec2 position);
 
         void loadContent(WorldScene &scene);
     };

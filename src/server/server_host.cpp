@@ -3,16 +3,6 @@
 
 using namespace bf;
 
-ClientConnection *ServerHost::getRemoteClient(ENetPeer *peer) {
-    auto foundClient = peerClients.find(peer);
-
-    if (foundClient == peerClients.end()) {
-        return nullptr;
-    }
-
-    return foundClient->second;
-}
-
 ServerHost::ServerHost(int port) {
     // Start network
     if (enet_initialize() != 0) {
@@ -38,14 +28,15 @@ ServerHost::ServerHost(int port) {
             switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT: {
                 // Add client
-                remoteClients.emplace_back();
-                RemoteClientConnection &client = remoteClients.back();
+                RemoteClientConnection *client = new RemoteClientConnection();
 
-                client.networkPeer = event.peer;
+                // Attach peer
+                client->networkPeer = event.peer;
 
-                peerClients.emplace(event.peer, &client);
+                // Link peer with client
+                event.peer->data = client;
 
-                server.addClient(&client);
+                server.addClient(client);
 
                 std::cout << "Player connected. (Player count: " << server.clients.size() << ")" << std::endl;
 
@@ -53,20 +44,12 @@ ServerHost::ServerHost(int port) {
             }
             
             case ENET_EVENT_TYPE_DISCONNECT: {
-                // Find client or skip
-                ClientConnection *client = getRemoteClient(event.peer);
-
-                if (client == nullptr) {
-                    break;
-                }
+                ClientConnection *client = (ClientConnection*)event.peer->data;
 
                 // Remove client
                 server.removeClient(client);
 
-                remoteClients.erase(std::remove_if(remoteClients.begin(), remoteClients.end(),
-                    [client](RemoteClientConnection &remoteClient) { return &remoteClient == client; }));
-
-                peerClients.erase(event.peer);
+                delete client;
 
                 std::cout << "Player disconnected. (Player count: " << server.clients.size() << ")" << std::endl;
 
@@ -74,12 +57,7 @@ ServerHost::ServerHost(int port) {
             }
         
             case ENET_EVENT_TYPE_RECEIVE: {
-                // Find client or skip
-                ClientConnection *client = getRemoteClient(event.peer);
-
-                if (client == nullptr) {
-                    break;
-                }
+                ClientConnection *client = (ClientConnection*)event.peer->data;;
 
                 // Read packet
                 Packet packet;
