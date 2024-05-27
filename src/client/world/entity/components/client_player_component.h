@@ -2,6 +2,6 @@
 
 namespace bf {
 	struct ClientPlayerComponent {
-		
+		bool jumpStopped;
 	};
 }

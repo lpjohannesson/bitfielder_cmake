@@ -134,11 +134,7 @@ using namespace bf;
     }\
     \
     /* End */\
-    position.AXIS = endPosition;\
-    \
-    if (collided) {\
-        body.velocity.AXIS = 0.0f;\
-    }
+    position.AXIS = endPosition;
 
 bool BodySystem::getCollisionX(const BodyMovement &movement, float &endPosition) {
     GET_COLLISION_AXIS(x, y)
@@ -150,10 +146,24 @@ bool BodySystem::getCollisionY(const BodyMovement &movement, float &endPosition)
 
 void BodySystem::moveX(World &world, glm::vec2 &position, BodyComponent &body) {
     MOVE_AXIS(x, y, blockForwardStart, blockForwardEnd, blockForward, blockSide, getCollisionX)
+
+    if (collided) {
+        body.velocity.x = 0.0f;
+    }
 }
 
 void BodySystem::moveY(World &world, glm::vec2 &position, BodyComponent &body) {
+    body.isOnFloor = false;
+
     MOVE_AXIS(y, x, blockSideStart, blockSideEnd, blockSide, blockForward, getCollisionY)
+
+    if (collided) {
+        if (body.velocity.y > 0.0f) {
+            body.isOnFloor = true;
+        }
+
+        body.velocity.y = 0.0f;
+    }
 }
 
 void BodySystem::update(World &world) {

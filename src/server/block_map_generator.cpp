@@ -8,7 +8,7 @@ void BlockMapGenerator::generateChunk(World &world, BlockChunk &chunk) {
         for (int x = 0; x < BlockChunk::SIZE.x; x++) {
             glm::ivec2 position = { x, y };
             
-            chunk.setBlockIndex(position, rand() % 2);
+            chunk.setBlockIndex(position, rand() % (BlockChunk::SIZE.y - y) == 0);
         }
     }
 }
