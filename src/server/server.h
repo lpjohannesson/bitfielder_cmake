@@ -14,10 +14,10 @@ namespace bf {
                 void addClient(ClientConnection *client);
                 void removeClient(ClientConnection *client);
 
-                void writeChunk(ClientConnection *client, BlockChunk *chunk);
+                void writeBlockChunk(ClientConnection *client, BlockChunk *chunk);
+                void writeDespawnEntity(ClientConnection *client, int playerID);
                 void writeEntityPosition(ClientConnection *client, entt::entity entity);
                 void writeRemotePlayer(ClientConnection *client, entt::entity player);
-                void writeDespawnRemotePlayer(ClientConnection *client, int playerID);
 
                 void readPacket(ClientConnection *client, Packet &packet);
 

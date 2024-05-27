@@ -1,5 +1,6 @@
 #include "server.h"
 #include <iostream>
+#include "core/packet_types.h"
 #include "world/entity/components/id_component.h"
 #include "world/entity/components/position_component.h"
 
@@ -19,8 +20,8 @@ void Server::addClient(ClientConnection *client) {
     clients.push_back(client);
 
     // Load chunks
-    writeChunk(client, world.map.getChunk(0));
-    writeChunk(client, world.map.getChunk(1));
+    writeBlockChunk(client, world.map.getChunk(0));
+    writeBlockChunk(client, world.map.getChunk(1));
 }
 
 void Server::removeClient(ClientConnection *client) {
@@ -35,19 +36,27 @@ void Server::removeClient(ClientConnection *client) {
 
     // Send disconnection to others
     for (ClientConnection *otherClient : clients) {
-        writeDespawnRemotePlayer(otherClient, playerID);
+        writeDespawnEntity(otherClient, playerID);
     }
 }
 
-void Server::writeChunk(ClientConnection *client, BlockChunk *chunk) {
+void Server::writeBlockChunk(ClientConnection *client, BlockChunk *chunk) {
     Packet packet;
 
-    packet << 0 << chunk->getMapIndex();
+    packet << (int)ServerPacket::BLOCK_CHUNK << chunk->getMapIndex();
 
     // TODO: Chunk compression, host to network data, private chunk data
 
     // Chunk data
     packet.write((char*)&chunk->data, sizeof(BlockChunk::data));
+
+    client->writePacket(packet);
+}
+
+void Server::writeDespawnEntity(ClientConnection *client, int entityID) {
+    Packet packet;
+
+    packet << (int)ServerPacket::DESPAWN_ENTITY << entityID;
 
     client->writePacket(packet);
 }
@@ -62,7 +71,7 @@ void Server::writeEntityPosition(ClientConnection *client, entt::entity entity) 
     int entityID = entityRegistry.get<IDComponent>(entity).id;
     glm::vec2 entityPosition = entityRegistry.get<PositionComponent>(entity).position;
 
-    packet << 3 << entityID << entityPosition;
+    packet << (int)ServerPacket::ENTITY_POSITION << entityID << entityPosition;
 
     client->writePacket(packet);
 }
@@ -75,15 +84,7 @@ void Server::writeRemotePlayer(ClientConnection *client, entt::entity player) {
     int playerID = entityRegistry.get<IDComponent>(player).id;
     glm::vec2 playerPosition = entityRegistry.get<PositionComponent>(player).position;
 
-    packet << 1 << playerID << playerPosition;
-
-    client->writePacket(packet);
-}
-
-void Server::writeDespawnRemotePlayer(ClientConnection *client, int playerID) {
-    Packet packet;
-
-    packet << 2 << playerID;
+    packet << (int)ServerPacket::REMOTE_PLAYER << playerID << playerPosition;
 
     client->writePacket(packet);
 }

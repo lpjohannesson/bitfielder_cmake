@@ -1,9 +1,32 @@
 #include "world_scene.h"
 #include <cstring>
-#include "engine/engine.h"
 #include <iostream>
+#include "engine/engine.h"
+#include "core/packet_types.h"
 
 using namespace bf;
+
+void WorldScene::readBlockChunk(Packet &packet) {
+	int chunkIndex;
+	packet >> chunkIndex;
+
+	// Chunk data
+	char* chunkData;
+	packet.read(chunkData, sizeof(BlockChunk::data));
+
+	BlockChunk &chunk = world.map.createChunk(chunkIndex);
+	std::memcpy(chunk.data, chunkData, sizeof(BlockChunk::data));
+
+	// Create mesh
+	worldRenderer.map.createMesh(world, chunk);
+}
+
+void WorldScene::readDespawnEntity(Packet &packet) {
+	int entityID;
+	packet >> entityID;
+
+	world.entities.despawnEntity(entityID);
+}
 
 void WorldScene::readEntityPosition(Packet &packet) {
 	int entityID;
@@ -25,21 +48,6 @@ void WorldScene::readEntityPosition(Packet &packet) {
 	position.position = newPosition;
 }
 
-void WorldScene::readChunk(Packet &packet) {
-	int chunkIndex;
-	packet >> chunkIndex;
-
-	// Chunk data
-	char* chunkData;
-	packet.read(chunkData, sizeof(BlockChunk::data));
-
-	BlockChunk &chunk = world.map.createChunk(chunkIndex);
-	std::memcpy(chunk.data, chunkData, sizeof(BlockChunk::data));
-
-	// Create mesh
-	worldRenderer.map.createMesh(world, chunk);
-}
-
 void WorldScene::readRemotePlayer(Packet &packet) {
 	int playerID;
 	glm::vec2 playerPosition;
@@ -48,13 +56,6 @@ void WorldScene::readRemotePlayer(Packet &packet) {
 	// Spawn player entity
 	entt::entity player = world.entities.spawnEntity(playerID);
 	clientContent.createPlayer(player, *this, playerPosition);
-}
-
-void WorldScene::readDespawnRemotePlayer(Packet &packet) {
-	int playerID;
-	packet >> playerID;
-
-	world.entities.despawnEntity(playerID);
 }
 
 void WorldScene::writePlayerPosition() {
@@ -72,21 +73,21 @@ void WorldScene::readPacket(Packet &packet) {
 	int packetID;
 	packet >> packetID;
 
-	switch (packetID) {
-	case 0:
-		readChunk(packet);
-		break;
-
-	case 1:
-		readRemotePlayer(packet);
+	switch ((ServerPacket)packetID) {
+	case ServerPacket::BLOCK_CHUNK:
+		readBlockChunk(packet);
 		break;
 	
-	case 2:
-		readDespawnRemotePlayer(packet);
+	case ServerPacket::DESPAWN_ENTITY:
+		readDespawnEntity(packet);
 		break;
 	
-	case 3:
+	case ServerPacket::ENTITY_POSITION:
 		readEntityPosition(packet);
+		break;
+	
+	case ServerPacket::REMOTE_PLAYER:
+		readRemotePlayer(packet);
 		break;
 	}
 }
