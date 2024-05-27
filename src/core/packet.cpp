@@ -9,9 +9,9 @@ Packet& Packet::write(const char *value, int size) {
     return *this;
 }
 
-Packet& Packet::read(char *&value, int size) {
+Packet& Packet::read(char *&valuePtr, int size) {
     // Set pointer to data with offset
-    value = data.data() + dataPosition;
+    valuePtr = data.data() + dataPosition;
 
     // Move offset forward
     dataPosition += size;
@@ -31,11 +31,34 @@ Packet& Packet::operator<<(int value) {
 
 Packet& Packet::operator>>(int &value) {
     // Read pointer to network value
-    int* networkValue;
-    read((char*&)networkValue, sizeof(value));
+    int *valuePtr;
+    read((char*&)valuePtr, sizeof(value));
 
     // Convert to host value
-    value = ntohl(*networkValue);
+    value = ntohl(*valuePtr);
 
     return *this;
+}
+
+Packet& Packet::operator<<(float value) {
+    write((char*)&value, sizeof(value));
+
+    return *this;
+}
+
+Packet& Packet::operator>>(float &value) {
+    float *valuePtr;
+    read((char*&)valuePtr, sizeof(value));
+
+    value = *valuePtr;
+
+    return *this;
+}
+
+Packet& Packet::operator<<(glm::vec2 value) {
+    return operator<<(value.x) << value.y;
+}
+
+Packet& Packet::operator>>(glm::vec2 &value) {
+    return operator>>(value.x) >> value.y;
 }

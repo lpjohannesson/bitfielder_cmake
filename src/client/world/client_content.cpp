@@ -54,6 +54,6 @@ void ClientContent::loadContent(WorldScene &scene) {
 
     world.blocks.registry.emplace<BlockRendererComponent>(world.content.testBlock, BlockRendererComponent { &testBlockRenderer });
 
-	entt::entity player = world.entities.spawnEntity(-1);
+	player = world.entities.spawnEntity(-1);
 	createLocalPlayer(player, scene, { 0.0f, 0.0f });
 }

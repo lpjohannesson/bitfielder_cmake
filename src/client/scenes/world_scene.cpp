@@ -5,8 +5,27 @@
 
 using namespace bf;
 
+void WorldScene::readEntityPosition(Packet &packet) {
+	int entityID;
+	glm::vec2 newPosition;
+
+	packet >> entityID >> newPosition;
+
+	// Get entity
+	entt::entity entity;
+	
+	if (!world.entities.getEntity(entityID, entity)) {
+		return;
+	}
+
+	// Write value
+	entt::registry &entityRegistry = world.entities.registry;
+
+	PositionComponent &position = entityRegistry.get<PositionComponent>(entity);
+	position.position = newPosition;
+}
+
 void WorldScene::readChunk(Packet &packet) {
-	// Chunk index
 	int chunkIndex;
 	packet >> chunkIndex;
 
@@ -22,25 +41,30 @@ void WorldScene::readChunk(Packet &packet) {
 }
 
 void WorldScene::readRemotePlayer(Packet &packet) {
-	// Player ID
 	int playerID;
-	packet >> playerID;
-
-	std::cout << "Added: " << playerID << std::endl;
+	glm::vec2 playerPosition;
+	packet >> playerID >> playerPosition;
 
 	// Spawn player entity
 	entt::entity player = world.entities.spawnEntity(playerID);
-	clientContent.createPlayer(player, *this, { 0.0f, 0.0f });
+	clientContent.createPlayer(player, *this, playerPosition);
 }
 
 void WorldScene::readDespawnRemotePlayer(Packet &packet) {
-	// Player ID
 	int playerID;
 	packet >> playerID;
 
-	std::cout << "Removed: " << playerID << std::endl;
-
 	world.entities.despawnEntity(playerID);
+}
+
+void WorldScene::writePlayerPosition() {
+	Packet packet;
+
+	entt::registry &entityRegistry = world.entities.registry;
+	glm::vec2 playerPosition = entityRegistry.get<PositionComponent>(clientContent.player).position;
+
+	packet << playerPosition;
+	server->writePacket(packet);
 }
 
 void WorldScene::readPacket(Packet &packet) {
@@ -60,6 +84,10 @@ void WorldScene::readPacket(Packet &packet) {
 	case 2:
 		readDespawnRemotePlayer(packet);
 		break;
+	
+	case 3:
+		readEntityPosition(packet);
+		break;
 	}
 }
 
@@ -69,10 +97,7 @@ void WorldScene::updateSize(glm::ivec2 size) {
 
 void WorldScene::update() {
 	world.update();
-
-	//Packet packet;
-	//packet << 246810;
-	//server->writePacket(packet);
+	writePlayerPosition();
 }
 
 void WorldScene::render() {

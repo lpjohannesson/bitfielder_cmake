@@ -1,6 +1,7 @@
 #include "server.h"
 #include <iostream>
 #include "world/entity/components/id_component.h"
+#include "world/entity/components/position_component.h"
 
 using namespace bf;
 
@@ -31,7 +32,7 @@ void Server::removeClient(ClientConnection *client) {
     // Erase from client list
     clients.erase(std::remove(clients.begin(), clients.end(), client));
 
-    // Send disconnect packet to others
+    // Send disconnection to others
     for (ClientConnection *otherClient : clients) {
         writeDespawnRemotePlayer(otherClient, playerID);
     }
@@ -40,7 +41,6 @@ void Server::removeClient(ClientConnection *client) {
 void Server::writeChunk(ClientConnection *client, BlockChunk *chunk) {
     Packet packet;
 
-    // Packet ID, chunk index
     packet << 0 << chunk->getMapIndex();
 
     // TODO: Chunk compression, host to network data, private chunk data
@@ -51,14 +51,28 @@ void Server::writeChunk(ClientConnection *client, BlockChunk *chunk) {
     client->writePacket(packet);
 }
 
+void Server::writeEntityPosition(ClientConnection *client, entt::entity entity) {
+    Packet packet;
+
+    entt::registry &entityRegistry = world.entities.registry;
+
+    int entityID = entityRegistry.get<IDComponent>(entity).id;
+    glm::vec2 entityPosition = entityRegistry.get<PositionComponent>(entity).position;
+
+    packet << 3 << entityID << entityPosition;
+
+    client->writePacket(packet);
+}
+
 void Server::writeRemotePlayer(ClientConnection *client, entt::entity player) {
     Packet packet;
 
     entt::registry &entityRegistry = world.entities.registry;
 
-    // Packet ID, player ID
     int playerID = entityRegistry.get<IDComponent>(player).id;
-    packet << 1 << playerID;
+    glm::vec2 playerPosition = entityRegistry.get<PositionComponent>(player).position;
+
+    packet << 1 << playerID << playerPosition;
 
     client->writePacket(packet);
 }
@@ -72,10 +86,20 @@ void Server::writeDespawnRemotePlayer(ClientConnection *client, int playerID) {
 }
 
 void Server::readPacket(ClientConnection *client, Packet &packet) {
-    int test;
-    packet >> test;
+    entt::registry &entityRegistry = world.entities.registry;
 
-    std::cout << test << std::endl;
+    int playerID = entityRegistry.get<IDComponent>(client->player).id;
+    PositionComponent &playerPosition = entityRegistry.get<PositionComponent>(client->player);
+
+    packet >> playerPosition.position;
+
+    for (ClientConnection *otherClient : clients) {
+        if (client == otherClient) {
+            continue;
+        }
+
+        writeEntityPosition(otherClient, client->player);
+    }
 }
 
 Server::Server() {

@@ -16,9 +16,11 @@ namespace bf {
 		ClientContent clientContent;
 
 		void readChunk(Packet &packet);
-
+		void readEntityPosition(Packet &packet);
 		void readRemotePlayer(Packet &packet);
 		void readDespawnRemotePlayer(Packet &packet);
+
+		void writePlayerPosition();
 
 		void readPacket(Packet &packet);
 
