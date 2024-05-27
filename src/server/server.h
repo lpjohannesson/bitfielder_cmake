@@ -16,6 +16,7 @@ namespace bf {
 
                 void writeChunk(ClientConnection *client, BlockChunk *chunk);
                 void writeRemotePlayer(ClientConnection *client, entt::entity player);
+                void writeDespawnRemotePlayer(ClientConnection *client, int playerID);
 
                 void readPacket(ClientConnection *client, Packet &packet);
 

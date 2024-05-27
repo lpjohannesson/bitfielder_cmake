@@ -6,12 +6,14 @@
 
 using namespace bf;
 
-entt::entity ClientContent::spawnRemotePlayer(WorldScene &scene, glm::vec2 position) {
+entt::entity ClientContent::spawnPlayer(WorldScene &scene, int id, glm::vec2 position) {
 	World &world = scene.world;
 	WorldRenderer &worldRenderer = scene.worldRenderer;
 	entt::registry &entityRegistry = world.entities.registry;
 
-	entt::entity player = world.content.spawnPlayer(world, position);
+	// Spawn player with ID
+	entt::entity player = world.entities.spawnEntity(id);
+	world.content.spawnPlayer(player, world, position);
 	
 	// Load sprite
 	TextureSection playerTextureSection = worldRenderer.textureAtlas.getSection("assets/textures/player.png");
@@ -27,7 +29,7 @@ entt::entity ClientContent::spawnLocalPlayer(WorldScene &scene, glm::vec2 positi
 	entt::registry &entityRegistry = world.entities.registry;
 
 	// Spawn remote player with extra attributes
-	entt::entity player = spawnRemotePlayer(scene, position);
+	entt::entity player = spawnPlayer(scene, -1, position);
 
 	entityRegistry.emplace<ClientPlayerComponent>(
 		player, ClientPlayerComponent { });

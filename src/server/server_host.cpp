@@ -47,7 +47,7 @@ ServerHost::ServerHost(int port) {
 
                 server.addClient(&client);
 
-                std::cout << "Player disconnected. (Player count: " << server.clients.size() << ")" << std::endl;
+                std::cout << "Player connected. (Player count: " << server.clients.size() << ")" << std::endl;
 
                 break;
             }

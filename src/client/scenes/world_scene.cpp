@@ -22,7 +22,19 @@ void WorldScene::readChunk(Packet &packet) {
 }
 
 void WorldScene::readRemotePlayer(Packet &packet) {
-	clientContent.spawnRemotePlayer(*this, { 0.0f, 0.0f });
+	// Player ID
+	int playerID;
+	packet >> playerID;
+
+	clientContent.spawnPlayer(*this, playerID, { 0.0f, 0.0f });
+}
+
+void WorldScene::readDespawnRemotePlayer(Packet &packet) {
+	// Player ID
+	int playerID;
+	packet >> playerID;
+
+	world.entities.despawnEntity(playerID);
 }
 
 void WorldScene::readPacket(Packet &packet) {
@@ -38,6 +50,10 @@ void WorldScene::readPacket(Packet &packet) {
 	case 1:
 		readRemotePlayer(packet);
 		break;
+	
+	case 2:
+		readDespawnRemotePlayer(packet);
+		break;
 	}
 }
 
@@ -48,9 +64,9 @@ void WorldScene::updateSize(glm::ivec2 size) {
 void WorldScene::update() {
 	world.update();
 
-	Packet packet;
-	packet << 246810;
-	server->writePacket(packet);
+	//Packet packet;
+	//packet << 246810;
+	//server->writePacket(packet);
 }
 
 void WorldScene::render() {
