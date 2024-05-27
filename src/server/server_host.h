@@ -1,8 +1,6 @@
 #pragma once
-#include <unordered_map>
 #include <enet/enet.h>
 #include "server.h"
-#include "remote_client_connection.h"
 
 namespace bf {
 	class ServerHost {

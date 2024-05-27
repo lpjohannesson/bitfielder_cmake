@@ -1,5 +1,6 @@
 #include "server_host.h"
 #include <iostream>
+#include "remote_client_connection.h"
 
 using namespace bf;
 
