@@ -18,6 +18,7 @@ void RemoteWorldScene::update() {
             readPacket(packet);
 
             enet_packet_destroy(event.packet);
+            
             break;
         }
         }

@@ -18,6 +18,7 @@ void Server::addClient(ClientConnection *client) {
 
     clients.push_back(client);
 
+    // Load chunks
     writeChunk(client, world.map.getChunk(0));
     writeChunk(client, world.map.getChunk(1));
 }
@@ -52,6 +53,8 @@ void Server::writeChunk(ClientConnection *client, BlockChunk *chunk) {
 }
 
 void Server::writeEntityPosition(ClientConnection *client, entt::entity entity) {
+    // TODO: Use separate packet for position
+
     Packet packet;
 
     entt::registry &entityRegistry = world.entities.registry;
@@ -88,11 +91,13 @@ void Server::writeDespawnRemotePlayer(ClientConnection *client, int playerID) {
 void Server::readPacket(ClientConnection *client, Packet &packet) {
     entt::registry &entityRegistry = world.entities.registry;
 
+    // TODO: Ensure entity has component
     int playerID = entityRegistry.get<IDComponent>(client->player).id;
     PositionComponent &playerPosition = entityRegistry.get<PositionComponent>(client->player);
 
     packet >> playerPosition.position;
 
+    // TODO: Make timed polls for positions
     for (ClientConnection *otherClient : clients) {
         if (client == otherClient) {
             continue;

@@ -25,6 +25,7 @@ entt::entity Entities::spawnEntity(int id) {
 }
 
 entt::entity Entities::spawnEntity() {
+    // TODO: Check for duplicate IDs
     // Spawn entity with new ID
     entt::entity entity = spawnEntity(nextID);
     nextID++;

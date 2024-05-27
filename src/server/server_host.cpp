@@ -30,10 +30,8 @@ ServerHost::ServerHost(int port) {
                 // Add client
                 RemoteClientConnection *client = new RemoteClientConnection();
 
-                // Attach peer
-                client->networkPeer = event.peer;
-
                 // Link peer with client
+                client->networkPeer = event.peer;
                 event.peer->data = client;
 
                 server.addClient(client);
@@ -44,11 +42,10 @@ ServerHost::ServerHost(int port) {
             }
             
             case ENET_EVENT_TYPE_DISCONNECT: {
-                ClientConnection *client = (ClientConnection*)event.peer->data;
-
                 // Remove client
-                server.removeClient(client);
+                RemoteClientConnection *client = (RemoteClientConnection*)event.peer->data;
 
+                server.removeClient(client);
                 delete client;
 
                 std::cout << "Player disconnected. (Player count: " << server.clients.size() << ")" << std::endl;
