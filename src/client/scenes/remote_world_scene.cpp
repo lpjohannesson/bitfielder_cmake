@@ -18,7 +18,7 @@ void RemoteWorldScene::update() {
             readPacket(packet);
 
             enet_packet_destroy(event.packet);
-            
+
             break;
         }
         }
@@ -49,14 +49,17 @@ RemoteWorldScene::RemoteWorldScene(const char *ip, int port) {
 
     ENetEvent event;
 
-    if (enet_host_service(networkHost, &event, 5000) > 0 &&
-        event.type == ENET_EVENT_TYPE_CONNECT) {
-        std::cout << "Connected." << std::endl;
-    }
-    else {
+    if (enet_host_service(networkHost, &event, 5000) == 0 ||
+        event.type != ENET_EVENT_TYPE_CONNECT) {
+
+        // TODO: Network fail logic
         std::cout << "Failed." << std::endl;
         enet_peer_reset(networkServer);
+
+        return;
     }
+
+    std::cout << "Connected." << std::endl;
 
     // Create server connection
     server = &remoteServerConnection;

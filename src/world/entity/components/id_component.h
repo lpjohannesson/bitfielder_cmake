@@ -2,6 +2,6 @@
 
 namespace bf {
 	struct IDComponent {
-	    int id;
+	    int id = 0;
 	};
 }

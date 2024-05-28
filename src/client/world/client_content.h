@@ -1,7 +1,7 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
-#include "entity/systems/client_player_system.h"
+#include "entity/systems/local_player_system.h"
 #include "block/renderers/basic_block_renderer.h"
 
 namespace bf {
@@ -9,7 +9,7 @@ namespace bf {
     
     class ClientContent {
     public:
-        ClientPlayerSystem clientPlayerSystem;
+        LocalPlayerSystem localPlayerSystem;
 
         BasicBlockRenderer testBlockRenderer;
 

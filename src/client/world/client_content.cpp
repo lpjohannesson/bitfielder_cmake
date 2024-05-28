@@ -2,7 +2,7 @@
 #include "client/scenes/world_scene.h"
 #include "block/components/block_renderer_component.h"
 #include "entity/components/sprite_component.h"
-#include "entity/components/client_player_component.h"
+#include "entity/components/local_player_component.h"
 
 using namespace bf;
 
@@ -27,8 +27,8 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, gl
 	// Spawn remote player with extra attributes
 	createPlayer(player, scene, position);
 
-	entityRegistry.emplace<ClientPlayerComponent>(
-		player, ClientPlayerComponent { });
+	entityRegistry.emplace<LocalPlayerComponent>(
+		player, LocalPlayerComponent { });
 	
 	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(14.0f, 14.0f) / 16.0f });
 }
@@ -38,7 +38,7 @@ void ClientContent::loadContent(WorldScene &scene) {
 	WorldRenderer &worldRenderer = scene.worldRenderer;
 
 	// Add entity systems
-	world.entities.addSystem(clientPlayerSystem);
+	world.entities.addSystem(localPlayerSystem);
 
 	// Load texture atlas
     std::vector<std::string> texturePaths = {
@@ -54,6 +54,7 @@ void ClientContent::loadContent(WorldScene &scene) {
 
     world.blocks.registry.emplace<BlockRendererComponent>(world.content.testBlock, BlockRendererComponent { &testBlockRenderer });
 
+	// TODO: Recieve local player ID
 	player = world.entities.spawnEntity(-1);
 	createLocalPlayer(player, scene, { 0.0f, 0.0f });
 }

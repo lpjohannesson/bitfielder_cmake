@@ -3,6 +3,7 @@
 #include <iostream>
 #include "engine/engine.h"
 #include "core/packet_types.h"
+#include "core/game_time.h"
 
 using namespace bf;
 
@@ -107,6 +108,7 @@ void WorldScene::render() {
 }
 
 void WorldScene::start() {
+	gameTime.reset();
 	clientContent.loadContent(*this);
 }
 

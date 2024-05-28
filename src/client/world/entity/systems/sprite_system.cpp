@@ -15,8 +15,16 @@ void SpriteSystem::render(const WorldScene &scene) {
     for (auto [entity, sprite, position] : view.each()) {
         // Draw entity sprite
         Sprite batchSprite;
-        batchSprite.box.start = position.position;
-        batchSprite.box.size = sprite.size;
+
+        if (sprite.flipX) {
+            batchSprite.box.start = { position.position.x + sprite.size.x, position.position.y };
+            batchSprite.box.size = { -sprite.size.x, sprite.size.y };
+        }
+        else {
+            batchSprite.box.start = position.position;
+            batchSprite.box.size = sprite.size;
+        }
+
         batchSprite.uvBox = sprite.uvBox;
 
         spriteBatch.drawSprite(batchSprite);
