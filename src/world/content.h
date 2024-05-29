@@ -14,6 +14,6 @@ namespace bf {
 
         void createPlayer(entt::entity player, World &world, glm::vec2 position);
 
-        void loadContent(World &world);
+        Content(World &world);
     };
 }

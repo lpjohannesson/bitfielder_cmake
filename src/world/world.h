@@ -16,6 +16,6 @@ namespace bf {
 
         void update();
 
-        World();
+        inline World() : content(*this) {}
     };
 }

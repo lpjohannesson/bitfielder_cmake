@@ -21,6 +21,9 @@ add_executable(client
     src/gfx/sprite/sprite_mesh.cpp
     src/gfx/sprite/sprite_renderer.cpp
 
+    src/gfx/sprite/animation/sprite_animation.cpp
+    src/gfx/sprite/animation/sprite_frames.cpp
+
     src/world/content.cpp
     src/world/world.cpp
 
@@ -51,6 +54,7 @@ add_executable(client
     src/client/world/entity/entity_renderer.cpp
 
     src/client/world/entity/systems/sprite_system.cpp
+    src/client/world/entity/systems/sprite_animator_system.cpp
     src/client/world/entity/systems/local_player_system.cpp
     
     src/client/scenes/world_scene.cpp

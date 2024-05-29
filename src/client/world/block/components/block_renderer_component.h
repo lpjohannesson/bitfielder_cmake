@@ -3,6 +3,6 @@
 
 namespace bf {
     struct BlockRendererComponent {
-        BlockRenderer *renderer;
+        BlockRenderer *renderer = nullptr;
     };
 }

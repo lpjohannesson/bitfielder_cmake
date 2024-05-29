@@ -31,5 +31,7 @@ namespace bf {
 
 		void start() override;
 		void end() override;
+
+		inline WorldScene() : clientContent(*this) {}
 	};
 }

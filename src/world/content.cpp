@@ -11,7 +11,7 @@ void Content::createPlayer(entt::entity player, World &world, glm::vec2 position
     entityRegistry.emplace<PositionComponent>(player, PositionComponent { position });
 }
 
-void Content::loadContent(World &world) {
+Content::Content(World &world) {
     // Add entity systems
     world.entities.addSystem(bodySystem);
 

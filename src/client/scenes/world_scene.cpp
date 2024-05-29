@@ -109,7 +109,6 @@ void WorldScene::render() {
 
 void WorldScene::start() {
 	gameTime.reset();
-	clientContent.loadContent(*this);
 }
 
 void WorldScene::end() {

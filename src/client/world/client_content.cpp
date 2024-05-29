@@ -2,6 +2,7 @@
 #include "client/scenes/world_scene.h"
 #include "block/components/block_renderer_component.h"
 #include "entity/components/sprite_component.h"
+#include "entity/components/sprite_animator_component.h"
 #include "entity/components/local_player_component.h"
 
 using namespace bf;
@@ -14,10 +15,11 @@ void ClientContent::createPlayer(entt::entity player, WorldScene &scene, glm::ve
 	world.content.createPlayer(player, world, position);
 	
 	// Load sprite
-	TextureSection playerTextureSection = worldRenderer.textureAtlas.getSection("assets/textures/player.png");
-
 	entityRegistry.emplace<SpriteComponent>(
-		player, SpriteComponent { glm::vec2(playerTextureSection.size) / 16.0f, playerTextureSection.uvBox });
+		player, SpriteComponent { glm::vec2(1.0f), glm::vec2(-4.0f, -2.0f) / 16.0f });
+	
+	entityRegistry.emplace<SpriteAnimatorComponent>(
+		player, SpriteAnimatorComponent {});
 }
 
 void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, glm::vec2 position) {
@@ -28,17 +30,18 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, gl
 	createPlayer(player, scene, position);
 
 	entityRegistry.emplace<LocalPlayerComponent>(
-		player, LocalPlayerComponent { });
+		player, LocalPlayerComponent {});
 	
-	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(14.0f, 14.0f) / 16.0f });
+	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(8.0f, 13.0f) / 16.0f });
 }
 
-void ClientContent::loadContent(WorldScene &scene) {
+ClientContent::ClientContent(WorldScene &scene) {
 	World &world = scene.world;
 	WorldRenderer &worldRenderer = scene.worldRenderer;
 
-	// Add entity systems
+	// Add entity systems in order
 	world.entities.addSystem(localPlayerSystem);
+	world.entities.addSystem(spriteAnimatorSystem);
 
 	// Load texture atlas
     std::vector<std::string> texturePaths = {
@@ -48,7 +51,18 @@ void ClientContent::loadContent(WorldScene &scene) {
 
 	worldRenderer.textureAtlas.loadAtlas(texturePaths);
 
-	// Load test block renderer
+	// Create player animations
+    TextureSection playerTextureSection = scene.worldRenderer.textureAtlas.getSection("assets/textures/player.png");
+    playerFrames.loadFrames(playerTextureSection.uvBox, { 6, 1 });
+
+	playerIdle.createAnimation(playerFrames, { 0 });
+	playerWalk.createAnimation(playerFrames, { 1, 2, 3, 4 }, 0.4f);
+	playerJump.createAnimation(playerFrames, { 4 });
+	playerSlide.createAnimation(playerFrames, { 5 });
+
+	localPlayerSystem.loadContent(scene);
+
+	// Create test block renderer
     testBlockRenderer.sprite.box.size = glm::vec2(1.0f);
     testBlockRenderer.sprite.uvBox = worldRenderer.textureAtlas.getSection("assets/textures/tile.png").uvBox;
 

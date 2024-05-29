@@ -3,9 +3,6 @@
     "vcpkg.target.hostTriplet": "x64-windows",
     "vcpkg.target.defaultTriplet": "x64-windows",
     "vcpkg.target.useStaticLib": false,
-    "cmake.configureSettings": {
-        "CMAKE_TOOLCHAIN_FILE": "C:\\Users\\lp_jo\\vcpkg/scripts/buildsystems/vcpkg.cmake"
-    },
     "cmake.debugConfig": {
         "console": "integratedTerminal",
     },
@@ -108,6 +105,7 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "string_view": "cpp"
     }
 }

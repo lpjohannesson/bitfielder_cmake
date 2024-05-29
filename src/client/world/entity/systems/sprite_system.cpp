@@ -25,6 +25,8 @@ void SpriteSystem::render(const WorldScene &scene) {
             batchSprite.box.size = sprite.size;
         }
 
+        batchSprite.box.start += sprite.offset;
+
         batchSprite.uvBox = sprite.uvBox;
 
         spriteBatch.drawSprite(batchSprite);
