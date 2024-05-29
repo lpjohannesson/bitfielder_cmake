@@ -6,6 +6,5 @@ namespace bf {
 	struct SpriteComponent {
 		glm::vec2 size{}, offset{};
         Box2 uvBox{};
-		bool flipX = false;
 	};
 }

@@ -2,6 +2,7 @@
 #include "render_system_impl.h"
 #include "../components/sprite_component.h"
 #include "world/entity/components/position_component.h"
+#include "world/entity/components/sprite_flip_component.h"
 #include "client/client.h"
 
 using namespace bf;
@@ -16,7 +17,13 @@ void SpriteSystem::render(const WorldScene &scene) {
         // Draw entity sprite
         Sprite batchSprite;
 
-        if (sprite.flipX) {
+        bool flipX = false;
+
+        if (world.entities.registry.all_of<SpriteFlipComponent>(entity)) {
+            flipX = world.entities.registry.get<SpriteFlipComponent>(entity).flipX;
+        }
+
+        if (flipX) {
             batchSprite.box.start = { position.position.x + sprite.size.x, position.position.y };
             batchSprite.box.size = { -sprite.size.x, sprite.size.y };
         }

@@ -4,16 +4,55 @@
 #include "engine/engine.h"
 #include "core/packet_types.h"
 #include "core/game_time.h"
+#include "client/world/entity/components/local_player_component.h"
+#include "world/entity/components/sprite_flip_component.h"
 
 using namespace bf;
+
+void WorldScene::writePlayerPosition() {
+	Packet packet;
+
+	glm::vec2 position = entityRegistry->get<PositionComponent>(clientContent.player).position;
+
+	packet << (int)ClientPacket::PLAYER_POSITION << position;
+	server->writePacket(packet);
+}
+
+void WorldScene::writePlayerSpriteAnimation() {
+	Packet packet;
+
+	SpriteAnimationComponent &animation = entityRegistry->get<SpriteAnimationComponent>(clientContent.player);
+
+	packet << (int)ClientPacket::PLAYER_SPRITE_ANIMATION << animation.animationIndex;
+	server->writePacket(packet);
+}
+
+void WorldScene::writePlayerSpriteFlip() {
+	Packet packet;
+
+	SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(clientContent.player);
+
+	packet << (int)ClientPacket::PLAYER_SPRITE_FLIP << spriteFlip.flipX;
+	server->writePacket(packet);
+}
+
+bool WorldScene::readEntityPacket(Packet &packet, entt::entity &entity) {
+	int entityID;
+	packet >> entityID;
+	
+	if (!world.entities.getEntity(entityID, entity)) {
+		return false;
+	}
+
+	return true;
+}
 
 void WorldScene::readBlockChunk(Packet &packet) {
 	int chunkIndex;
 	packet >> chunkIndex;
 
 	// Chunk data
-	char* chunkData;
-	packet.read(chunkData, sizeof(BlockChunk::data));
+	char* chunkData = packet.read(sizeof(BlockChunk::data));
 
 	BlockChunk &chunk = world.map.createChunk(chunkIndex);
 	std::memcpy(chunk.data, chunkData, sizeof(BlockChunk::data));
@@ -30,47 +69,57 @@ void WorldScene::readDespawnEntity(Packet &packet) {
 }
 
 void WorldScene::readEntityPosition(Packet &packet) {
-	int entityID;
-	glm::vec2 newPosition;
-
-	packet >> entityID >> newPosition;
-
-	// Get entity
 	entt::entity entity;
 	
-	if (!world.entities.getEntity(entityID, entity)) {
+	if (!readEntityPacket(packet, entity)) {
 		return;
 	}
 
-	// Write value
-	entt::registry &entityRegistry = world.entities.registry;
+	PositionComponent &position = entityRegistry->get<PositionComponent>(entity);
+	packet >> position.position;
+}
 
-	PositionComponent &position = entityRegistry.get<PositionComponent>(entity);
-	position.position = newPosition;
+void WorldScene::readEntitySpriteAnimation(Packet &packet) {
+	entt::entity entity;
+	
+	if (!readEntityPacket(packet, entity)) {
+		return;
+	}
+
+	int animationIndex;
+	packet >> animationIndex;
+
+	SpriteAnimationComponent &animation = entityRegistry->get<SpriteAnimationComponent>(entity);
+	SpriteAnimatorComponent &animator = entityRegistry->get<SpriteAnimatorComponent>(entity);
+
+	SpriteAnimatorSystem::playAnimation(animator, animation, animationIndex);
+}
+
+void WorldScene::readEntitySpriteFlip(Packet &packet) {
+	entt::entity entity;
+	
+	if (!readEntityPacket(packet, entity)) {
+		return;
+	}
+
+	SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(entity);
+	packet >> spriteFlip.flipX;
 }
 
 void WorldScene::readRemotePlayer(Packet &packet) {
 	int playerID;
-	glm::vec2 playerPosition;
-	packet >> playerID >> playerPosition;
+
+	packet >> playerID;
+	
+	PlayerSpawnProperties spawnProperties;
+	packet >> spawnProperties.position >> spawnProperties.spriteAnimationIndex >> spawnProperties.spriteFlipX;
 
 	// Spawn player entity
 	entt::entity player = world.entities.spawnEntity(playerID);
-	clientContent.createPlayer(player, *this, playerPosition);
-}
-
-void WorldScene::writePlayerPosition() {
-	Packet packet;
-
-	entt::registry &entityRegistry = world.entities.registry;
-	glm::vec2 playerPosition = entityRegistry.get<PositionComponent>(clientContent.player).position;
-
-	packet << playerPosition;
-	server->writePacket(packet);
+	clientContent.createPlayer(player, *this, spawnProperties);
 }
 
 void WorldScene::readPacket(Packet &packet) {
-	// Packet ID
 	int packetID;
 	packet >> packetID;
 
@@ -86,6 +135,14 @@ void WorldScene::readPacket(Packet &packet) {
 	case ServerPacket::ENTITY_POSITION:
 		readEntityPosition(packet);
 		break;
+
+	case ServerPacket::ENTITY_SPRITE_ANIMATION:
+		readEntitySpriteAnimation(packet);
+		break;
+
+	case ServerPacket::ENTITY_SPRITE_FLIP:
+		readEntitySpriteFlip(packet);
+		break;
 	
 	case ServerPacket::REMOTE_PLAYER:
 		readRemotePlayer(packet);
@@ -99,7 +156,20 @@ void WorldScene::updateSize(glm::ivec2 size) {
 
 void WorldScene::update() {
 	world.update();
-	writePlayerPosition();
+
+	LocalPlayerComponent &localPlayer = entityRegistry->get<LocalPlayerComponent>(clientContent.player);
+
+	if (localPlayer.positionDirty) {
+		writePlayerPosition();
+	}
+
+	if (localPlayer.spriteAnimationDirty) {
+		writePlayerSpriteAnimation();
+	}
+
+	if (localPlayer.spriteFlipDirty) {
+		writePlayerSpriteFlip();
+	}
 }
 
 void WorldScene::render() {
@@ -113,4 +183,8 @@ void WorldScene::start() {
 
 void WorldScene::end() {
 
+}
+
+WorldScene::WorldScene() : clientContent(*this) {
+	entityRegistry = &world.entities.registry;
 }

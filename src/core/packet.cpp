@@ -3,18 +3,32 @@
 
 using namespace bf;
 
-Packet& Packet::write(const char *value, int size) {
+void Packet::write(const char *value, int size) {
     // Append data
     data.insert(data.end(), value, value + size);
-    return *this;
 }
 
-Packet& Packet::read(char *&valuePtr, int size) {
-    // Set pointer to data with offset
-    valuePtr = data.data() + dataPosition;
+char* Packet::read(int size) {
+    char* dataPtr = data.data() + dataPosition;
 
     // Move offset forward
     dataPosition += size;
+
+    // Get pointer to data with offset
+    return dataPtr;
+}
+
+Packet& Packet::operator<<(bool value) {
+    // Convert to byte
+    char valueByte = value;
+    write(&valueByte, sizeof(valueByte));
+
+    return *this;
+}
+
+Packet& Packet::operator>>(bool &value) {
+    char *valuePtr = read(sizeof(char));
+    value = *valuePtr;
 
     return *this;
 }
@@ -31,8 +45,7 @@ Packet& Packet::operator<<(int value) {
 
 Packet& Packet::operator>>(int &value) {
     // Read pointer to network value
-    int *valuePtr;
-    read((char*&)valuePtr, sizeof(value));
+    int *valuePtr = (int*)read(sizeof(value));
 
     // Convert to host value
     value = ntohl(*valuePtr);
@@ -47,9 +60,7 @@ Packet& Packet::operator<<(float value) {
 }
 
 Packet& Packet::operator>>(float &value) {
-    float *valuePtr;
-    read((char*&)valuePtr, sizeof(value));
-
+    float *valuePtr = (float*)read(sizeof(value));
     value = *valuePtr;
 
     return *this;

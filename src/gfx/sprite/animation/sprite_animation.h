@@ -4,13 +4,12 @@
 
 namespace bf {
     class SpriteAnimation {
-    public:
-        SpriteFrames *frames;    
+    public:   
         std::vector<int> sequence;
-        float duration = 0.0f;
+        float duration;
 
-        Box2 &getFrame(float time);
+        Box2 getFrame(const SpriteFrames &frames, float time) const;
 
-        void createAnimation(SpriteFrames &frames, const std::vector<int> &sequence, float duration = 0.0f);
+        SpriteAnimation(const std::vector<int> sequence, float duration);
     };
 }

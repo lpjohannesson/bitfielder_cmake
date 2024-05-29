@@ -6,6 +6,7 @@
 #include "../components/sprite_animator_component.h"
 #include "../systems/sprite_animator_system.h"
 #include "world/entity/components/body_component.h"
+#include "world/entity/components/sprite_flip_component.h"
 #include "core/game_time.h"
 #include "core/direction.h"
 
@@ -20,9 +21,16 @@ void LocalPlayerSystem::update(World &world) {
         (float)client->clientInput.down.pressed - (float)client->clientInput.up.pressed
     };
 
-    auto view = world.entities.registry.view<LocalPlayerComponent, BodyComponent, SpriteComponent, SpriteAnimatorComponent>();
+    auto view = world.entities.registry.view<
+        LocalPlayerComponent,
+        PositionComponent,
+        BodyComponent,
+        SpriteComponent,
+        SpriteFlipComponent,
+        SpriteAnimationComponent,
+        SpriteAnimatorComponent>();
 
-    for (auto [entity, localPlayer, body, sprite, spriteAnimator] : view.each()) {
+    for (auto [entity, localPlayer, position, body, sprite, spriteFlip, spriteAnimation, spriteAnimator] : view.each()) {
         // Update floor timer
         if (body.isOnFloor) {
             localPlayer.floorTime = maxFloorTime;
@@ -58,36 +66,42 @@ void LocalPlayerSystem::update(World &world) {
 
         // Flip sprite
         if (movement.x != 0.0f) {
-            sprite.flipX = movement.x < 0.0f;
+            spriteFlip.flipX = movement.x < 0.0f;
         }
 
         // Animate
-        ClientContent &clientContent = scene->clientContent;
-        SpriteAnimation *animation;
+        PlayerAnimation animationIndex;
 
         if (body.isOnFloor) {
             if (body.velocity.x == 0.0f || movement.x == 0.0f) {
-                animation = &clientContent.playerIdle;
+                animationIndex = PlayerAnimation::IDLE;
             }
             else {
                 if (glm::sign(body.velocity.x) == movement.x) {
-                    animation = &clientContent.playerWalk;
+                    animationIndex = PlayerAnimation::WALK;
                 }
                 else {
-                    animation = &clientContent.playerSlide;
+                    animationIndex = PlayerAnimation::SLIDE;
                 }
             }
         }
         else {
-            animation = &clientContent.playerJump;
+            animationIndex = PlayerAnimation::JUMP;
         }
 
-        SpriteAnimatorSystem::playAnimation(spriteAnimator, *animation);
+        localPlayer.spriteAnimationDirty = SpriteAnimatorSystem::playAnimation(spriteAnimator, spriteAnimation, (int)animationIndex);
 
         // Move horizontally, friction only on the ground
         if (body.isOnFloor || movement.x != 0.0f) {
             Direction::targetAxis(body.velocity.x, movement.x * speed, acceleration * deltaTime);
         }
+
+        // Update last position, used for packet efficiency
+        localPlayer.positionDirty = position.position != localPlayer.lastPosition;
+        localPlayer.lastPosition = position.position;
+
+        localPlayer.spriteFlipDirty = spriteFlip.flipX != localPlayer.lastSpriteFlip;
+        localPlayer.lastSpriteFlip = spriteFlip.flipX;
     }
 }
 

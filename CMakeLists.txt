@@ -21,8 +21,9 @@ add_executable(client
     src/gfx/sprite/sprite_mesh.cpp
     src/gfx/sprite/sprite_renderer.cpp
 
-    src/gfx/sprite/animation/sprite_animation.cpp
     src/gfx/sprite/animation/sprite_frames.cpp
+    src/gfx/sprite/animation/sprite_animation.cpp
+    src/gfx/sprite/animation/sprite_animation_set.cpp
 
     src/world/content.cpp
     src/world/world.cpp

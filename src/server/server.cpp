@@ -3,13 +3,17 @@
 #include "core/packet_types.h"
 #include "world/entity/components/id_component.h"
 #include "world/entity/components/position_component.h"
+#include "world/entity/components/sprite_animation_component.h"
+#include "world/entity/components/sprite_flip_component.h"
 
 using namespace bf;
 
 void Server::addClient(ClientConnection *client) {
     // Create new player object
     client->player = world.entities.spawnEntity();
-    world.content.createPlayer(client->player, world, { 0.0f, 0.0f });
+
+    PlayerSpawnProperties spawnProperties;
+    world.content.createPlayer(client->player, world, spawnProperties);
 
     // Send new player between clients
     for (ClientConnection *otherClient : clients) {
@@ -25,10 +29,8 @@ void Server::addClient(ClientConnection *client) {
 }
 
 void Server::removeClient(ClientConnection *client) {
-    entt::registry &entityRegistry = world.entities.registry;
-
     // Destroy entity, keep ID
-    int playerID = entityRegistry.get<IDComponent>(client->player).id;
+    int playerID = entityRegistry->get<IDComponent>(client->player).id;
     world.entities.despawnEntity(playerID);
 
     // Erase from client list
@@ -62,43 +64,58 @@ void Server::writeDespawnEntity(ClientConnection *client, int entityID) {
 }
 
 void Server::writeEntityPosition(ClientConnection *client, entt::entity entity) {
-    // TODO: Use separate packet for position
-
     Packet packet;
 
-    entt::registry &entityRegistry = world.entities.registry;
+    int entityID = entityRegistry->get<IDComponent>(entity).id;
+    glm::vec2 position = entityRegistry->get<PositionComponent>(entity).position;
 
-    int entityID = entityRegistry.get<IDComponent>(entity).id;
-    glm::vec2 entityPosition = entityRegistry.get<PositionComponent>(entity).position;
+    packet << (int)ServerPacket::ENTITY_POSITION << entityID << position;
 
-    packet << (int)ServerPacket::ENTITY_POSITION << entityID << entityPosition;
+    client->writePacket(packet);
+}
+
+void Server::writeEntitySpriteAnimation(ClientConnection *client, entt::entity entity) {
+    Packet packet;
+
+    int entityID = entityRegistry->get<IDComponent>(entity).id;
+    SpriteAnimationComponent &animation = entityRegistry->get<SpriteAnimationComponent>(entity);
+
+    packet << (int)ServerPacket::ENTITY_SPRITE_ANIMATION << entityID << animation.animationIndex;
+
+    client->writePacket(packet);
+}
+
+void Server::writeEntitySpriteFlip(ClientConnection *client, entt::entity entity) {
+    Packet packet;
+
+    int entityID = entityRegistry->get<IDComponent>(entity).id;
+    SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(entity);
+
+    packet << (int)ServerPacket::ENTITY_SPRITE_FLIP << entityID << spriteFlip.flipX;
 
     client->writePacket(packet);
 }
 
 void Server::writeRemotePlayer(ClientConnection *client, entt::entity player) {
+    // TODO: Sprite info
     Packet packet;
 
-    entt::registry &entityRegistry = world.entities.registry;
+    int entityID = entityRegistry->get<IDComponent>(player).id;
+    glm::vec2 position = entityRegistry->get<PositionComponent>(player).position;
+    SpriteAnimationComponent &spriteAnimation = entityRegistry->get<SpriteAnimationComponent>(player);
+    SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(player);
 
-    int playerID = entityRegistry.get<IDComponent>(player).id;
-    glm::vec2 playerPosition = entityRegistry.get<PositionComponent>(player).position;
-
-    packet << (int)ServerPacket::REMOTE_PLAYER << playerID << playerPosition;
+    packet << (int)ServerPacket::REMOTE_PLAYER << entityID << position << spriteAnimation.animationIndex << spriteFlip.flipX;
 
     client->writePacket(packet);
 }
 
-void Server::readPacket(ClientConnection *client, Packet &packet) {
-    entt::registry &entityRegistry = world.entities.registry;
+void Server::readPlayerPosition(ClientConnection *client, Packet &packet) {
+    // TODO: Rubber-banding
+    PositionComponent &position = entityRegistry->get<PositionComponent>(client->player);
+    packet >> position.position;
 
-    // TODO: Ensure entity has component
-    int playerID = entityRegistry.get<IDComponent>(client->player).id;
-    PositionComponent &playerPosition = entityRegistry.get<PositionComponent>(client->player);
-
-    packet >> playerPosition.position;
-
-    // TODO: Make timed polls for positions
+    // TODO: Make timed polls
     for (ClientConnection *otherClient : clients) {
         if (client == otherClient) {
             continue;
@@ -108,7 +125,56 @@ void Server::readPacket(ClientConnection *client, Packet &packet) {
     }
 }
 
+void Server::readPlayerSpriteAnimation(ClientConnection *client, Packet &packet) {
+    SpriteAnimationComponent &spriteAnimation = entityRegistry->get<SpriteAnimationComponent>(client->player);
+    packet >> spriteAnimation.animationIndex;
+
+    // TODO: Make timed polls
+    for (ClientConnection *otherClient : clients) {
+        if (client == otherClient) {
+            continue;
+        }
+
+        writeEntitySpriteAnimation(otherClient, client->player);
+    }
+}
+
+void Server::readPlayerSpriteFlip(ClientConnection *client, Packet &packet) {
+    SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(client->player);
+    packet >> spriteFlip.flipX;
+
+    // TODO: Make timed polls
+    for (ClientConnection *otherClient : clients) {
+        if (client == otherClient) {
+            continue;
+        }
+
+        writeEntitySpriteFlip(otherClient, client->player);
+    }
+}
+
+void Server::readPacket(ClientConnection *client, Packet &packet) {
+    int packetID;
+	packet >> packetID;
+
+	switch ((ClientPacket)packetID) {
+	case ClientPacket::PLAYER_POSITION:
+        readPlayerPosition(client, packet);
+        break;
+
+    case ClientPacket::PLAYER_SPRITE_ANIMATION:
+        readPlayerSpriteAnimation(client, packet);
+        break;
+
+    case ClientPacket::PLAYER_SPRITE_FLIP:
+        readPlayerSpriteFlip(client, packet);
+        break;
+	}
+}
+
 Server::Server() {
+    entityRegistry = &world.entities.registry;
+
     BlockChunk &chunk = world.map.createChunk(0);
     mapGenerator.generateChunk(world, chunk);
 

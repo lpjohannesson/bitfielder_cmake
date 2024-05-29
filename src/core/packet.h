@@ -8,8 +8,11 @@ namespace bf {
         std::vector<char> data;
         int dataPosition = 0;
 
-        Packet& write(const char *value, int size);
-        Packet& read(char *&valuePtr, int size);
+        void write(const char *value, int size);
+        char* read(int size);
+
+        Packet& operator<<(bool value);
+        Packet& operator>>(bool &value);
 
         Packet& operator<<(int value);
         Packet& operator>>(int &value);

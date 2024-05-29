@@ -1,35 +1,47 @@
 #include "sprite_animator_system.h"
 #include <glm/gtx/common.hpp>
 #include "world/entity/systems/entity_system_impl.h"
+#include "../components/sprite_component.h"
 #include "core/game_time.h"
 
 using namespace bf;
 
-void SpriteAnimatorSystem::playAnimation(SpriteAnimatorComponent &animator, SpriteAnimation &animation) {
-    // Skip if already playing
-    if (animator.animation == &animation) {
-        return;
+bool SpriteAnimatorSystem::playAnimation(SpriteAnimatorComponent &animator, SpriteAnimationComponent &animation, int animationIndex) {
+    // Return if animation changed, skip if already playing
+    if (animation.animationIndex == animationIndex) {
+        return false;
     }
 
-    animator.animation = &animation;
+    animation.animationIndex = animationIndex;
     animator.time = 0.0f;
+
+    return true;
 }
 
 void SpriteAnimatorSystem::update(World &world) {
     float deltaTime = gameTime.getDeltaTime();
 
-    auto view = world.entities.registry.view<SpriteAnimatorComponent, SpriteComponent>();
+    auto view = world.entities.registry.view<SpriteAnimatorComponent, SpriteComponent, SpriteAnimationComponent>();
 
-    for (auto [entity, spriteAnimator, sprite] : view.each()) {
-        if (spriteAnimator.animation == nullptr) {
+    for (auto [entity, spriteAnimator, sprite, spriteAnimation] : view.each()) {
+        // Get animation or skip
+        SpriteAnimationSet *animationSet = spriteAnimator.animationSet;
+
+        if (animationSet == nullptr) {
+            continue;
+        }
+
+        SpriteAnimation *animation = animationSet->getAnimation(spriteAnimation.animationIndex);
+
+        if (animation == nullptr) {
             continue;
         }
 
         // Set frame
-        sprite.uvBox = spriteAnimator.animation->getFrame(spriteAnimator.time);
+        animationSet->getFrame(*animation, spriteAnimator.time, sprite.uvBox);
 
         // Advance time
-        float duration = spriteAnimator.animation->duration;
+        float duration = animation->duration;
 
         if (duration != 0.0f) {
             spriteAnimator.time = glm::fmod(spriteAnimator.time + deltaTime, duration);

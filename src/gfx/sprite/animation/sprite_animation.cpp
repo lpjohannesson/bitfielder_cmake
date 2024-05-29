@@ -2,7 +2,7 @@
 
 using namespace bf;
 
-Box2 &SpriteAnimation::getFrame(float time) {
+Box2 SpriteAnimation::getFrame(const SpriteFrames &frames, float time) const {
     // Get frame index in sequence
     int sequenceIndex;
 
@@ -15,11 +15,10 @@ Box2 &SpriteAnimation::getFrame(float time) {
 
     // Get frame
     int frameIndex = sequence.at(sequenceIndex);
-    return frames->frames.at(frameIndex);
+    return frames.frames.at(frameIndex);
 }
 
-void SpriteAnimation::createAnimation(SpriteFrames &frames, const std::vector<int> &sequence, float duration) {
-    this->frames = &frames;
+SpriteAnimation::SpriteAnimation(const std::vector<int> sequence, float duration) {
     this->sequence = sequence;
     this->duration = duration;
 }

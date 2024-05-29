@@ -6,13 +6,19 @@
 namespace bf {
     class World;
 
+    struct PlayerSpawnProperties {
+        glm::vec2 position{};
+        int spriteAnimationIndex = 0;
+        bool spriteFlipX = false;
+    };
+
     class Content {
     public:
         BodySystem bodySystem;
 
         entt::entity airBlock, testBlock;
 
-        void createPlayer(entt::entity player, World &world, glm::vec2 position);
+        void createPlayer(entt::entity player, World &world, const PlayerSpawnProperties &spawnProperties);
 
         Content(World &world);
     };

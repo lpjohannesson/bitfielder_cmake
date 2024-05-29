@@ -7,30 +7,31 @@
 
 using namespace bf;
 
-void ClientContent::createPlayer(entt::entity player, WorldScene &scene, glm::vec2 position) {
+void ClientContent::createPlayer(entt::entity player, WorldScene &scene, const PlayerSpawnProperties &spawnProperties) {
 	World &world = scene.world;
 	WorldRenderer &worldRenderer = scene.worldRenderer;
 	entt::registry &entityRegistry = world.entities.registry;
 
-	world.content.createPlayer(player, world, position);
+	world.content.createPlayer(player, world, spawnProperties);
 	
 	// Load sprite
 	entityRegistry.emplace<SpriteComponent>(
 		player, SpriteComponent { glm::vec2(1.0f), glm::vec2(-4.0f, -2.0f) / 16.0f });
 	
 	entityRegistry.emplace<SpriteAnimatorComponent>(
-		player, SpriteAnimatorComponent {});
+		player, SpriteAnimatorComponent { &playerAnimations });
 }
 
-void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, glm::vec2 position) {
+void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, const PlayerSpawnProperties &spawnProperties) {
 	World &world = scene.world;
 	entt::registry &entityRegistry = world.entities.registry;
 
 	// Spawn remote player with extra attributes
-	createPlayer(player, scene, position);
+	createPlayer(player, scene, spawnProperties);
 
+	// Start last position as current
 	entityRegistry.emplace<LocalPlayerComponent>(
-		player, LocalPlayerComponent {});
+		player, LocalPlayerComponent { spawnProperties.position });
 	
 	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(8.0f, 13.0f) / 16.0f });
 }
@@ -53,12 +54,12 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	// Create player animations
     TextureSection playerTextureSection = scene.worldRenderer.textureAtlas.getSection("assets/textures/player.png");
-    playerFrames.loadFrames(playerTextureSection.uvBox, { 6, 1 });
+    playerAnimations.frames.loadFrames(playerTextureSection.uvBox, { 6, 1 });
 
-	playerIdle.createAnimation(playerFrames, { 0 });
-	playerWalk.createAnimation(playerFrames, { 1, 2, 3, 4 }, 0.4f);
-	playerJump.createAnimation(playerFrames, { 4 });
-	playerSlide.createAnimation(playerFrames, { 5 });
+	playerAnimations.addAnimation({ 0 });
+	playerAnimations.addAnimation({ 1, 2, 3, 4 }, 0.4f);
+	playerAnimations.addAnimation({ 4 });
+	playerAnimations.addAnimation({ 5 });
 
 	localPlayerSystem.loadContent(scene);
 
@@ -70,5 +71,7 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	// TODO: Recieve local player ID
 	player = world.entities.spawnEntity(-1);
-	createLocalPlayer(player, scene, { 0.0f, 0.0f });
+
+	PlayerSpawnProperties spawnProperties;
+	createLocalPlayer(player, scene, spawnProperties);
 }

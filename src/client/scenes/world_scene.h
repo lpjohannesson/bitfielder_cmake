@@ -7,6 +7,9 @@
 
 namespace bf {
 	class WorldScene : public Scene {
+	private:
+		entt::registry *entityRegistry;
+
 	public:
 		ServerConnection *server;
 
@@ -15,12 +18,18 @@ namespace bf {
 
 		ClientContent clientContent;
 
+		void writePlayerPosition();
+		void writePlayerSpriteAnimation();
+		void writePlayerSpriteFlip();
+
+		bool readEntityPacket(Packet &packet, entt::entity &entity);
+
 		void readBlockChunk(Packet &packet);
 		void readDespawnEntity(Packet &packet);
 		void readEntityPosition(Packet &packet);
+		void readEntitySpriteAnimation(Packet &packet);
+		void readEntitySpriteFlip(Packet &packet);
 		void readRemotePlayer(Packet &packet);
-
-		void writePlayerPosition();
 
 		void readPacket(Packet &packet);
 
@@ -32,6 +41,6 @@ namespace bf {
 		void start() override;
 		void end() override;
 
-		inline WorldScene() : clientContent(*this) {}
+		WorldScene();
 	};
 }
