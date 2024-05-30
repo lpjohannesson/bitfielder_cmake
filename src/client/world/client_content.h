@@ -10,7 +10,7 @@ namespace bf {
     class WorldScene;
 
     enum class PlayerAnimation {
-        IDLE, WALK, JUMP, SLIDE
+        IDLE, WALK, JUMP, FALL, SLIDE
     };
     
     class ClientContent {

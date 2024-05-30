@@ -11,6 +11,7 @@ add_executable(client
     src/engine/engine.cpp
     src/engine/file_loader.cpp
     src/engine/input.cpp
+    src/engine/input_action.cpp
 
     src/gfx/core/renderer.cpp
     src/gfx/core/shader.cpp

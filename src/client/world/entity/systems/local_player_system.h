@@ -7,7 +7,7 @@ namespace bf {
 
 	class LocalPlayerSystem : public EntitySystem {
     public:
-        float speed, acceleration, gravity, jumpImpulse, jumpStop, maxFloorTime;
+        float speed, acceleration, gravity, jumpImpulse, jumpStop, maxFloorTime, maxJumpTime;
         WorldScene *scene;
 
         void loadContent(WorldScene &scene);

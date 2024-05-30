@@ -49,11 +49,37 @@ bool Engine::update() {
 		case SDL_KEYUP:
 			input.keyUp(event.key.keysym.sym);
 			break;
+
+		case SDL_CONTROLLERDEVICEADDED:
+			if (gameController != nullptr) {
+				SDL_GameControllerClose(gameController);
+			}
+
+			gameController = SDL_GameControllerOpen(event.cdevice.which);
+			break;
+
+		case SDL_CONTROLLERBUTTONDOWN:
+			input.joyButtonDown((SDL_GameControllerButton)event.cbutton.button);
+			break;
+
+		case SDL_CONTROLLERBUTTONUP:
+			input.joyButtonUp((SDL_GameControllerButton)event.cbutton.button);
+			break;
+
+		case SDL_CONTROLLERAXISMOTION:
+			input.joyAxisMotion((SDL_GameControllerAxis)event.caxis.axis, event.caxis.value);
+			break;
 		}
 	}
 
 	if (quitting) {
 		return false;
+	}
+
+	// Toggle fullscreen
+	if (fullscreenAction.justPressed()) {
+		fullscreen = !fullscreen;
+		SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 	}
 
 	// Update scene
@@ -69,10 +95,11 @@ bool Engine::update() {
 	return true;
 }
 
-Engine::Engine() {
+Engine::Engine() : fullscreenAction(input) {
 	engine = this;
 
-	SDL_Init(SDL_INIT_VIDEO);
+	//SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 
 	windowSize = { 640, 480 };
 
@@ -97,11 +124,20 @@ Engine::Engine() {
 	glewExperimental = GL_TRUE;
 	glewInit();
 
+	// Setup joysticks
+	SDL_JoystickEventState(SDL_ENABLE);
+
 	renderer.updateSize(windowSize);
+
+	input.addKeyboardAction(fullscreenAction, SDLK_F11);
 }
 
 Engine::~Engine() {
 	endCurrentScene();
+
+	if (gameController != nullptr) {
+		SDL_GameControllerClose(gameController);
+	}
 
 	SDL_DestroyWindow(window);
 	SDL_GL_DeleteContext(glContext);

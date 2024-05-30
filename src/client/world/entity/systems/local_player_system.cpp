@@ -31,7 +31,15 @@ void LocalPlayerSystem::update(World &world) {
         SpriteAnimatorComponent>();
 
     for (auto [entity, localPlayer, position, body, sprite, spriteFlip, spriteAnimation, spriteAnimator] : view.each()) {
-        // Update floor timer
+        // Update jump timer, allowing early jumps
+        if (client->clientInput.jump.justPressed()) {
+            localPlayer.jumpTime = maxJumpTime;
+        }
+        else {
+            localPlayer.jumpTime = glm::max(0.0f, localPlayer.jumpTime - deltaTime);
+        }
+
+        // Update floor timer, allowing late jumps
         if (body.isOnFloor) {
             localPlayer.floorTime = maxFloorTime;
         }
@@ -43,18 +51,19 @@ void LocalPlayerSystem::update(World &world) {
 
         if (canJump) {
             // Jump
-            if (client->clientInput.jump.justPressed()) {
+            if (localPlayer.jumpTime > 0.0f) {
                 body.velocity.y = -jumpImpulse;
 
                 localPlayer.jumpStopped = false;
-                localPlayer.floorTime = 0;
+                localPlayer.floorTime = 0.0f;
+                localPlayer.jumpTime = 0.0f;
             }
         }
         else {
             // Stop jump on release
             if (!localPlayer.jumpStopped &&
                 body.velocity.y < 0.0f &&
-                client->clientInput.jump.justReleased()) {
+                !client->clientInput.jump.pressed) {
                 
                 body.velocity.y *= jumpStop;
                 localPlayer.jumpStopped = true;
@@ -86,7 +95,12 @@ void LocalPlayerSystem::update(World &world) {
             }
         }
         else {
-            animationIndex = PlayerAnimation::JUMP;
+            if (body.velocity.y < 0.0f) {
+                animationIndex = PlayerAnimation::JUMP;
+            }
+            else {
+                animationIndex = PlayerAnimation::FALL;
+            }
         }
 
         localPlayer.spriteAnimationDirty = SpriteAnimatorSystem::playAnimation(spriteAnimator, spriteAnimation, (int)animationIndex);
@@ -116,4 +130,5 @@ LocalPlayerSystem::LocalPlayerSystem() {
     jumpImpulse = 10.0f;
     jumpStop = 0.55f;
     maxFloorTime = 0.1f;
+    maxJumpTime = 0.1f;
 }

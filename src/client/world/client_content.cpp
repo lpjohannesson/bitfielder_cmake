@@ -54,12 +54,13 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	// Create player animations
     TextureSection playerTextureSection = scene.worldRenderer.textureAtlas.getSection("assets/textures/player.png");
-    playerAnimations.frames.loadFrames(playerTextureSection.uvBox, { 6, 1 });
+    playerAnimations.frames.loadFrames(playerTextureSection.uvBox, { 8, 1 });
 
 	playerAnimations.addAnimation({ 0 });
 	playerAnimations.addAnimation({ 1, 2, 3, 4 }, 0.4f);
-	playerAnimations.addAnimation({ 4 });
 	playerAnimations.addAnimation({ 5 });
+	playerAnimations.addAnimation({ 6 });
+	playerAnimations.addAnimation({ 7 });
 
 	localPlayerSystem.loadContent(scene);
 

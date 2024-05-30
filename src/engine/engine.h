@@ -15,7 +15,11 @@ namespace bf {
 		SDL_Window *window;
 		SDL_GLContext glContext;
 
+		SDL_GameController *gameController = nullptr;
+
 		Scene *currentScene = nullptr;
+
+		bool fullscreen = false;
 
 		void endCurrentScene();
 
@@ -23,7 +27,9 @@ namespace bf {
 		inline glm::ivec2 getWindowSize() const { return windowSize; }
 
 		Renderer renderer;
+		
 		Input input;
+		InputAction fullscreenAction;
 
 		void changeScene(Scene *scene);
 
