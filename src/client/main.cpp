@@ -1,3 +1,4 @@
+#define SDL_MAIN_HANDLED
 #include "engine/engine.h"
 #include "client/client.h"
 

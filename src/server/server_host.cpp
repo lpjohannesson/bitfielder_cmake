@@ -1,10 +1,13 @@
 #include "server_host.h"
 #include <iostream>
+#include <SDL2/SDL.h>
 #include "remote_client_connection.h"
 
 using namespace bf;
 
 ServerHost::ServerHost(int port) {
+    SDL_Init(SDL_INIT_TIMER);
+
     // Start network
     if (enet_initialize() != 0) {
         std::cout << "Network failed." << std::endl;

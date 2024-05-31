@@ -110,6 +110,7 @@ void LocalPlayerSystem::update(World &world) {
             Direction::targetAxis(body.velocity.x, movement.x * speed, acceleration * deltaTime);
         }
 
+        // TODO: Make generic position changed flag
         // Update last position, used for packet efficiency
         localPlayer.positionDirty = position.position != localPlayer.lastPosition;
         localPlayer.lastPosition = position.position;

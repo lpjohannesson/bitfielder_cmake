@@ -85,7 +85,7 @@ bool Engine::update() {
 	// Update scene
 	currentScene->update();
 
-	// Update input
+	// Update input for previous state
 	input.update();
 
 	// Render
