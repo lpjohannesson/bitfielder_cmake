@@ -31,6 +31,43 @@ void LocalPlayerSystem::update(World &world) {
         SpriteAnimatorComponent>();
 
     for (auto [entity, localPlayer, position, body, sprite, spriteFlip, spriteAnimation, spriteAnimator] : view.each()) {
+        // Flip sprite
+        if (movement.x != 0.0f) {
+            spriteFlip.flipX = movement.x < 0.0f;
+        }
+
+        // Animate
+        PlayerAnimation animationIndex;
+
+        if (body.isOnFloor) {
+            if (body.velocity.x == 0.0f || movement.x == 0.0f) {
+                animationIndex = PlayerAnimation::IDLE;
+            }
+            else {
+                if (glm::sign(body.velocity.x) == movement.x) {
+                    animationIndex = PlayerAnimation::WALK;
+                }
+                else {
+                    animationIndex = PlayerAnimation::SLIDE;
+                }
+            }
+        }
+        else {
+            if (body.velocity.y < 0.0f) {
+                animationIndex = PlayerAnimation::JUMP;
+            }
+            else {
+                animationIndex = PlayerAnimation::FALL;
+            }
+        }
+
+        localPlayer.spriteAnimationDirty = SpriteAnimatorSystem::playAnimation(spriteAnimator, spriteAnimation, (int)animationIndex);
+
+        // Move horizontally, friction only on the ground
+        if (body.isOnFloor || movement.x != 0.0f) {
+            Direction::targetAxis(body.velocity.x, movement.x * speed, acceleration * deltaTime);
+        }
+
         // Update jump timer, allowing early jumps
         if (client->clientInput.jump.justPressed()) {
             localPlayer.jumpTime = maxJumpTime;
@@ -72,43 +109,6 @@ void LocalPlayerSystem::update(World &world) {
 
         // Fall
         body.velocity.y += gravity * deltaTime;
-
-        // Flip sprite
-        if (movement.x != 0.0f) {
-            spriteFlip.flipX = movement.x < 0.0f;
-        }
-
-        // Animate
-        PlayerAnimation animationIndex;
-
-        if (body.isOnFloor) {
-            if (body.velocity.x == 0.0f || movement.x == 0.0f) {
-                animationIndex = PlayerAnimation::IDLE;
-            }
-            else {
-                if (glm::sign(body.velocity.x) == movement.x) {
-                    animationIndex = PlayerAnimation::WALK;
-                }
-                else {
-                    animationIndex = PlayerAnimation::SLIDE;
-                }
-            }
-        }
-        else {
-            if (body.velocity.y < 0.0f) {
-                animationIndex = PlayerAnimation::JUMP;
-            }
-            else {
-                animationIndex = PlayerAnimation::FALL;
-            }
-        }
-
-        localPlayer.spriteAnimationDirty = SpriteAnimatorSystem::playAnimation(spriteAnimator, spriteAnimation, (int)animationIndex);
-
-        // Move horizontally, friction only on the ground
-        if (body.isOnFloor || movement.x != 0.0f) {
-            Direction::targetAxis(body.velocity.x, movement.x * speed, acceleration * deltaTime);
-        }
 
         // TODO: Make generic position changed flag
         // Update last position, used for packet efficiency
