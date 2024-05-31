@@ -3,20 +3,21 @@
 #include "block_map_element.h"
 
 namespace bf {
+	struct BlockData {
+		unsigned int frontIndex, backIndex;
+	};
+
 	class BlockChunk : public BlockMapElement {
 	public:
 		static constexpr glm::ivec2 SIZE{ 16, 16 };
 
-	public:
-		unsigned int data[SIZE.y][SIZE.x];
+		BlockData data[SIZE.y][SIZE.x];
 
 		static int getChunkIndex(int blockX);
 		static glm::ivec2 worldToChunk(glm::ivec2 position, int chunkIndex);
 
-		int getBlockIndex(glm::ivec2 position) const;
-		int sampleBlockIndex(glm::ivec2 position) const;
-
-		void setBlockIndex(glm::ivec2 position, int index);
+		BlockData *getBlock(glm::ivec2 position) const;
+		BlockData *sampleBlock(glm::ivec2 position) const;
 
 		BlockChunk(int mapIndex);
 	};

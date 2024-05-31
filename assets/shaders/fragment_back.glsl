@@ -12,5 +12,5 @@ void main() {
         discard;
     }
 
-    fColor.rgb = color.rgb;
+    fColor.rgb = color.rgb - vec3(0.4);
 }

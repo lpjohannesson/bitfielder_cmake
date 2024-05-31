@@ -104,7 +104,13 @@ using namespace bf;
         for (int blockSide = blockSideStart; blockSide <= blockSideEnd; blockSide++) {\
             glm::ivec2 blockPosition = { BLOCK_X, BLOCK_Y };\
             \
-            int blockIndex = blockSample.sampleBlockIndex(blockPosition);\
+            BlockData *blockData = blockSample.sampleBlock(blockPosition);\
+            \
+            if (blockData == nullptr) {\
+                continue;\
+            }\
+            \
+            int blockIndex = blockData->frontIndex;\
             entt::entity block = world.blocks.getBlock(blockIndex);\
             \
             /* TODO: add collision component to blocks */\

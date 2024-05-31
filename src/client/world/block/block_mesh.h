@@ -6,8 +6,8 @@
 namespace bf {
     class BlockMesh : public BlockMapElement {
     public:
-        SpriteMesh mesh;
+        SpriteMesh frontMesh, backMesh;
 
-        inline BlockMesh(int mapIndex) : BlockMapElement(mapIndex), mesh(client->spriteRenderer) {}
+        inline BlockMesh(int mapIndex) : BlockMapElement(mapIndex), frontMesh(client->spriteRenderer), backMesh(client->spriteRenderer) {}
     };
 }

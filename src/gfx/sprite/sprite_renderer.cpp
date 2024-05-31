@@ -1,6 +1,4 @@
 #include "sprite_renderer.h"
-#include <glm/gtc/type_ptr.hpp>
-#include "gfx/core/shader.h"
 
 using namespace bf;
 
@@ -28,34 +26,8 @@ void SpriteRenderer::createIndexBuffer() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
-void SpriteRenderer::createShaderProgram() {
-    // Create shaders
-    GLuint glVertexShader = glCreateShader(GL_VERTEX_SHADER);
-    GLuint glFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	Shader::compileShader(glVertexShader, "assets/shaders/vertex.glsl");
-    Shader::compileShader(glFragmentShader, "assets/shaders/fragment.glsl");
-
-    // Create shader program
-    glProgram = glCreateProgram();
-
-    glAttachShader(glProgram, glVertexShader);
-    glAttachShader(glProgram, glFragmentShader);
-
-    Shader::linkProgram(glProgram);
-
-	// Delete shaders
-	glDeleteShader(glVertexShader);
-	glDeleteShader(glFragmentShader);
-}
-
-void SpriteRenderer::setTransform(glm::mat4 transform) {
-	GLint glTransformLocation = glGetUniformLocation(glProgram, "transform");
-	glUniformMatrix4fv(glTransformLocation, 1, GL_FALSE, glm::value_ptr(transform));
-}
-
-void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const Texture &texture) const {
-	glUseProgram(glProgram);
+void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program, const Texture &texture) const {
+	glUseProgram(program.getGLProgram());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
@@ -66,10 +38,8 @@ void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const Texture &texture) 
 
 SpriteRenderer::SpriteRenderer() {
 	createIndexBuffer();
-	createShaderProgram();
 }
 
 SpriteRenderer::~SpriteRenderer() {
-	glDeleteProgram(glProgram);
 	glDeleteBuffers(1, &glIndexBuffer);
 }

@@ -17,10 +17,11 @@ add_executable(client
     src/gfx/core/shader.cpp
     src/gfx/core/texture.cpp
     src/gfx/core/texture_atlas.cpp
-    
-    src/gfx/sprite/sprite_batch.cpp
+
     src/gfx/sprite/sprite_mesh.cpp
+    src/gfx/sprite/sprite_program.cpp
     src/gfx/sprite/sprite_renderer.cpp
+    src/gfx/sprite/sprite_batch.cpp
 
     src/gfx/sprite/animation/sprite_frames.cpp
     src/gfx/sprite/animation/sprite_animation.cpp

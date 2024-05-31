@@ -14,11 +14,17 @@ namespace bf {
     public:
         TextureAtlas textureAtlas;
 
+        SpriteProgram frontSpriteProgram, backSpriteProgram;
+
         BlockMapRenderer map;
         EntityRenderer entities;
 
         void updateSize(glm::ivec2 size);
 
         void render(const WorldScene &scene);
+
+        inline WorldRenderer() :
+            frontSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl"),
+            backSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_back.glsl") {}
 	};
 }

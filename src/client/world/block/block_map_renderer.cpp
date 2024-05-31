@@ -5,33 +5,42 @@
 
 using namespace bf;
 
-void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
+void BlockMapRenderer::renderBlock(const World &world, const BlockRenderData &renderData) {
     const entt::registry &blocksRegistry = world.blocks.registry;
+    entt::entity block = world.blocks.getBlock(renderData.blockIndex);
 
+    // Get renderer or skip
+    if (!blocksRegistry.all_of<BlockRendererComponent>(block)) {
+        return;
+    }
+
+    BlockRenderer *blockRenderer = blocksRegistry.get<BlockRendererComponent>(block).renderer;
+    blockRenderer->render(renderData);
+}
+
+void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
     int mapIndex = chunk.getMapIndex();
     int blockStartX = mapIndex * BlockChunk::SIZE.x;
 
+    BlockRenderData renderData;
+    renderData.renderer = this;
+
     for (int y = 0; y < BlockChunk::SIZE.y; y++) {
 		for (int x = 0; x < BlockChunk::SIZE.x; x++) {
-            // Get block data for position
-			glm::ivec2 position = { x, y };
-
-            int blockIndex = chunk.getBlockIndex(position);
-			entt::entity block = world.blocks.getBlock(blockIndex);
-
-            // Get renderer or skip
-            if (!blocksRegistry.all_of<BlockRendererComponent>(block)) {
-                continue;
-            }
-
-            BlockRenderer *blockRenderer = blocksRegistry.get<BlockRendererComponent>(block).renderer;
-
-            // Render block
-            BlockRenderData renderData;
-            renderData.renderer = this;
             renderData.position = { blockStartX + x, y };
+            
+            // Get block data
+			BlockData *blockData = chunk.getBlock({ x, y });
 
-            blockRenderer->render(renderData);
+            // Render front
+            renderData.blockIndex = blockData->frontIndex;
+            renderData.spriteBatch = &frontSpriteBatch;
+			renderBlock(world, renderData);
+
+            // Render back
+            renderData.blockIndex = blockData->backIndex;
+            renderData.spriteBatch = &backSpriteBatch;
+			renderBlock(world, renderData);
 		}
 	}
 
@@ -42,17 +51,7 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
         blockMesh = &map.createChunk(mapIndex);
     }
 
-    spriteBatch.uploadMesh(blockMesh->mesh);
-}
-
-void BlockMapRenderer::render(const WorldScene &scene) {
-    const World &world = scene.world;
-	const WorldRenderer &worldRenderer = scene.worldRenderer;
-
-    // TODO: Only visible chunks
-    for (const auto &[chunkIndex, chunk] : worldRenderer.map.map.chunks) {
-        // Draw sprite mesh
-        client->spriteRenderer.renderMesh(
-            chunk.mesh, worldRenderer.textureAtlas.texture);
-    }
+    // Upload layers
+    frontSpriteBatch.uploadMesh(blockMesh->frontMesh);
+    backSpriteBatch.uploadMesh(blockMesh->backMesh);
 }

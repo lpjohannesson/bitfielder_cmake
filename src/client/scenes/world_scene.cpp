@@ -174,7 +174,7 @@ void WorldScene::update() {
 }
 
 void WorldScene::render() {
-	engine->renderer.clearScreen({ 0.0f, 0.0f, 0.0f, 0.0f });
+	engine->renderer.clearScreen({ 0.0f, 0.0f, 0.5f, 0.0f });
 	worldRenderer.render(*this);
 }
 

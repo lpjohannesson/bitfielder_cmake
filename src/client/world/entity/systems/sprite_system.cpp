@@ -39,9 +39,6 @@ void SpriteSystem::render(const WorldScene &scene) {
         spriteBatch.drawSprite(batchSprite);
     }
 
-    // Upload and render
+    // Upload mesh
     spriteBatch.uploadMesh(mesh);
-
-    client->spriteRenderer.renderMesh(
-        mesh, worldRenderer.textureAtlas.texture);
 }

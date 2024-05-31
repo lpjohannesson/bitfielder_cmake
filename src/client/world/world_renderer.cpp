@@ -13,8 +13,25 @@ void WorldRenderer::updateSize(glm::ivec2 size) {
 }
 
 void WorldRenderer::render(const WorldScene &scene) {
-    client->spriteRenderer.setTransform(viewTransform * scene.camera.getTransform());
-
-    map.render(scene);
     entities.render(scene);
+
+    glm::mat4 transform = viewTransform * scene.camera.getTransform();
+    frontSpriteProgram.setTransform(transform);
+    backSpriteProgram.setTransform(transform);
+
+    const Texture &texture = scene.worldRenderer.textureAtlas.texture;
+
+    // TODO: Only visible chunks
+    for (const auto &[chunkIndex, chunk] : map.map.chunks) {
+        client->spriteRenderer.renderMesh(
+            chunk.backMesh, backSpriteProgram, texture);
+    }
+
+    for (const auto &[chunkIndex, chunk] : map.map.chunks) {
+        client->spriteRenderer.renderMesh(
+            chunk.frontMesh, frontSpriteProgram, texture);
+    }
+
+    client->spriteRenderer.renderMesh(
+        entities.spriteSystem.mesh, frontSpriteProgram, texture);
 }

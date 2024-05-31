@@ -6,5 +6,5 @@ using namespace bf;
 void BasicBlockRenderer::render(const BlockRenderData &renderData) {
     // Draw sprite at position
     sprite.box.start = renderData.position;
-    renderData.renderer->spriteBatch.drawSprite(sprite);
+    renderData.spriteBatch->drawSprite(sprite);
 }
