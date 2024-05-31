@@ -5,31 +5,31 @@
 
 namespace bf {
 	class Server {
-    private:
-        entt::registry *entityRegistry;
+        private:
+                entt::registry *entityRegistry;
 
-	public:
-        std::vector<ClientConnection*> clients;
+        public:
+                std::vector<ClientConnection*> clients;
 
-        World world;
-        BlockMapGenerator mapGenerator;
+                World world;
+                BlockMapGenerator mapGenerator;
 
-        void addClient(ClientConnection *client);
-        void removeClient(ClientConnection *client);
+                void addClient(ClientConnection *client);
+                void removeClient(ClientConnection *client);
 
-        void writeBlockChunk(ClientConnection *client, BlockChunk *chunk);
-        void writeDespawnEntity(ClientConnection *client, int playerID);
-        void writeEntityPosition(ClientConnection *client, entt::entity entity);
-        void writeEntitySpriteAnimation(ClientConnection *client, entt::entity entity);
-        void writeEntitySpriteFlip(ClientConnection *client, entt::entity entity);
-        void writeRemotePlayer(ClientConnection *client, entt::entity player);
+                void writeBlockChunk(ClientConnection *client, BlockChunk *chunk);
+                void writeDespawnEntity(ClientConnection *client, int playerID);
+                void writeEntityPosition(ClientConnection *client, entt::entity entity);
+                void writeEntitySpriteAnimation(ClientConnection *client, entt::entity entity);
+                void writeEntitySpriteFlip(ClientConnection *client, entt::entity entity);
+                void writeRemotePlayer(ClientConnection *client, entt::entity player);
 
-        void readPlayerPosition(ClientConnection *client, Packet &packet);
-        void readPlayerSpriteAnimation(ClientConnection *client, Packet &packet);
-        void readPlayerSpriteFlip(ClientConnection *client, Packet &packet);
+                void readPlayerPosition(ClientConnection *client, Packet &packet);
+                void readPlayerSpriteAnimation(ClientConnection *client, Packet &packet);
+                void readPlayerSpriteFlip(ClientConnection *client, Packet &packet);
 
-        void readPacket(ClientConnection *client, Packet &packet);
+                void readPacket(ClientConnection *client, Packet &packet);
 
-        Server();
+                Server();
 	};
 }

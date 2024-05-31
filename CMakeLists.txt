@@ -26,8 +26,8 @@ add_executable(client
     src/gfx/sprite/animation/sprite_animation.cpp
     src/gfx/sprite/animation/sprite_animation_set.cpp
 
-    src/world/content.cpp
     src/world/world.cpp
+    src/world/content.cpp
 
     src/world/block/block_chunk.cpp
     src/world/block/block_map.cpp
@@ -49,6 +49,7 @@ add_executable(client
     
     src/client/world/client_content.cpp
     src/client/world/world_renderer.cpp
+    src/client/world/camera.cpp
 
     src/client/world/block/block_map_renderer.cpp
     src/client/world/block/renderers/basic_block_renderer.cpp

@@ -41,6 +41,7 @@ void BlockMapRenderer::render(const WorldScene &scene) {
     const World &world = scene.world;
 	const WorldRenderer &worldRenderer = scene.worldRenderer;
 
+    // TODO: Only visible chunks
     for (const auto &[chunkIndex, chunk] : world.map.chunks) {
         // Draw sprite mesh
         client->spriteRenderer.renderMesh(

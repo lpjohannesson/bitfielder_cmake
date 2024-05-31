@@ -156,6 +156,7 @@ void WorldScene::updateSize(glm::ivec2 size) {
 
 void WorldScene::update() {
 	world.update();
+	camera.update(*this);
 
 	LocalPlayerComponent &localPlayer = entityRegistry->get<LocalPlayerComponent>(clientContent.player);
 
@@ -173,12 +174,13 @@ void WorldScene::update() {
 }
 
 void WorldScene::render() {
-	engine->renderer.clearScreen({ 0.0f, 0.0f, 0.5f, 0.0f });
+	engine->renderer.clearScreen({ 0.0f, 0.0f, 0.0f, 0.0f });
 	worldRenderer.render(*this);
 }
 
 void WorldScene::start() {
 	gameTime.reset();
+	camera.start(*this);
 }
 
 void WorldScene::end() {

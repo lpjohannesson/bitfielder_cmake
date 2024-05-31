@@ -4,6 +4,7 @@
 #include "client/server_connection.h"
 #include "client/world/world_renderer.h"
 #include "client/world/client_content.h"
+#include "client/world/camera.h"
 
 namespace bf {
 	class WorldScene : public Scene {
@@ -15,6 +16,7 @@ namespace bf {
 
 		World world;
 		WorldRenderer worldRenderer;
+		Camera camera;
 
 		ClientContent clientContent;
 

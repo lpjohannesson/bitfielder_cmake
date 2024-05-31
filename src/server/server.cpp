@@ -24,8 +24,9 @@ void Server::addClient(ClientConnection *client) {
     clients.push_back(client);
 
     // Load chunks
-    writeBlockChunk(client, world.map.getChunk(0));
-    writeBlockChunk(client, world.map.getChunk(1));
+    for (int i = 0; i < 10; i++) {
+        writeBlockChunk(client, world.map.getChunk(i));
+    }
 }
 
 void Server::removeClient(ClientConnection *client) {
@@ -175,9 +176,8 @@ void Server::readPacket(ClientConnection *client, Packet &packet) {
 Server::Server() {
     entityRegistry = &world.entities.registry;
 
-    BlockChunk &chunk = world.map.createChunk(0);
-    mapGenerator.generateChunk(world, chunk);
-
-	BlockChunk &chunk2 = world.map.createChunk(1);
-    mapGenerator.generateChunk(world, chunk2);
+    for (int i = 0; i < 10; i++) {
+        BlockChunk &chunk = world.map.createChunk(i);
+        mapGenerator.generateChunk(world, chunk);
+    }
 }

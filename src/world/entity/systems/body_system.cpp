@@ -170,6 +170,7 @@ void BodySystem::update(World &world) {
     auto view = world.entities.registry.view<PositionComponent, BodyComponent>();
 
     for (auto [entity, position, body] : view.each()) {
+        // TODO: Non-linear velocity
         moveX(world, position.position, body);
         moveY(world, position.position, body);
     }
