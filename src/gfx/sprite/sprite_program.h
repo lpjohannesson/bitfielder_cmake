@@ -1,11 +1,12 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include "gfx/core/texture.h"
 
 namespace bf {
 	class SpriteProgram {
 	private:
-		GLuint glProgram;
+		GLuint glProgram, glTransformLocation;
 
 	public:
         inline GLuint getGLProgram() const { return glProgram; }

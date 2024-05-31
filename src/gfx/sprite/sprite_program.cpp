@@ -6,8 +6,6 @@ using namespace bf;
 
 void SpriteProgram::setTransform(glm::mat4 transform) {
 	glUseProgram(glProgram);
-	
-	GLint glTransformLocation = glGetUniformLocation(glProgram, "transform");
 	glUniformMatrix4fv(glTransformLocation, 1, GL_FALSE, glm::value_ptr(transform));
 }
 
@@ -29,6 +27,9 @@ SpriteProgram::SpriteProgram(const char *vertexPath, const char *fragmentPath) {
 	// Delete shaders
 	glDeleteShader(glVertexShader);
 	glDeleteShader(glFragmentShader);
+
+	// Find transform
+	glTransformLocation = glGetUniformLocation(glProgram, "transform");
 }
 
 SpriteProgram::~SpriteProgram() {

@@ -3,6 +3,8 @@
 using namespace bf;
 
 void Texture::loadSurface(SDL_Surface *surface) {
+	glBindTexture(GL_TEXTURE_2D, glTexture);
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
 	glGenerateMipmap(GL_TEXTURE_2D);
 }

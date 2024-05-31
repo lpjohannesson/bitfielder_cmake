@@ -174,7 +174,7 @@ void WorldScene::update() {
 }
 
 void WorldScene::render() {
-	engine->renderer.clearScreen({ 0.0f, 0.0f, 0.5f, 0.0f });
+	engine->renderer.clearScreen({ 0.5f, 1.0f, 1.0f, 0.0f });
 	worldRenderer.render(*this);
 }
 
@@ -187,6 +187,6 @@ void WorldScene::end() {
 
 }
 
-WorldScene::WorldScene() : clientContent(*this) {
+WorldScene::WorldScene() : worldRenderer(*this), clientContent(*this) {
 	entityRegistry = &world.entities.registry;
 }

@@ -9,7 +9,7 @@ void BlockMapGenerator::generateChunk(World &world, BlockChunk &chunk) {
             BlockData *blockData = chunk.getBlock({ x, y });
             
             blockData->frontIndex = rand() % (BlockChunk::SIZE.y - y) == 0;
-            blockData->backIndex = 1;
+            blockData->backIndex = rand() % glm::max(BlockChunk::SIZE.y - y - 4, 1) == 0;
         }
     }
 }

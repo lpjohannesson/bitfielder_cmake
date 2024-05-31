@@ -1,5 +1,6 @@
 #version 330 core
 
+out vec2 fPosition;
 out vec2 fUV;
 
 layout (location = 0) in vec2 vPosition;
@@ -9,5 +10,7 @@ uniform mat4 transform;
 
 void main() {
     gl_Position = transform * vec4(vPosition, 0.0, 1.0);
+    
+    fPosition = (gl_Position.xy + 1.0) * 0.5;
     fUV = vUV;
 }

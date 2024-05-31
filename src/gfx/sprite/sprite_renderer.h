@@ -17,7 +17,7 @@ namespace bf {
 
 		inline GLuint getGLIndexBuffer() const { return glIndexBuffer; }
 		
-		void renderMesh(const SpriteMesh &mesh, const SpriteProgram &program, const Texture &texture) const;
+		void renderMesh(const SpriteMesh &mesh, const SpriteProgram &program) const;
 
 		SpriteRenderer();
 		~SpriteRenderer();
