@@ -1,5 +1,6 @@
 #pragma once
 #include "block/block_map.h"
+#include "block/block_chunk.h"
 #include "block/block_types.h"
 #include "entity/entities.h"
 #include "world/content.h"
@@ -7,7 +8,7 @@
 namespace bf {
 	class World {
     public:
-        BlockMap map;
+        BlockMap<BlockChunk> map;
         BlockTypes blocks;
 
         Entities entities;

@@ -1,17 +1,28 @@
 #pragma once
 #include <unordered_map>
-#include "block_chunk.h"
+#include <glm/glm.hpp>
 
 namespace bf {
+	template <typename T>
 	class BlockMap {
 	public:
-		std::unordered_map<int, BlockChunk> chunks;
+		std::unordered_map<int, T> chunks;
 
-		static int getChunkIndex(int blockX);
+		inline T *getChunk(int index) const {
+			// Find chunk by index
+			auto foundChunk = chunks.find(index);
 
-		static glm::ivec2 worldToChunk(glm::ivec2 position, int chunkIndex);
+			if (foundChunk == chunks.end()) {
+				return nullptr;
+			}
 
-        BlockChunk *getChunk(int index) const;
-        BlockChunk &createChunk(int index);
+			return (T*)&foundChunk->second;
+		}
+
+		inline T &createChunk(int index) {
+			// Construct chunk with index parameter
+			chunks.emplace(index, index);
+			return chunks.at(index);
+		}
 	};
 }

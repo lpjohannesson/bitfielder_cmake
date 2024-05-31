@@ -29,9 +29,8 @@ add_executable(client
     src/world/world.cpp
     src/world/content.cpp
 
+    src/world/block/block_map_element.cpp
     src/world/block/block_chunk.cpp
-    src/world/block/block_map.cpp
-    src/world/block/block_sample.cpp
     src/world/block/block_types.cpp
 
     src/world/entity/entities.cpp
@@ -66,8 +65,6 @@ add_executable(client
 
     src/client/main.cpp)
 
-target_compile_definitions(client PRIVATE BF_CLIENT)
-
 add_executable(server
     src/core/packet.cpp
     src/core/game_time.cpp
@@ -75,9 +72,8 @@ add_executable(server
     src/world/content.cpp
     src/world/world.cpp
 
+    src/world/block/block_map_element.cpp
     src/world/block/block_chunk.cpp
-    src/world/block/block_map.cpp
-    src/world/block/block_sample.cpp
     src/world/block/block_types.cpp
 
     src/world/entity/entities.cpp

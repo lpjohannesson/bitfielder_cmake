@@ -8,7 +8,8 @@ using namespace bf;
 void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
     const entt::registry &blocksRegistry = world.blocks.registry;
 
-    int blockStartX = chunk.getMapIndex() * BlockChunk::SIZE.x;
+    int mapIndex = chunk.getMapIndex();
+    int blockStartX = mapIndex * BlockChunk::SIZE.x;
 
     for (int y = 0; y < BlockChunk::SIZE.y; y++) {
 		for (int x = 0; x < BlockChunk::SIZE.x; x++) {
@@ -34,7 +35,14 @@ void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
 		}
 	}
 
-    spriteBatch.uploadMesh(chunk.blockMesh.mesh);
+    // Get or create mesh
+    BlockMesh *blockMesh = map.getChunk(mapIndex);
+
+    if (blockMesh == nullptr) {
+        blockMesh = &map.createChunk(mapIndex);
+    }
+
+    spriteBatch.uploadMesh(blockMesh->mesh);
 }
 
 void BlockMapRenderer::render(const WorldScene &scene) {
@@ -42,9 +50,9 @@ void BlockMapRenderer::render(const WorldScene &scene) {
 	const WorldRenderer &worldRenderer = scene.worldRenderer;
 
     // TODO: Only visible chunks
-    for (const auto &[chunkIndex, chunk] : world.map.chunks) {
+    for (const auto &[chunkIndex, chunk] : worldRenderer.map.map.chunks) {
         // Draw sprite mesh
         client->spriteRenderer.renderMesh(
-            chunk.blockMesh.mesh, worldRenderer.textureAtlas.texture);
+            chunk.mesh, worldRenderer.textureAtlas.texture);
     }
 }

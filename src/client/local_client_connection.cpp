@@ -5,9 +5,9 @@ using namespace bf;
 
 void LocalClientConnection::writePacket(Packet &packet) {
     // Pass packet to world scene
-    worldScene->readPacket(packet);
+    scene->readPacket(packet);
 }
 
-LocalClientConnection::LocalClientConnection(LocalWorldScene *worldScene) {
-    this->worldScene = worldScene;
+LocalClientConnection::LocalClientConnection(LocalWorldScene *scene) {
+    this->scene = scene;
 }

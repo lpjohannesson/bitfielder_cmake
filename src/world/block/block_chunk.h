@@ -1,27 +1,17 @@
 #pragma once
 #include <glm/glm.hpp>
-
-#ifdef BF_CLIENT
-#include "client/world/block/block_mesh.h"
-#endif
+#include "block_map_element.h"
 
 namespace bf {
-	class BlockChunk {
+	class BlockChunk : public BlockMapElement {
 	public:
 		static constexpr glm::ivec2 SIZE{ 16, 16 };
 
-	private:
-		int mapIndex;
-
 	public:
-	// TODO: Move mesh
-#ifdef BF_CLIENT
-		BlockMesh blockMesh;
-#endif
-
 		unsigned int data[SIZE.y][SIZE.x];
 
-		inline int getMapIndex() const { return mapIndex; }
+		static int getChunkIndex(int blockX);
+		static glm::ivec2 worldToChunk(glm::ivec2 position, int chunkIndex);
 
 		int getBlockIndex(glm::ivec2 position) const;
 		int sampleBlockIndex(glm::ivec2 position) const;

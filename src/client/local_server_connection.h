@@ -6,11 +6,11 @@ namespace bf {
 
 	class LocalServerConnection : public ServerConnection {
     private:
-        LocalWorldScene *worldScene;
+        LocalWorldScene *scene;
 
 	public:
         void writePacket(Packet &packet) override;
 
-        LocalServerConnection(LocalWorldScene *worldScene);
+        LocalServerConnection(LocalWorldScene *scene);
 	};
 }
