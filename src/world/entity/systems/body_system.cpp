@@ -177,7 +177,7 @@ void BodySystem::update(World &world) {
 
     for (auto [entity, position, body] : view.each()) {
         // TODO: Non-linear velocity
-        moveX(world, position.position, body);
         moveY(world, position.position, body);
+        moveX(world, position.position, body);
     }
 }

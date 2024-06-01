@@ -8,15 +8,16 @@ uniform sampler2D fTexture;
 uniform sampler2D fShadowTexture;
 
 void main() {
-    vec4 color = texture(fTexture, fUV) - 0.4;
+    vec4 color = texture(fTexture, fUV);
 
     if (color.a == 0.0) {
         discard;
     }
 
     if (texture(fShadowTexture, fPosition).r > 0.0) {
-        color -= 0.4;
+        fColor.rgb = color.rgb - 0.5;
     }
-
-    fColor.rgb = color.rgb;
+    else {
+        fColor.rgb = color.rgb - 0.3;
+    }
 }
