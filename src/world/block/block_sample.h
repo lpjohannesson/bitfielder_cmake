@@ -14,32 +14,8 @@ namespace bf {
 		inline int getChunkStart() const { return chunkStart; }
 		inline int getChunkCount() const { return chunks.size(); }
 
-		inline BlockChunk* getChunk(int chunkIndex) const {
+		inline T *getChunk(int chunkIndex) const {
 			return chunks[chunkIndex - chunkStart];
-		}
-
-		inline BlockData *getBlock(glm::ivec2 position) const {
-			int chunkIndex = BlockChunk::getChunkIndex(position.x);
-			BlockChunk* chunk = getChunk(chunkIndex);
-
-			if (chunk == nullptr) {
-				return 0;
-			}
-
-			glm::ivec2 chunkPosition = BlockChunk::worldToChunk(position, chunkIndex);
-			return chunk->getBlock(chunkPosition);
-		}
-
-        inline BlockData *sampleBlock(glm::ivec2 position) const {
-			int chunkIndex = BlockChunk::getChunkIndex(position.x);
-			BlockChunk* chunk = getChunk(chunkIndex);
-
-			if (chunk == nullptr) {
-				return 0;
-			}
-
-			glm::ivec2 chunkPosition = BlockChunk::worldToChunk(position, chunkIndex);
-			return chunk->sampleBlock(chunkPosition);
 		}
 
         inline BlockSample(const BlockMap<T>& blockMap, int blockStartX, int blockEndX) {

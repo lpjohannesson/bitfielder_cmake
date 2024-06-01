@@ -1,16 +1,199 @@
 #include "local_player_system.h"
 #include "world/entity/systems/entity_system_impl.h"
 #include "client/scenes/world_scene.h"
-#include "../components/local_player_component.h"
-#include "../components/sprite_component.h"
-#include "../components/sprite_animator_component.h"
-#include "../systems/sprite_animator_system.h"
-#include "world/entity/components/body_component.h"
-#include "world/entity/components/sprite_flip_component.h"
 #include "core/game_time.h"
 #include "core/direction.h"
 
 using namespace bf;
+
+void LocalPlayerSystem::move(LocalPlayerData &playerData) {
+    float deltaTime = gameTime.getDeltaTime();
+
+    glm::vec2 &movement = playerData.movement;
+    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
+    PositionComponent &position = *playerData.position;
+    BodyComponent &body = *playerData.body;
+
+    // Move horizontally, friction only on the ground
+    if (body.isOnFloor || movement.x != 0.0f) {
+        Direction::targetAxis(body.velocity.x, movement.x * speed, acceleration * deltaTime);
+    }
+
+    // Update jump timer, allowing early jumps
+    if (client->clientInput.jump.justPressed()) {
+        localPlayer.jumpTime = maxJumpTime;
+    }
+    else {
+        localPlayer.jumpTime = glm::max(0.0f, localPlayer.jumpTime - deltaTime);
+    }
+
+    // Update floor timer, allowing late jumps
+    if (body.isOnFloor) {
+        localPlayer.floorTime = maxFloorTime;
+    }
+    else {
+        localPlayer.floorTime = glm::max(0.0f, localPlayer.floorTime - deltaTime);
+    }
+
+    bool canJump = localPlayer.floorTime > 0.0f;
+
+    if (canJump) {
+        // Jump
+        if (localPlayer.jumpTime > 0.0f) {
+            body.velocity.y = -jumpImpulse;
+
+            localPlayer.jumpStopped = false;
+            localPlayer.floorTime = 0.0f;
+            localPlayer.jumpTime = 0.0f;
+        }
+    }
+    else {
+        // Stop jump on release
+        if (!localPlayer.jumpStopped &&
+            body.velocity.y < 0.0f &&
+            !client->clientInput.jump.pressed) {
+            
+            body.velocity.y *= jumpStop;
+            localPlayer.jumpStopped = true;
+        }
+    }
+
+    // Fall
+    body.velocity.y += gravity * deltaTime;
+
+    // TODO: Make generic position changed flag
+    // Update last position, used for packet efficiency
+    localPlayer.positionDirty = position.position != localPlayer.lastPosition;
+    localPlayer.lastPosition = position.position;
+}
+
+void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
+    // TODO: Sprite aim
+
+    glm::vec2 &movement = playerData.movement;
+    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
+    BodyComponent &body = *playerData.body;
+    SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
+
+    // Flip sprite
+    if (movement.x != 0.0f) {
+        spriteFlip.flipX = movement.x < 0.0f;
+    }
+
+    localPlayer.spriteFlipDirty = spriteFlip.flipX != localPlayer.lastSpriteFlip;
+    localPlayer.lastSpriteFlip = spriteFlip.flipX;
+
+    // Animate
+    PlayerAnimation animationIndex;
+
+    if (body.isOnFloor) {
+        if (body.velocity.x == 0.0f || movement.x == 0.0f) {
+            animationIndex = PlayerAnimation::IDLE;
+        }
+        else {
+            if (glm::sign(body.velocity.x) == movement.x) {
+                animationIndex = PlayerAnimation::WALK;
+            }
+            else {
+                animationIndex = PlayerAnimation::SLIDE;
+            }
+        }
+    }
+    else {
+        if (body.velocity.y < 0.0f) {
+            animationIndex = PlayerAnimation::JUMP;
+        }
+        else {
+            animationIndex = PlayerAnimation::FALL;
+        }
+    }
+
+    localPlayer.spriteAnimationDirty =
+        SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)animationIndex);
+}
+
+bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
+    float deltaTime = gameTime.getDeltaTime();
+
+    glm::vec2 &movement = playerData.movement;
+    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
+    PositionComponent &position = *playerData.position;
+    BodyComponent &body = *playerData.body;
+    SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
+
+    // Check input
+    if (!client->clientInput.modifyBlock.pressed) {
+        return false;
+    }
+
+    // Get center and forward blocks
+    glm::vec2 playerCenter = position.position + body.size * 0.5f;
+    glm::ivec2 centerBlockPosition = glm::floor(playerCenter);
+
+    glm::ivec2 forwardBlockPosition;
+
+    if (movement.y == 0.0f) {
+        int facingSign = spriteFlip.flipX ? -1 : 1;
+        forwardBlockPosition = { centerBlockPosition.x + facingSign, centerBlockPosition.y };
+    }
+    else {
+        forwardBlockPosition = { centerBlockPosition.x, centerBlockPosition.y + (int)movement.y };
+    }
+
+    BlockData *centerBlockData = BlockChunk::getWorldBlock(scene->world.map, centerBlockPosition);
+    BlockData *forwardBlockData = BlockChunk::getWorldBlock(scene->world.map, forwardBlockPosition);
+
+    // Determine if placing, breaking, or neither
+    bool placing;
+
+    if (forwardBlockData == nullptr) {
+        if (centerBlockData == nullptr) {
+            return false;
+        }
+
+        placing = true;
+    }
+    else if (centerBlockData == nullptr) {
+        if (forwardBlockData == nullptr) {
+            return false;
+        }
+
+        placing = false;
+    }
+    else {
+        placing = forwardBlockData->frontIndex == 0;
+    }
+
+    // TODO: Block particles
+    // Apply change to chunk
+    int chunkIndex;
+
+    if (placing) {
+        // TODO: Check neighbours
+        centerBlockData->frontIndex = 1;
+        chunkIndex = BlockChunk::getChunkIndex(centerBlockPosition.x);
+    }
+    else {
+        forwardBlockData->frontIndex = 0;
+        chunkIndex = BlockChunk::getChunkIndex(forwardBlockPosition.x);
+    }
+
+    // Update chunk mesh
+    BlockChunk *chunk = scene->world.map.getChunk(chunkIndex);
+    scene->worldRenderer.map.createMesh(scene->world, *chunk);
+    
+    // Move player
+    // TODO: Disable body
+    glm::vec2 positionOffset = glm::vec2(0.5f) - body.size * 0.5f;
+    position.position = glm::vec2(forwardBlockPosition) + positionOffset;
+
+    body.velocity = { 0.0f, 0.0f };
+
+    // Reset timer
+    localPlayer.blockTime = maxBlockTime;
+
+    return true;
+}
 
 void LocalPlayerSystem::update(World &world) {
     float deltaTime = gameTime.getDeltaTime();
@@ -31,92 +214,18 @@ void LocalPlayerSystem::update(World &world) {
         SpriteAnimatorComponent>();
 
     for (auto [entity, localPlayer, position, body, sprite, spriteFlip, spriteAnimation, spriteAnimator] : view.each()) {
-        // Flip sprite
-        if (movement.x != 0.0f) {
-            spriteFlip.flipX = movement.x < 0.0f;
-        }
+        LocalPlayerData playerData = { movement, &localPlayer, &position, &body, &sprite, &spriteFlip, &spriteAnimation, &spriteAnimator };
 
-        // Animate
-        PlayerAnimation animationIndex;
+        animate(playerData);
 
-        if (body.isOnFloor) {
-            if (body.velocity.x == 0.0f || movement.x == 0.0f) {
-                animationIndex = PlayerAnimation::IDLE;
-            }
-            else {
-                if (glm::sign(body.velocity.x) == movement.x) {
-                    animationIndex = PlayerAnimation::WALK;
-                }
-                else {
-                    animationIndex = PlayerAnimation::SLIDE;
-                }
+        if (localPlayer.blockTime == 0.0f) {
+            if (!tryModifyBlock(playerData)) {
+                move(playerData);
             }
         }
         else {
-            if (body.velocity.y < 0.0f) {
-                animationIndex = PlayerAnimation::JUMP;
-            }
-            else {
-                animationIndex = PlayerAnimation::FALL;
-            }
+            localPlayer.blockTime = glm::max(0.0f, localPlayer.blockTime - deltaTime);
         }
-
-        localPlayer.spriteAnimationDirty = SpriteAnimatorSystem::playAnimation(spriteAnimator, spriteAnimation, (int)animationIndex);
-
-        // Move horizontally, friction only on the ground
-        if (body.isOnFloor || movement.x != 0.0f) {
-            Direction::targetAxis(body.velocity.x, movement.x * speed, acceleration * deltaTime);
-        }
-
-        // Update jump timer, allowing early jumps
-        if (client->clientInput.jump.justPressed()) {
-            localPlayer.jumpTime = maxJumpTime;
-        }
-        else {
-            localPlayer.jumpTime = glm::max(0.0f, localPlayer.jumpTime - deltaTime);
-        }
-
-        // Update floor timer, allowing late jumps
-        if (body.isOnFloor) {
-            localPlayer.floorTime = maxFloorTime;
-        }
-        else {
-            localPlayer.floorTime = glm::max(0.0f, localPlayer.floorTime - deltaTime);
-        }
-
-        bool canJump = localPlayer.floorTime > 0.0f;
-
-        if (canJump) {
-            // Jump
-            if (localPlayer.jumpTime > 0.0f) {
-                body.velocity.y = -jumpImpulse;
-
-                localPlayer.jumpStopped = false;
-                localPlayer.floorTime = 0.0f;
-                localPlayer.jumpTime = 0.0f;
-            }
-        }
-        else {
-            // Stop jump on release
-            if (!localPlayer.jumpStopped &&
-                body.velocity.y < 0.0f &&
-                !client->clientInput.jump.pressed) {
-                
-                body.velocity.y *= jumpStop;
-                localPlayer.jumpStopped = true;
-            }
-        }
-
-        // Fall
-        body.velocity.y += gravity * deltaTime;
-
-        // TODO: Make generic position changed flag
-        // Update last position, used for packet efficiency
-        localPlayer.positionDirty = position.position != localPlayer.lastPosition;
-        localPlayer.lastPosition = position.position;
-
-        localPlayer.spriteFlipDirty = spriteFlip.flipX != localPlayer.lastSpriteFlip;
-        localPlayer.lastSpriteFlip = spriteFlip.flipX;
     }
 }
 
@@ -132,4 +241,5 @@ LocalPlayerSystem::LocalPlayerSystem() {
     jumpStop = 0.55f;
     maxFloorTime = 0.1f;
     maxJumpTime = 0.1f;
+    maxBlockTime = 0.3f;
 }
