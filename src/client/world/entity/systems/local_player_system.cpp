@@ -113,6 +113,19 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
 }
 
 bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
+    // Check input
+    bool onFrontLayer;
+
+    if (client->clientInput.modifyBlockFront.pressed) {
+        onFrontLayer = true;
+    }
+    else if (client->clientInput.modifyBlockBack.pressed) {
+        onFrontLayer = false;
+    }
+    else {
+        return false;
+    }
+
     float deltaTime = gameTime.getDeltaTime();
 
     glm::vec2 &movement = playerData.movement;
@@ -120,11 +133,6 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
     PositionComponent &position = *playerData.position;
     BodyComponent &body = *playerData.body;
     SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
-
-    // Check input
-    if (!client->clientInput.modifyBlock.pressed) {
-        return false;
-    }
 
     // Get center and forward blocks
     glm::vec2 playerCenter = position.position + body.size * 0.5f;
@@ -143,40 +151,64 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
     BlockData *centerBlockData = BlockChunk::getWorldBlock(scene->world.map, centerBlockPosition);
     BlockData *forwardBlockData = BlockChunk::getWorldBlock(scene->world.map, forwardBlockPosition);
 
-    // Determine if placing, breaking, or neither
-    bool placing;
+    int chunkIndex;
 
-    if (forwardBlockData == nullptr) {
+    if (onFrontLayer) {
+        // Determine if placing, breaking, or neither
+        bool placing;
+
+        if (forwardBlockData == nullptr) {
+            if (centerBlockData == nullptr) {
+                return false;
+            }
+
+            placing = true;
+        }
+        else if (centerBlockData == nullptr) {
+            if (forwardBlockData == nullptr) {
+                return false;
+            }
+
+            placing = false;
+        }
+        else {
+            placing = forwardBlockData->frontIndex == 0;
+        }
+
+        if (placing) {
+            // TODO: Check neighbours and other bodies
+            centerBlockData->frontIndex = 1;
+            chunkIndex = BlockChunk::getChunkIndex(centerBlockPosition.x);
+        }
+        else {
+            forwardBlockData->frontIndex = 0;
+            chunkIndex = BlockChunk::getChunkIndex(forwardBlockPosition.x);
+        }
+    }
+    else {
+        // Check block exists
         if (centerBlockData == nullptr) {
             return false;
         }
 
-        placing = true;
-    }
-    else if (centerBlockData == nullptr) {
-        if (forwardBlockData == nullptr) {
-            return false;
+        // Check for block in front
+        if (forwardBlockData != nullptr) {
+            if (forwardBlockData->frontIndex != 0) {
+                return false;
+            }
         }
 
-        placing = false;
-    }
-    else {
-        placing = forwardBlockData->frontIndex == 0;
+        if (centerBlockData->backIndex == 0) {
+            centerBlockData->backIndex = 1;
+        }
+        else {
+            centerBlockData->backIndex = 0;
+        }
+    
+        chunkIndex = BlockChunk::getChunkIndex(centerBlockPosition.x);
     }
 
     // TODO: Block particles
-    // Apply change to chunk
-    int chunkIndex;
-
-    if (placing) {
-        // TODO: Check neighbours
-        centerBlockData->frontIndex = 1;
-        chunkIndex = BlockChunk::getChunkIndex(centerBlockPosition.x);
-    }
-    else {
-        forwardBlockData->frontIndex = 0;
-        chunkIndex = BlockChunk::getChunkIndex(forwardBlockPosition.x);
-    }
 
     // Update chunk mesh
     BlockChunk *chunk = scene->world.map.getChunk(chunkIndex);

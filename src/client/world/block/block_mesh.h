@@ -4,10 +4,13 @@
 #include "client/client.h"
 
 namespace bf {
+    // TODO: Sections
     class BlockMesh : public BlockMapElement {
     public:
         SpriteMesh frontMesh, backMesh;
 
-        inline BlockMesh(int mapIndex) : BlockMapElement(mapIndex), frontMesh(client->spriteRenderer), backMesh(client->spriteRenderer) {}
+        inline BlockMesh(int mapIndex) : BlockMapElement(mapIndex),
+            frontMesh(client->spriteRenderer),
+            backMesh(client->spriteRenderer) {}
     };
 }
