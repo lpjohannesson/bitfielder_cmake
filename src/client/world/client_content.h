@@ -4,7 +4,7 @@
 #include "world/content.h"
 #include "entity/systems/sprite_animator_system.h"
 #include "entity/systems/local_player_system.h"
-#include "block/renderers/basic_block_renderer.h"
+#include "block/renderers/auto_block_renderer.h"
 
 namespace bf {
     class WorldScene;
@@ -20,7 +20,7 @@ namespace bf {
         SpriteAnimatorSystem spriteAnimatorSystem;
         LocalPlayerSystem localPlayerSystem;
 
-        BasicBlockRenderer testBlockRenderer;
+        AutoBlockRenderer testBlockRenderer;
 
         entt::entity player;
 

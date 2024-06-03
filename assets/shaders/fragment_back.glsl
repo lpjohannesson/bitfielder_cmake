@@ -15,9 +15,9 @@ void main() {
     }
 
     if (texture(fShadowTexture, fPosition).r > 0.0) {
-        fColor.rgb = color.rgb - 0.5;
+        fColor.rgb = color.rgb - 0.4;
     }
     else {
-        fColor.rgb = color.rgb - 0.3;
+        fColor.rgb = color.rgb - 0.2;
     }
 }

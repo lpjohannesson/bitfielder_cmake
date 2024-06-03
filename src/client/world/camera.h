@@ -6,7 +6,7 @@ namespace bf {
 
     struct CameraPlayerInfo {
         glm::vec2 position;
-        bool isOnFloor;
+        bool isOnFloor, isModifyingBlock;
     };
 
     class Camera {
@@ -18,7 +18,7 @@ namespace bf {
     public:
         inline glm::mat4 getTransform() const { return transform; }
 
-        float dragDistanceX, offsetSpeedX, maxOffsetX, panSpeedY;
+        float dragDistanceX, offsetSpeedX, maxOffsetX, panSpeedY, blockPanSpeedY;
 
         glm::vec2 position{}, offset{};
         float targetY;

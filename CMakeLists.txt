@@ -54,6 +54,7 @@ add_executable(client
 
     src/client/world/block/block_map_renderer.cpp
     src/client/world/block/renderers/basic_block_renderer.cpp
+    src/client/world/block/renderers/auto_block_renderer.cpp
 
     src/client/world/entity/entity_renderer.cpp
 

@@ -11,7 +11,7 @@ void SpriteFrames::loadFrames(Box2 uvBox, glm::ivec2 frameCounts) {
         for (int x = 0; x < frameCounts.x; x++) {
             glm::vec2 position = { x, y };
 
-            frame.start = uvBox.start.x + frame.size * position;
+            frame.start = uvBox.start + frame.size * position;
             frames.push_back(frame);
         }
     }

@@ -1,8 +1,10 @@
 #include "local_player_system.h"
+#include <glm/gtx/easing.hpp>
 #include "world/entity/systems/entity_system_impl.h"
 #include "client/scenes/world_scene.h"
 #include "core/game_time.h"
 #include "core/direction.h"
+#include <iostream>
 
 using namespace bf;
 
@@ -23,16 +25,10 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
     if (client->clientInput.jump.justPressed()) {
         localPlayer.jumpTime = maxJumpTime;
     }
-    else {
-        localPlayer.jumpTime = glm::max(0.0f, localPlayer.jumpTime - deltaTime);
-    }
 
     // Update floor timer, allowing late jumps
     if (body.isOnFloor) {
         localPlayer.floorTime = maxFloorTime;
-    }
-    else {
-        localPlayer.floorTime = glm::max(0.0f, localPlayer.floorTime - deltaTime);
     }
 
     bool canJump = localPlayer.floorTime > 0.0f;
@@ -169,6 +165,10 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
                 return false;
             }
 
+            if (forwardBlockData->frontIndex == 0) {
+                return false;
+            }
+
             placing = false;
         }
         else {
@@ -214,15 +214,19 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
     BlockChunk *chunk = scene->world.map.getChunk(chunkIndex);
     scene->worldRenderer.map.createMesh(scene->world, *chunk);
     
-    // Move player
     // TODO: Disable body
-    glm::vec2 positionOffset = glm::vec2(0.5f) - body.size * 0.5f;
-    position.position = glm::vec2(forwardBlockPosition) + positionOffset;
-
     body.velocity = { 0.0f, 0.0f };
 
-    // Reset timer
+    // Reset timers
     localPlayer.blockTime = maxBlockTime;
+    localPlayer.blockTweenTime = maxBlockTweenTime;
+
+    // Set up movement tween
+    glm::vec2 positionOffset = glm::vec2(0.5f) - body.size * 0.5f;
+    glm::vec2 endPosition = glm::vec2(forwardBlockPosition) + positionOffset;
+
+    localPlayer.blockTweenStart = position.position;
+    localPlayer.blockTweenEnd = endPosition;
 
     return true;
 }
@@ -257,7 +261,19 @@ void LocalPlayerSystem::update(World &world) {
         }
         else {
             localPlayer.blockTime = glm::max(0.0f, localPlayer.blockTime - deltaTime);
+
+            // Apply block tween
+            if (localPlayer.blockTweenTime > 0.0f) {
+                localPlayer.blockTweenTime = glm::max(0.0f, localPlayer.blockTweenTime - deltaTime);
+
+                float blockTweenProgress = glm::quadraticEaseOut(1.0f - localPlayer.blockTweenTime / maxBlockTweenTime);
+                position.position = glm::lerp(localPlayer.blockTweenStart, localPlayer.blockTweenEnd, blockTweenProgress);
+            }
         }
+
+        // Update timers
+        localPlayer.floorTime = glm::max(0.0f, localPlayer.floorTime - deltaTime);
+        localPlayer.jumpTime = glm::max(0.0f, localPlayer.jumpTime - deltaTime);
     }
 }
 
@@ -274,4 +290,5 @@ LocalPlayerSystem::LocalPlayerSystem() {
     maxFloorTime = 0.1f;
     maxJumpTime = 0.1f;
     maxBlockTime = 0.3f;
+    maxBlockTweenTime = 0.15f;
 }

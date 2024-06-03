@@ -9,10 +9,11 @@ CameraPlayerInfo Camera::getPlayerInfo(const WorldScene &scene) {
     const entt::registry &entityRegistry = scene.world.entities.registry;
     entt::entity player = scene.clientContent.player;
 
+    LocalPlayerComponent localPlayer = entityRegistry.get<LocalPlayerComponent>(player);
     glm::vec2 position = entityRegistry.get<PositionComponent>(player).position;
     BodyComponent body = entityRegistry.get<BodyComponent>(player);
 
-    return { position + body.size * 0.5f, body.isOnFloor };
+    return { position + body.size * 0.5f, body.isOnFloor, localPlayer.blockTime > 0.0f };
 }
 
 void Camera::update(WorldScene &scene) {
@@ -28,17 +29,23 @@ void Camera::update(WorldScene &scene) {
     position.x = dragX;
 
     // Camera Y
-    if (position.y < playerInfo.position.y) {
-        // Always pan down
-        position.y = targetY = playerInfo.position.y;
+    if (playerInfo.isModifyingBlock) {
+        targetY = playerInfo.position.y;
+        Direction::targetAxis(position.y, targetY, blockPanSpeedY * gameTime.getDeltaTime());
     }
     else {
-        // Pan up if on floor
-        if (playerInfo.isOnFloor) {
-            targetY = playerInfo.position.y;
+        if (position.y < playerInfo.position.y) {
+            // Always pan down
+            position.y = targetY = playerInfo.position.y;
         }
+        else {
+            // Pan up if on floor
+            if (playerInfo.isOnFloor) {
+                targetY = playerInfo.position.y;
+            }
 
-        Direction::targetAxis(position.y, targetY, panSpeedY * gameTime.getDeltaTime());
+            Direction::targetAxis(position.y, targetY, panSpeedY * gameTime.getDeltaTime());
+        }
     }
 
     transform = glm::translate(glm::mat4(1.0f), glm::vec3(-(position + offset), 0.0f));
@@ -54,4 +61,5 @@ Camera::Camera() {
     offsetSpeedX = 0.5f;
     maxOffsetX = 2.5f;
     panSpeedY = 8.0f;
+    blockPanSpeedY = 6.0f;
 }

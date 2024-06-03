@@ -66,7 +66,7 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	// Create test block renderer
     testBlockRenderer.sprite.box.size = glm::vec2(1.0f);
-    testBlockRenderer.sprite.uvBox = worldRenderer.textureAtlas.getSection("assets/textures/tile.png").uvBox;
+    testBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/tile.png").uvBox);
 
     world.blocks.registry.emplace<BlockRendererComponent>(world.content.testBlock, BlockRendererComponent { &testBlockRenderer });
 

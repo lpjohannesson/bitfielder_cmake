@@ -30,7 +30,7 @@ namespace bf {
         bool tryModifyBlock(LocalPlayerData &playerData);
 
     public:
-        float speed, acceleration, gravity, jumpImpulse, jumpStop, maxFloorTime, maxJumpTime, maxBlockTime;
+        float speed, acceleration, gravity, jumpImpulse, jumpStop, maxFloorTime, maxJumpTime, maxBlockTime, maxBlockTweenTime;
         WorldScene *scene;
 
         void loadContent(WorldScene &scene);
