@@ -20,6 +20,8 @@ namespace bf {
 
 		ClientContent clientContent;
 
+		void updateBlock(glm::ivec2 position);
+
 		void writePlayerPosition();
 		void writePlayerSpriteAnimation();
 		void writePlayerSpriteFlip();

@@ -9,5 +9,6 @@ void BlockMapGenerator::generateChunk(World &world, BlockChunk &chunk) {
         chunk.getBlock({ x, 14 })->frontIndex = 2;
         chunk.getBlock({ x, 13 })->frontIndex = 3;
         chunk.getBlock({ x, 12 })->frontIndex = 4;
+        chunk.getBlock({ x, 11 })->frontIndex = 5;
     }
 }

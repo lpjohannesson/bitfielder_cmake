@@ -17,6 +17,6 @@ namespace bf {
         BlockMap<BlockMesh> map;
         SpriteBatch frontSpriteBatch, backSpriteBatch;
 
-        void createMesh(const World &world, BlockChunk &chunk);
+        void createMesh(const World &world, const BlockChunk &chunk);
     };
 }

@@ -21,6 +21,7 @@ Content::Content(World &world) {
     // Create blocks
     airBlock = world.blocks.createBlock();
     dirtBlock = world.blocks.createBlock();
+    grassBlock = world.blocks.createBlock();
     woodBlock = world.blocks.createBlock();
     goldBlock = world.blocks.createBlock();
     woolBlock = world.blocks.createBlock();

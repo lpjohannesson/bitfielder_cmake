@@ -18,7 +18,7 @@ void BlockMapRenderer::renderBlock(const World &world, const BlockRenderData &re
     blockRenderer->render(renderData);
 }
 
-void BlockMapRenderer::createMesh(const World &world, BlockChunk &chunk) {
+void BlockMapRenderer::createMesh(const World &world, const BlockChunk &chunk) {
     int mapIndex = chunk.getMapIndex();
     int blockStartX = mapIndex * BlockChunk::SIZE.x;
 

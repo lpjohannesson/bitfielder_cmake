@@ -9,6 +9,22 @@
 
 using namespace bf;
 
+void WorldScene::updateBlock(glm::ivec2 position) {
+	// TODO: Block particles
+
+	// Get sample including neighbours
+	BlockSample<BlockChunk> blockSample(world.map, position.x - 1, position.x + 1);
+
+	// Update meshes
+	for (BlockChunk *chunk : blockSample.chunks) {
+		if (chunk == nullptr) {
+			continue;
+		}
+
+		worldRenderer.map.createMesh(world, *chunk);
+	}
+}
+
 void WorldScene::writePlayerPosition() {
 	Packet packet;
 
@@ -59,6 +75,19 @@ void WorldScene::readBlockChunk(Packet &packet) {
 
 	// Create mesh
 	worldRenderer.map.createMesh(world, chunk);
+
+	// Update neighbour meshes
+	BlockChunk
+		*leftChunk = world.map.getChunk(chunkIndex - 1),
+		*rightChunk = world.map.getChunk(chunkIndex + 1);
+	
+	if (leftChunk != nullptr) {
+		worldRenderer.map.createMesh(world, *leftChunk);
+	}
+
+	if (rightChunk != nullptr) {
+		worldRenderer.map.createMesh(world, *rightChunk);
+	}
 }
 
 void WorldScene::readDespawnEntity(Packet &packet) {

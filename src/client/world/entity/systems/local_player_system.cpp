@@ -147,7 +147,7 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
     BlockData *centerBlockData = BlockChunk::getWorldBlock(scene->world.map, centerBlockPosition);
     BlockData *forwardBlockData = BlockChunk::getWorldBlock(scene->world.map, forwardBlockPosition);
 
-    int chunkIndex;
+    glm::ivec2 *blockPosition;
 
     if (onFrontLayer) {
         // Determine if placing, breaking, or neither
@@ -178,11 +178,11 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
         if (placing) {
             // TODO: Check neighbours and other bodies
             centerBlockData->frontIndex = 1;
-            chunkIndex = BlockChunk::getChunkIndex(centerBlockPosition.x);
+            blockPosition = &centerBlockPosition;
         }
         else {
             forwardBlockData->frontIndex = 0;
-            chunkIndex = BlockChunk::getChunkIndex(forwardBlockPosition.x);
+            blockPosition = &forwardBlockPosition;
         }
     }
     else {
@@ -205,14 +205,10 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
             centerBlockData->backIndex = 0;
         }
     
-        chunkIndex = BlockChunk::getChunkIndex(centerBlockPosition.x);
+        blockPosition = &centerBlockPosition;
     }
 
-    // TODO: Block particles
-
-    // Update chunk mesh
-    BlockChunk *chunk = scene->world.map.getChunk(chunkIndex);
-    scene->worldRenderer.map.createMesh(scene->world, *chunk);
+    scene->updateBlock(*blockPosition);
     
     // TODO: Disable body
     body.velocity = { 0.0f, 0.0f };

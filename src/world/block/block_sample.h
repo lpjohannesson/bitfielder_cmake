@@ -8,11 +8,9 @@ namespace bf {
 	class BlockSample {
 	private:
 		int chunkStart;
-		std::vector<T*> chunks;
 
 	public:
-		inline int getChunkStart() const { return chunkStart; }
-		inline int getChunkCount() const { return chunks.size(); }
+		std::vector<T*> chunks;
 
 		inline T *getChunk(int chunkIndex) const {
 			return chunks[chunkIndex - chunkStart];

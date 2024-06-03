@@ -43,8 +43,8 @@ void WorldRenderer::render(const WorldScene &scene) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    for (const auto &[chunkIndex, chunk] : map.map.chunks) {
-        client->spriteRenderer.renderMesh(chunk.frontMesh, shadowSpriteProgram);
+    for (const auto &[chunkIndex, blockMesh] : map.map.chunks) {
+        client->spriteRenderer.renderMesh(blockMesh.frontMesh, shadowSpriteProgram);
     }
 
     client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, shadowSpriteProgram);
@@ -54,9 +54,9 @@ void WorldRenderer::render(const WorldScene &scene) {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     // TODO: Only render visible chunks
-    for (const auto &[chunkIndex, chunk] : map.map.chunks) {
-        client->spriteRenderer.renderMesh(chunk.backMesh, backSpriteProgram);
-        client->spriteRenderer.renderMesh(chunk.frontMesh, frontSpriteProgram);
+    for (const auto &[chunkIndex, blockMesh] : map.map.chunks) {
+        client->spriteRenderer.renderMesh(blockMesh.backMesh, backSpriteProgram);
+        client->spriteRenderer.renderMesh(blockMesh.frontMesh, frontSpriteProgram);
     }
 
     client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, frontSpriteProgram);

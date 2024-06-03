@@ -48,6 +48,7 @@ ClientContent::ClientContent(WorldScene &scene) {
     std::vector<std::string> texturePaths = {
 		"assets/textures/player.png",
 		"assets/textures/blocks/dirt.png",
+		"assets/textures/blocks/grass.png",
 		"assets/textures/blocks/wood.png",
 		"assets/textures/blocks/gold.png",
 		"assets/textures/blocks/wool.png",
@@ -67,9 +68,13 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	localPlayerSystem.loadContent(scene);
 
+	// TODO: JSON block renderer files
 	// Create block renderers
     dirtBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/dirt.png").uvBox);
     world.blocks.registry.emplace<BlockRendererComponent>(world.content.dirtBlock, BlockRendererComponent { &dirtBlockRenderer });
+
+	grassBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/grass.png").uvBox);
+    world.blocks.registry.emplace<BlockRendererComponent>(world.content.grassBlock, BlockRendererComponent { &grassBlockRenderer });
 
 	woodBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/wood.png").uvBox);
     world.blocks.registry.emplace<BlockRendererComponent>(world.content.woodBlock, BlockRendererComponent { &woodBlockRenderer });
