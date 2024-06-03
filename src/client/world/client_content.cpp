@@ -47,7 +47,10 @@ ClientContent::ClientContent(WorldScene &scene) {
 	// Load texture atlas
     std::vector<std::string> texturePaths = {
 		"assets/textures/player.png",
-		"assets/textures/tile.png",
+		"assets/textures/blocks/dirt.png",
+		"assets/textures/blocks/wood.png",
+		"assets/textures/blocks/gold.png",
+		"assets/textures/blocks/wool.png",
 	};
 
 	worldRenderer.textureAtlas.loadAtlas(texturePaths);
@@ -64,11 +67,18 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	localPlayerSystem.loadContent(scene);
 
-	// Create test block renderer
-    testBlockRenderer.sprite.box.size = glm::vec2(1.0f);
-    testBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/tile.png").uvBox);
+	// Create block renderers
+    dirtBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/dirt.png").uvBox);
+    world.blocks.registry.emplace<BlockRendererComponent>(world.content.dirtBlock, BlockRendererComponent { &dirtBlockRenderer });
 
-    world.blocks.registry.emplace<BlockRendererComponent>(world.content.testBlock, BlockRendererComponent { &testBlockRenderer });
+	woodBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/wood.png").uvBox);
+    world.blocks.registry.emplace<BlockRendererComponent>(world.content.woodBlock, BlockRendererComponent { &woodBlockRenderer });
+
+	goldBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/gold.png").uvBox);
+    world.blocks.registry.emplace<BlockRendererComponent>(world.content.goldBlock, BlockRendererComponent { &goldBlockRenderer });
+
+	woolBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/wool.png").uvBox);
+    world.blocks.registry.emplace<BlockRendererComponent>(world.content.woolBlock, BlockRendererComponent { &woolBlockRenderer });
 
 	// TODO: Recieve local player ID
 	player = world.entities.spawnEntity(-1);

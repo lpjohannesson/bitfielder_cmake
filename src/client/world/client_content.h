@@ -20,7 +20,7 @@ namespace bf {
         SpriteAnimatorSystem spriteAnimatorSystem;
         LocalPlayerSystem localPlayerSystem;
 
-        AutoBlockRenderer testBlockRenderer;
+        AutoBlockRenderer dirtBlockRenderer, woodBlockRenderer, goldBlockRenderer, woolBlockRenderer;
 
         entt::entity player;
 

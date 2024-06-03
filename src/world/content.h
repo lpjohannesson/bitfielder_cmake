@@ -16,7 +16,7 @@ namespace bf {
     public:
         BodySystem bodySystem;
 
-        entt::entity airBlock, testBlock;
+        entt::entity airBlock, dirtBlock, woodBlock, goldBlock, woolBlock;
 
         void createPlayer(entt::entity player, World &world, const PlayerSpawnProperties &spawnProperties);
 

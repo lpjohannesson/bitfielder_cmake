@@ -128,5 +128,6 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 }
 
 TextureSection TextureAtlas::getSection(const std::string path) const {
+	// TODO: Invalid textures
 	return sections.at(path);
 }
