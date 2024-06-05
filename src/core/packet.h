@@ -17,6 +17,9 @@ namespace bf {
         Packet& operator<<(int value);
         Packet& operator>>(int &value);
 
+        Packet& operator<<(glm::ivec2 value);
+        Packet& operator>>(glm::ivec2 &value);
+
         Packet& operator<<(float value);
         Packet& operator>>(float &value);
 

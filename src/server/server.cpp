@@ -56,6 +56,14 @@ void Server::writeBlockChunk(ClientConnection *client, BlockChunk *chunk) {
     client->writePacket(packet);
 }
 
+void Server::writeReplaceBlock(ClientConnection *client, glm::ivec2 position, bool onFrontLayer, int blockIndex) {
+    Packet packet;
+
+    packet << (int)ServerPacket::REPLACE_BLOCK << position << onFrontLayer << blockIndex;
+
+    client->writePacket(packet);
+}
+
 void Server::writeDespawnEntity(ClientConnection *client, int entityID) {
     Packet packet;
 
@@ -154,6 +162,36 @@ void Server::readPlayerSpriteFlip(ClientConnection *client, Packet &packet) {
     }
 }
 
+void Server::readReplaceBlock(ClientConnection *client, Packet &packet) {
+    // TODO: Validity checks
+    glm::ivec2 position;
+    bool onFrontLayer;
+    int blockIndex;
+
+    packet >> position >> onFrontLayer >> blockIndex;
+
+    BlockData *blockData = BlockChunk::getWorldBlock(world.map, position);
+
+    if (blockData == nullptr) {
+        return;
+    }
+
+    if (onFrontLayer) {
+        blockData->frontIndex = blockIndex;
+    }
+    else {
+        blockData->backIndex = blockIndex;
+    }
+
+    for (ClientConnection *otherClient : clients) {
+        if (client == otherClient) {
+            continue;
+        }
+
+        writeReplaceBlock(otherClient, position, onFrontLayer, blockIndex);
+    }
+}
+
 void Server::readPacket(ClientConnection *client, Packet &packet) {
     int packetID;
 	packet >> packetID;
@@ -169,6 +207,10 @@ void Server::readPacket(ClientConnection *client, Packet &packet) {
 
     case ClientPacket::PLAYER_SPRITE_FLIP:
         readPlayerSpriteFlip(client, packet);
+        break;
+
+    case ClientPacket::REPLACE_BLOCK:
+        readReplaceBlock(client, packet);
         break;
 	}
 }

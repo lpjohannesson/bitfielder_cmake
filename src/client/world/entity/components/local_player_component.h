@@ -6,8 +6,6 @@ namespace bf {
 		glm::vec2 lastPosition{};
 		bool lastSpriteFlip = false;
 
-		bool positionDirty = false, spriteAnimationDirty = false, spriteFlipDirty = false;
-
 		bool jumpStopped = false;
 		float floorTime = 0.0f, jumpTime = 0.0f, blockTime = 0.0f, blockTweenTime = 0.0f;
 		glm::vec2 blockTweenStart, blockTweenEnd;

@@ -18,6 +18,7 @@ namespace bf {
                 void removeClient(ClientConnection *client);
 
                 void writeBlockChunk(ClientConnection *client, BlockChunk *chunk);
+                void writeReplaceBlock(ClientConnection *client, glm::ivec2 position, bool onFrontLayer, int blockIndex);
                 void writeDespawnEntity(ClientConnection *client, int playerID);
                 void writeEntityPosition(ClientConnection *client, entt::entity entity);
                 void writeEntitySpriteAnimation(ClientConnection *client, entt::entity entity);
@@ -27,6 +28,7 @@ namespace bf {
                 void readPlayerPosition(ClientConnection *client, Packet &packet);
                 void readPlayerSpriteAnimation(ClientConnection *client, Packet &packet);
                 void readPlayerSpriteFlip(ClientConnection *client, Packet &packet);
+                void readReplaceBlock(ClientConnection *client, Packet &packet);
 
                 void readPacket(ClientConnection *client, Packet &packet);
 

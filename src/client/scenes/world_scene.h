@@ -30,10 +30,12 @@ namespace bf {
 		void writePlayerPosition();
 		void writePlayerSpriteAnimation();
 		void writePlayerSpriteFlip();
+		void writeReplaceBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData);
 
 		bool readEntityPacket(Packet &packet, entt::entity &entity);
 
 		void readBlockChunk(Packet &packet);
+		void readReplaceBlock(Packet &packet);
 		void readDespawnEntity(Packet &packet);
 		void readEntityPosition(Packet &packet);
 		void readEntitySpriteAnimation(Packet &packet);

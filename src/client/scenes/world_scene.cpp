@@ -95,6 +95,21 @@ void WorldScene::writePlayerSpriteFlip() {
 	server->writePacket(packet);
 }
 
+void WorldScene::writeReplaceBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData) {
+	Packet packet;
+
+	packet << (int)ClientPacket::REPLACE_BLOCK << position << onFrontLayer;
+
+	if (onFrontLayer) {
+		packet << (int)blockData->frontIndex;
+	}
+	else {
+		packet << (int)blockData->backIndex;
+	}
+
+	server->writePacket(packet);
+}
+
 bool WorldScene::readEntityPacket(Packet &packet, entt::entity &entity) {
 	int entityID;
 	packet >> entityID;
@@ -130,6 +145,27 @@ void WorldScene::readBlockChunk(Packet &packet) {
 
 	if (rightChunk != nullptr) {
 		worldRenderer.map.createMesh(world, *rightChunk);
+	}
+}
+
+void WorldScene::readReplaceBlock(Packet &packet) {
+	glm::ivec2 position;
+	bool onFrontLayer;
+	int blockIndex;
+
+	packet >> position >> onFrontLayer >> blockIndex;
+
+	BlockData *blockData = BlockChunk::getWorldBlock(world.map, position);
+
+	if (blockData == nullptr) {
+		return;
+	}
+
+	if (blockIndex == 0) {
+		destroyBlock(position, onFrontLayer, blockData);
+	}
+	else {
+		placeBlock(position, onFrontLayer, blockData, blockIndex);
 	}
 }
 
@@ -199,6 +235,10 @@ void WorldScene::readPacket(Packet &packet) {
 	case ServerPacket::BLOCK_CHUNK:
 		readBlockChunk(packet);
 		break;
+
+	case ServerPacket::REPLACE_BLOCK:
+		readReplaceBlock(packet);
+		break;
 	
 	case ServerPacket::DESPAWN_ENTITY:
 		readDespawnEntity(packet);
@@ -238,20 +278,6 @@ void WorldScene::update() {
 
 	world.update();
 	camera.update(*this);
-
-	LocalPlayerComponent &localPlayer = entityRegistry->get<LocalPlayerComponent>(clientContent.player);
-
-	if (localPlayer.positionDirty) {
-		writePlayerPosition();
-	}
-
-	if (localPlayer.spriteAnimationDirty) {
-		writePlayerSpriteAnimation();
-	}
-
-	if (localPlayer.spriteFlipDirty) {
-		writePlayerSpriteFlip();
-	}
 }
 
 void WorldScene::render() {

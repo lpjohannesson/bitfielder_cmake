@@ -53,6 +53,14 @@ Packet& Packet::operator>>(int &value) {
     return *this;
 }
 
+Packet& Packet::operator<<(glm::ivec2 value) {
+    return operator<<(value.x) << value.y;
+}
+
+Packet& Packet::operator>>(glm::ivec2 &value) {
+    return operator>>(value.x) >> value.y;
+}
+
 Packet& Packet::operator<<(float value) {
     write((char*)&value, sizeof(value));
 

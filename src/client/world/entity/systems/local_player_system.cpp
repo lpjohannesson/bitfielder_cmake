@@ -57,11 +57,6 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
 
     // Fall
     velocity.velocity.y += gravity * deltaTime;
-
-    // TODO: Make generic position changed flag
-    // Update last position, used for packet efficiency
-    localPlayer.positionDirty = position.position != localPlayer.lastPosition;
-    localPlayer.lastPosition = position.position;
 }
 
 void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
@@ -103,7 +98,10 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
         spriteFlip.flipX = movement.x < 0.0f;
     }
 
-    localPlayer.spriteFlipDirty = spriteFlip.flipX != localPlayer.lastSpriteFlip;
+    if (localPlayer.lastSpriteFlip != spriteFlip.flipX) {
+        scene->writePlayerSpriteFlip();
+    }
+
     localPlayer.lastSpriteFlip = spriteFlip.flipX;
 
     // Animate
@@ -131,8 +129,9 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
         }
     }
 
-    localPlayer.spriteAnimationDirty =
-        SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)animationIndex);
+    if (SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)animationIndex)) {
+        scene->writePlayerSpriteAnimation();
+    }
 }
 
 bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
@@ -232,12 +231,16 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
         blockData = centerBlockData;
     }
 
+    // Replace block
     if (placing) {
         scene->placeBlock(*blockPosition, onFrontLayer, blockData, localPlayer.selectedBlockIndex);
     }
     else {
         scene->destroyBlock(*blockPosition, onFrontLayer, blockData);
     }
+
+    // Send to server
+    scene->writeReplaceBlock(*blockPosition, onFrontLayer, blockData);
     
     // TODO: Disable body
     velocity.velocity = { 0.0f, 0.0f };
@@ -321,6 +324,15 @@ void LocalPlayerSystem::update(World &world) {
         // Update timers
         localPlayer.floorTime = glm::max(0.0f, localPlayer.floorTime - deltaTime);
         localPlayer.jumpTime = glm::max(0.0f, localPlayer.jumpTime - deltaTime);
+
+        // TODO: Make generic position changed flag
+        // Update last position, used for packet efficiency
+        
+        if (position.position != localPlayer.lastPosition) {
+            scene->writePlayerPosition();
+        }
+
+        localPlayer.lastPosition = position.position;
     }
 }
 
