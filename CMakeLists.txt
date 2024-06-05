@@ -5,6 +5,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 
 add_executable(client
     src/core/direction.cpp
+    src/core/color.cpp
     src/core/packet.cpp
     src/core/game_time.cpp
     src/core/file_loader.cpp

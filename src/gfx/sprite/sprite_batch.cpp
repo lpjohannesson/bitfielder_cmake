@@ -30,10 +30,10 @@ void SpriteBatch::uploadMesh(SpriteMesh &mesh) {
 		// Push vertices
 		int vertexStart = spriteIndex * 4;
 
-		vertices.push_back({ start, uvStart });
-		vertices.push_back({ { end.x, start.y }, { uvEnd.x, uvStart.y } });
-		vertices.push_back({ { start.x, end.y }, { uvStart.x, uvEnd.y } });
-		vertices.push_back({ end, uvEnd });
+		vertices.push_back({ start, uvStart, sprite.color });
+		vertices.push_back({ { end.x, start.y }, { uvEnd.x, uvStart.y }, sprite.color });
+		vertices.push_back({ { start.x, end.y }, { uvStart.x, uvEnd.y }, sprite.color });
+		vertices.push_back({ end, uvEnd, sprite.color });
 	}
 
 	// Upload mesh

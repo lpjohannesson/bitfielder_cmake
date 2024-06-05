@@ -1,7 +1,10 @@
 #version 330 core
 
+in vec2 fPosition;
 in vec2 fUV;
-out vec4 fColor;
+in vec4 fColor;
+
+out vec4 fOutColor;
 
 uniform sampler2D fTexture;
 
@@ -12,5 +15,5 @@ void main() {
         discard;
     }
 
-    fColor.r = 1.0;
+    fOutColor.r = 1.0;
 }

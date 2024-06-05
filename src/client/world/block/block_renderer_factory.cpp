@@ -6,6 +6,7 @@
 #include "components/block_renderer_component.h"
 #include "components/block_particle_component.h"
 #include "world/block/components/block_name_component.h"
+#include "core/color.h"
 
 using namespace bf;
 
@@ -70,6 +71,10 @@ BlockRenderer *BlockRendererFactory::createAutoBlockRenderer(const WorldScene &s
     AutoBlockRenderer *blockRenderer = new AutoBlockRenderer();
 
     blockRenderer->loadFrames(getBlockTexture(scene, value).uvBox);
+
+    if (value.HasMember("color")) {
+        blockRenderer->sprite.color = Color::parseHex(value["color"].GetString());
+    }
 
     return blockRenderer;
 }

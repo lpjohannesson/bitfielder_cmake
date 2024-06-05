@@ -1,7 +1,8 @@
 {
     "block": {
         "type": "auto",
-        "texture": "wool"
+        "texture": "wool",
+        "color": "ff5050"
     },
     "particle": "wool"
 }
