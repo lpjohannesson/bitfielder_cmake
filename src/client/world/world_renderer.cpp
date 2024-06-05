@@ -20,7 +20,6 @@ void WorldRenderer::updateSize(glm::ivec2 size, const WorldScene &scene) {
     glm::vec2 halfSize = glm::floor(glm::vec2(size) * 0.5f);
 
     windowTransform = glm::ortho(-halfSize.x, halfSize.x, halfSize.y, -halfSize.y);
-    windowTransform = glm::scale(windowTransform, glm::vec3(64.0f));
 
     shadowBuffer.updateSize(size);
 

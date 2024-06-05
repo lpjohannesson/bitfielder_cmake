@@ -227,6 +227,15 @@ void WorldScene::updateSize(glm::ivec2 size) {
 }
 
 void WorldScene::update() {
+	float zoomDirection = 
+        (float)client->clientInput.zoomIn.justPressed() -
+        (float)client->clientInput.zoomOut.justPressed();
+	
+	if (zoomDirection != 0.0f) {
+		camera.setZoom(glm::max(1.0f, camera.getZoom() + zoomDirection));
+		worldRenderer.updateTransforms(*this);
+	}
+
 	world.update();
 	camera.update(*this);
 
@@ -252,6 +261,7 @@ void WorldScene::render() {
 
 void WorldScene::start() {
 	gameTime.reset();
+	camera.setZoom(3.0f);
 
 	BlockRendererFactory::createRenderers(*this);
 

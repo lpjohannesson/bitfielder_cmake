@@ -16,6 +16,11 @@ CameraPlayerInfo Camera::getPlayerInfo(const WorldScene &scene) {
     return { position + body.size * 0.5f, body.isOnFloor, localPlayer.blockTime > 0.0f };
 }
 
+void Camera::setZoom(float zoom) {
+    this->zoom = zoom;
+    zoomTransform = glm::scale(glm::mat4(1.0f), glm::vec3(zoom * 16.0f));
+}
+
 void Camera::update(WorldScene &scene) {
     CameraPlayerInfo playerInfo = getPlayerInfo(scene);
 
@@ -48,7 +53,13 @@ void Camera::update(WorldScene &scene) {
         }
     }
 
-    transform = glm::translate(glm::mat4(1.0f), glm::vec3(-(position + offset), 0.0f));
+    // Round translation to avoid visual glitches
+    glm::vec2 translation = -(position + offset);
+
+    glm::vec2 windowSize = engine->getWindowSize();
+    translation = glm::floor(translation * windowSize) / windowSize;
+
+    transform = zoomTransform * glm::translate(glm::mat4(1.0f), glm::vec3(translation, 0.0f));
 }
 
 void Camera::start(WorldScene &scene) {

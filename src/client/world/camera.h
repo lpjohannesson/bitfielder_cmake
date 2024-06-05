@@ -11,17 +11,21 @@ namespace bf {
 
     class Camera {
     private:
+        float zoom = 1.0f;
+        glm::mat4 transform, zoomTransform;
+
         static CameraPlayerInfo getPlayerInfo(const WorldScene &scene);
 
-        glm::mat4 transform;
-
     public:
+        inline float getZoom() const { return zoom; }
         inline glm::mat4 getTransform() const { return transform; }
 
         float dragDistanceX, offsetSpeedX, maxOffsetX, panSpeedY, blockPanSpeedY;
-
+        
         glm::vec2 position{}, offset{};
         float targetY;
+
+        void setZoom(float zoom);
 
         void update(WorldScene &scene);
 

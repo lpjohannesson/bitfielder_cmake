@@ -14,10 +14,8 @@ namespace bf {
         glm::mat4 windowTransform, shadowTransform, viewTransform, shadowViewTransform;
         Box2 screenBox;
 
-        void updateTransforms(const WorldScene &scene);
-
     public:
-        Box2 getScreenBox() const { return screenBox; }
+        inline Box2 getScreenBox() const { return screenBox; }
 
         TextureAtlas textureAtlas;
 
@@ -27,6 +25,7 @@ namespace bf {
         BlockMapRenderer map;
         EntityRenderer entities;
 
+        void updateTransforms(const WorldScene &scene);
         void updateSize(glm::ivec2 size, const WorldScene &scene);
 
         void render(const WorldScene &scene);

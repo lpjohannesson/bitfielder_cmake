@@ -4,7 +4,12 @@
 namespace bf {
 	class ClientInput {
 	public:
-        InputAction up, down, left, right, jump, modifyBlockFront, modifyBlockBack, selectItemLeft, selectItemRight;
+        InputAction
+			up, down, left, right,
+			jump,
+			modifyBlockFront, modifyBlockBack, 
+			selectItemLeft, selectItemRight,
+			zoomIn, zoomOut;
 
         ClientInput();
 	};

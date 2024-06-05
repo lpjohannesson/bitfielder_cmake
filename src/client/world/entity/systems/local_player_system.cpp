@@ -68,7 +68,8 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
     LocalPlayerComponent &localPlayer = *playerData.localPlayer;
 
     int selectDirection = 
-        (int)client->clientInput.selectItemRight.justPressed() - (int)client->clientInput.selectItemLeft.justPressed();
+        (int)client->clientInput.selectItemRight.justPressed() -
+        (int)client->clientInput.selectItemLeft.justPressed();
     
     if (selectDirection == 0) {
         return;
