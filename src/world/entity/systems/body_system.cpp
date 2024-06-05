@@ -2,6 +2,8 @@
 #include "entity_system_impl.h"
 #include "core/game_time.h"
 #include "world/block/block_sample.h"
+#include "../components/position_component.h"
+#include "../components/velocity_component.h"
 
 using namespace bf;
 
@@ -55,7 +57,7 @@ using namespace bf;
     return true;
 
 #define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_X, BLOCK_Y, GET_COLLISION_FUNCTION)\
-    if (body.velocity.AXIS == 0.0f) {\
+    if (velocity.AXIS == 0.0f) {\
         /* Not moving */\
         return;\
     }\
@@ -68,7 +70,7 @@ using namespace bf;
     \
     mover = { position, body.size };\
     \
-    float endPosition = position.AXIS + body.velocity.AXIS * gameTime.getDeltaTime();\
+    float endPosition = position.AXIS + velocity.AXIS * gameTime.getDeltaTime();\
     bool collided = false;\
     \
     /* Collide blocks */\
@@ -76,7 +78,7 @@ using namespace bf;
     /* Find extents along axis */\
     int blockForwardStart, blockForwardEnd;\
     \
-    if (body.velocity.AXIS < 0.0f) {\
+    if (velocity.AXIS < 0.0f) {\
         blockForwardStart = glm::floor(position.AXIS);\
         blockForwardEnd = glm::floor(endPosition);\
     }\
@@ -150,34 +152,34 @@ bool BodySystem::getCollisionY(const BodyMovement &movement, float &endPosition)
     GET_COLLISION_AXIS(y, x)
 }
 
-void BodySystem::moveX(World &world, glm::vec2 &position, BodyComponent &body) {
+void BodySystem::moveX(World &world, glm::vec2 &position, glm::vec2 &velocity, BodyComponent &body) {
     MOVE_AXIS(x, y, blockForwardStart, blockForwardEnd, blockForward, blockSide, getCollisionX)
 
     if (collided) {
-        body.velocity.x = 0.0f;
+        velocity.x = 0.0f;
     }
 }
 
-void BodySystem::moveY(World &world, glm::vec2 &position, BodyComponent &body) {
+void BodySystem::moveY(World &world, glm::vec2 &position, glm::vec2 &velocity, BodyComponent &body) {
     body.isOnFloor = false;
 
     MOVE_AXIS(y, x, blockSideStart, blockSideEnd, blockSide, blockForward, getCollisionY)
 
     if (collided) {
-        if (body.velocity.y > 0.0f) {
+        if (velocity.y > 0.0f) {
             body.isOnFloor = true;
         }
 
-        body.velocity.y = 0.0f;
+        velocity.y = 0.0f;
     }
 }
 
 void BodySystem::update(World &world) {
-    auto view = world.entities.registry.view<PositionComponent, BodyComponent>();
+    auto view = world.entities.registry.view<PositionComponent, VelocityComponent, BodyComponent>();
 
-    for (auto [entity, position, body] : view.each()) {
+    for (auto [entity, position, velocity, body] : view.each()) {
         // TODO: Non-linear velocity
-        moveY(world, position.position, body);
-        moveX(world, position.position, body);
+        moveY(world, position.position, velocity.velocity, body);
+        moveX(world, position.position, velocity.velocity, body);
     }
 }

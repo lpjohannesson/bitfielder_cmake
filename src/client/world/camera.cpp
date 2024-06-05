@@ -54,6 +54,8 @@ void Camera::update(WorldScene &scene) {
 void Camera::start(WorldScene &scene) {
     position = getPlayerInfo(scene).position;
     targetY = position.y;
+
+    update(scene);
 }
 
 Camera::Camera() {

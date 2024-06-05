@@ -4,7 +4,10 @@
 #include "engine/engine.h"
 #include "core/packet_types.h"
 #include "core/game_time.h"
+#include "client/world/block/block_renderer_factory.h"
 #include "client/world/entity/components/local_player_component.h"
+#include "client/world/block/components/block_particle_component.h"
+#include "client/world/entity/systems/particle_system.h"
 #include "world/entity/components/sprite_flip_component.h"
 
 using namespace bf;
@@ -23,6 +26,46 @@ void WorldScene::updateBlock(glm::ivec2 position) {
 
 		worldRenderer.map.createMesh(world, *chunk);
 	}
+}
+
+void WorldScene::spawnBlockParticles(glm::vec2 position, entt::entity block) {
+	entt::registry &blockRegistry = world.blocks.registry;
+
+	if (!blockRegistry.all_of<BlockParticleComponent>(block)) {
+		return;
+	}
+
+	BlockParticleComponent blockParticle = blockRegistry.get<BlockParticleComponent>(block);
+	clientContent.particleSystem.spawnParticleExplosion(position + glm::vec2(0.5f), blockParticle.size, blockParticle.frames);
+}
+
+void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData, int blockIndex) {
+	if (onFrontLayer) {
+		blockData->frontIndex = blockIndex;
+	}
+	else {
+		blockData->backIndex = blockIndex;
+	}
+
+	updateBlock(position);
+}
+
+void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData) {
+	int blockIndex;
+
+	if (onFrontLayer) {
+		blockIndex = blockData->frontIndex;
+		blockData->frontIndex = 0;
+	}
+	else {
+		blockIndex = blockData->backIndex;
+		blockData->backIndex = 0;
+	}
+
+	entt::entity block = world.blocks.getBlock(blockIndex);
+	spawnBlockParticles(position, block);
+
+	updateBlock(position);
 }
 
 void WorldScene::writePlayerPosition() {
@@ -180,7 +223,7 @@ void WorldScene::readPacket(Packet &packet) {
 }
 
 void WorldScene::updateSize(glm::ivec2 size) {
-	worldRenderer.updateSize(size);
+	worldRenderer.updateSize(size, *this);
 }
 
 void WorldScene::update() {
@@ -209,11 +252,14 @@ void WorldScene::render() {
 
 void WorldScene::start() {
 	gameTime.reset();
+
+	BlockRendererFactory::createRenderers(*this);
+
 	camera.start(*this);
 }
 
 void WorldScene::end() {
-
+	BlockRendererFactory::destroyRenderers(*this);
 }
 
 WorldScene::WorldScene() : worldRenderer(*this), clientContent(*this) {

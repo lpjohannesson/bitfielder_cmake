@@ -4,7 +4,7 @@
 #include "world/content.h"
 #include "entity/systems/sprite_animator_system.h"
 #include "entity/systems/local_player_system.h"
-#include "block/renderers/auto_block_renderer.h"
+#include "entity/systems/particle_system.h"
 
 namespace bf {
     class WorldScene;
@@ -19,8 +19,7 @@ namespace bf {
 
         SpriteAnimatorSystem spriteAnimatorSystem;
         LocalPlayerSystem localPlayerSystem;
-
-        AutoBlockRenderer dirtBlockRenderer, grassBlockRenderer, woodBlockRenderer, goldBlockRenderer, woolBlockRenderer;
+        ParticleSystem particleSystem;
 
         entt::entity player;
 

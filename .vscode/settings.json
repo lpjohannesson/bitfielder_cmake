@@ -112,6 +112,7 @@
         "semaphore": "cpp",
         "shared_mutex": "cpp",
         "stdfloat": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "regex": "cpp"
     }
 }

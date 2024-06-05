@@ -1,0 +1,7 @@
+{
+    "block": {
+        "type": "auto",
+        "texture": "dirt"
+    },
+    "particle": "dirt"
+}

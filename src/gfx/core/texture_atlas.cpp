@@ -1,4 +1,5 @@
 #include "texture_atlas.h"
+#include <filesystem>
 #include <iostream>
 #include <SDL2/SDL_image.h>
 #include <algorithm> 
@@ -15,8 +16,10 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 	glm::ivec2 atlasSize = { MIN_WIDTH, 0 };
 
 	for (const std::string &path : paths) {
+		std::string canonicalPath = std::filesystem::canonical(path).string();
+
 		// Load image
-		SDL_Surface *surface = IMG_Load(path.c_str());
+		SDL_Surface *surface = IMG_Load(canonicalPath.c_str());
 
 		if (surface == nullptr) {
 			std::cout << "Texture \"" << path << "\" could not be found." << std::endl;
@@ -27,12 +30,13 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 		glm::ivec2 size = { surface->w, surface->h };
 		Box2i box = { glm::ivec2(0), size };
 
-		entries.push_back({ path, surface, box });
-
 		// Expand atlas width
 		if (atlasSize.x < size.x) {
 			atlasSize.x = roundToTwoPower(size.x);
 		}
+
+		// Add to dictionary
+		entries.push_back({ canonicalPath, surface, box });
 	}
 
 	// Sort entries by area
@@ -129,5 +133,7 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 
 TextureSection TextureAtlas::getSection(const std::string path) const {
 	// TODO: Invalid textures
-	return sections.at(path);
+	std::string canonicalPath = std::filesystem::canonical(path).string();
+
+	return sections.at(canonicalPath);
 }

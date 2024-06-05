@@ -6,17 +6,11 @@
 
 namespace bf {
 	class BlockTypes {
-	private:
-		std::vector<entt::entity> blocks;
-
 	public:
+		std::vector<entt::entity> blocks;
 		entt::registry registry;
 
 		entt::entity getBlock(int index) const;
-		entt::entity createBlock();
-
-		inline BlockTypes() {
-
-		}
+		entt::entity createBlock(std::string name);
 	};
 }

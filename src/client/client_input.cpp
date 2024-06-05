@@ -13,6 +13,8 @@ ClientInput::ClientInput() {
     input.addKeyboardAction(jump, SDLK_z);
     input.addKeyboardAction(modifyBlockFront, SDLK_x);
     input.addKeyboardAction(modifyBlockBack, SDLK_c);
+    input.addKeyboardAction(selectItemLeft, SDLK_a);
+    input.addKeyboardAction(selectItemRight, SDLK_s);
 
     input.addJoyButtonAction(up, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP);
     input.addJoyButtonAction(down, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN);
@@ -21,4 +23,6 @@ ClientInput::ClientInput() {
     input.addJoyButtonAction(jump, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);
     input.addJoyButtonAction(modifyBlockFront, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X);
     input.addJoyButtonAction(modifyBlockBack, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B);
+    input.addJoyButtonAction(selectItemLeft, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+    input.addJoyButtonAction(selectItemRight, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 }

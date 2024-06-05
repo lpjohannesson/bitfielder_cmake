@@ -6,6 +6,7 @@
     "glm",
     "entt",
     "enet",
-    "winsock2"
+    "winsock2",
+    "rapidjson"
   ]
 }

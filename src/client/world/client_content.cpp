@@ -1,6 +1,6 @@
 #include "client_content.h"
+#include <filesystem>
 #include "client/scenes/world_scene.h"
-#include "block/components/block_renderer_component.h"
 #include "entity/components/sprite_component.h"
 #include "entity/components/sprite_animator_component.h"
 #include "entity/components/local_player_component.h"
@@ -33,6 +33,7 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, co
 	entityRegistry.emplace<LocalPlayerComponent>(
 		player, LocalPlayerComponent { spawnProperties.position });
 	
+	entityRegistry.emplace<VelocityComponent>(player, VelocityComponent {});
 	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(8.0f, 13.0f) / 16.0f });
 }
 
@@ -42,17 +43,23 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	// Add entity systems in order
 	world.entities.addSystem(localPlayerSystem);
+	localPlayerSystem.loadScene(scene);
+
+	world.entities.addSystem(particleSystem);
+	particleSystem.loadScene(scene);
+
 	world.entities.addSystem(spriteAnimatorSystem);
 
 	// Load texture atlas
-    std::vector<std::string> texturePaths = {
-		"assets/textures/player.png",
-		"assets/textures/blocks/dirt.png",
-		"assets/textures/blocks/grass.png",
-		"assets/textures/blocks/wood.png",
-		"assets/textures/blocks/gold.png",
-		"assets/textures/blocks/wool.png",
-	};
+    std::vector<std::string> texturePaths;
+
+	for (auto &textureEntry : std::filesystem::recursive_directory_iterator("assets/textures")) {
+		if (textureEntry.is_directory()) {
+			continue;
+		}
+
+		texturePaths.push_back(textureEntry.path().string());
+	}
 
 	worldRenderer.textureAtlas.loadAtlas(texturePaths);
 
@@ -65,25 +72,6 @@ ClientContent::ClientContent(WorldScene &scene) {
 	playerAnimations.addAnimation({ 5 });
 	playerAnimations.addAnimation({ 6 });
 	playerAnimations.addAnimation({ 7 });
-
-	localPlayerSystem.loadContent(scene);
-
-	// TODO: JSON block renderer files
-	// Create block renderers
-    dirtBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/dirt.png").uvBox);
-    world.blocks.registry.emplace<BlockRendererComponent>(world.content.dirtBlock, BlockRendererComponent { &dirtBlockRenderer });
-
-	grassBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/grass.png").uvBox);
-    world.blocks.registry.emplace<BlockRendererComponent>(world.content.grassBlock, BlockRendererComponent { &grassBlockRenderer });
-
-	woodBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/wood.png").uvBox);
-    world.blocks.registry.emplace<BlockRendererComponent>(world.content.woodBlock, BlockRendererComponent { &woodBlockRenderer });
-
-	goldBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/gold.png").uvBox);
-    world.blocks.registry.emplace<BlockRendererComponent>(world.content.goldBlock, BlockRendererComponent { &goldBlockRenderer });
-
-	woolBlockRenderer.loadFrames(worldRenderer.textureAtlas.getSection("assets/textures/blocks/wool.png").uvBox);
-    world.blocks.registry.emplace<BlockRendererComponent>(world.content.woolBlock, BlockRendererComponent { &woolBlockRenderer });
 
 	// TODO: Recieve local player ID
 	player = world.entities.spawnEntity(-1);

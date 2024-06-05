@@ -5,17 +5,32 @@
 
 using namespace bf;
 
-void WorldRenderer::updateSize(glm::ivec2 size) {
-    glm::vec2 halfSize = glm::vec2(size) * 0.5f;
+void WorldRenderer::updateTransforms(const WorldScene &scene) {
+    viewTransform = windowTransform * scene.camera.getTransform();
+    shadowViewTransform = viewTransform * shadowTransform;
 
-    viewTransform = glm::ortho(-halfSize.x, halfSize.x, halfSize.y, -halfSize.y);
-    viewTransform = glm::scale(viewTransform, glm::vec3(64.0f));
+    // Update screen box
+    glm::mat4 viewTransformInverse = glm::inverse(viewTransform);
+
+    screenBox.start = glm::vec2(viewTransformInverse * glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f));
+    screenBox.size = glm::vec2(viewTransformInverse * glm::vec4(1.0f, -1.0f, 0.0f, 1.0f)) - screenBox.start; 
+}
+
+void WorldRenderer::updateSize(glm::ivec2 size, const WorldScene &scene) {
+    glm::vec2 halfSize = glm::floor(glm::vec2(size) * 0.5f);
+
+    windowTransform = glm::ortho(-halfSize.x, halfSize.x, halfSize.y, -halfSize.y);
+    windowTransform = glm::scale(windowTransform, glm::vec3(64.0f));
 
     shadowBuffer.updateSize(size);
+
+    updateTransforms(scene);
 }
 
 void WorldRenderer::render(const WorldScene &scene) {
     entities.render(scene);
+
+    updateTransforms(scene);
 
     // Bind textures
     const Texture &texture = scene.worldRenderer.textureAtlas.texture;
@@ -26,12 +41,8 @@ void WorldRenderer::render(const WorldScene &scene) {
     glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, shadowBuffer.texture.getGLTexture());
 
-    // Set transforms
-    glm::mat4 cameraViewTransform = viewTransform * scene.camera.getTransform();
-    glm::mat4 shadowViewTransform = cameraViewTransform * shadowTransform;
-
-    frontSpriteProgram.setTransform(cameraViewTransform);
-    backSpriteProgram.setTransform(cameraViewTransform);
+    frontSpriteProgram.setTransform(viewTransform);
+    backSpriteProgram.setTransform(viewTransform);
     shadowSpriteProgram.setTransform(shadowViewTransform);
     
     glm::ivec2 windowSize = engine->getWindowSize();

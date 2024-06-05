@@ -19,10 +19,10 @@ Content::Content(World &world) {
     world.entities.addSystem(bodySystem);
 
     // Create blocks
-    airBlock = world.blocks.createBlock();
-    dirtBlock = world.blocks.createBlock();
-    grassBlock = world.blocks.createBlock();
-    woodBlock = world.blocks.createBlock();
-    goldBlock = world.blocks.createBlock();
-    woolBlock = world.blocks.createBlock();
+    airBlock = world.blocks.createBlock("air");
+    dirtBlock = world.blocks.createBlock("dirt");
+    grassBlock = world.blocks.createBlock("grass");
+    woodBlock = world.blocks.createBlock("wood");
+    goldBlock = world.blocks.createBlock("gold");
+    woolBlock = world.blocks.createBlock("wool");
 }

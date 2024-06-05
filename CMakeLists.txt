@@ -7,9 +7,9 @@ add_executable(client
     src/core/direction.cpp
     src/core/packet.cpp
     src/core/game_time.cpp
+    src/core/file_loader.cpp
 
     src/engine/engine.cpp
-    src/engine/file_loader.cpp
     src/engine/input.cpp
     src/engine/input_action.cpp
 
@@ -53,13 +53,17 @@ add_executable(client
     src/client/world/shadow_buffer.cpp
 
     src/client/world/block/block_map_renderer.cpp
+    src/client/world/block/block_renderer_factory.cpp
+
     src/client/world/block/renderers/basic_block_renderer.cpp
     src/client/world/block/renderers/auto_block_renderer.cpp
 
     src/client/world/entity/entity_renderer.cpp
 
+    src/client/world/entity/systems/client_entity_system.cpp
     src/client/world/entity/systems/sprite_system.cpp
     src/client/world/entity/systems/sprite_animator_system.cpp
+    src/client/world/entity/systems/particle_system.cpp
     src/client/world/entity/systems/local_player_system.cpp
     
     src/client/scenes/world_scene.cpp
@@ -117,4 +121,8 @@ target_link_libraries(server PRIVATE unofficial::enet::enet)
 
 target_link_libraries(client PRIVATE ws2_32)
 target_link_libraries(server PRIVATE ws2_32)
+
+set(RapidJSON_DIR vcpkg_installed/x64-windows/share/rapidjson)
+find_package(RapidJSON CONFIG REQUIRED)
+target_link_libraries(client PRIVATE rapidjson)
 

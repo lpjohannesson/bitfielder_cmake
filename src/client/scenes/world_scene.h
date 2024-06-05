@@ -22,6 +22,11 @@ namespace bf {
 
 		void updateBlock(glm::ivec2 position);
 
+		void spawnBlockParticles(glm::vec2 position, entt::entity block);
+
+		void placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData, int blockIndex);
+		void destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData);
+
 		void writePlayerPosition();
 		void writePlayerSpriteAnimation();
 		void writePlayerSpriteFlip();
