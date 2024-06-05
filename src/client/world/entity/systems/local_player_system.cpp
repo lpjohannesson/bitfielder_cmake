@@ -37,7 +37,7 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
     if (canJump) {
         // Jump
         if (localPlayer.jumpTime > 0.0f) {
-            velocity.velocity.y = -jumpImpulse;
+            velocity.velocity.y = velocity.oldVelocity.y = -jumpImpulse;
 
             localPlayer.jumpStopped = false;
             localPlayer.floorTime = 0.0f;

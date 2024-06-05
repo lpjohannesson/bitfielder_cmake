@@ -16,7 +16,7 @@ void ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::
 
     entityRegistry.emplace<ParticleComponent>(particle, ParticleComponent {});
     entityRegistry.emplace<PositionComponent>(particle, PositionComponent { position });
-    entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { velocity });
+    entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { velocity, velocity });
     entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { size, -size * 0.5f, frame });
 }
 
@@ -49,7 +49,9 @@ void ParticleSystem::update(World &world) {
 
     for (auto [entity, position, velocity, sprite] : view.each()) {
         velocity.velocity.y += gravity * deltaTime;
-        position.position += velocity.velocity * deltaTime;
+        
+        position.position += (velocity.velocity + velocity.oldVelocity) * 0.5f * deltaTime;
+        velocity.oldVelocity = velocity.velocity;
 
         // Destroy if particle is offscreen
         Box2 box = { position.position + sprite.offset, sprite.size };

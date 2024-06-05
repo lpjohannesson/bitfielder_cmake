@@ -3,6 +3,6 @@
 
 namespace bf {
 	struct VelocityComponent {
-		glm::vec2 velocity{};
+		glm::vec2 velocity{}, oldVelocity{};
 	};
 }
