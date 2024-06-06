@@ -6,14 +6,24 @@
 
 using namespace bf;
 
-bool SpriteAnimatorSystem::playAnimation(SpriteAnimatorComponent &animator, SpriteAnimationComponent &animation, int animationIndex) {
-    // Return if animation changed, skip if already playing
-    if (animation.animationIndex == animationIndex) {
-        return false;
+bool SpriteAnimatorSystem::playAnimation(SpriteAnimatorComponent &spriteAnimator, SpriteAnimationComponent &spriteAnimation, int animationIndex) {
+    const SpriteAnimation *animation = spriteAnimator.animationSet->getAnimation(animationIndex);
+
+    if (spriteAnimation.animationIndex == animationIndex) {
+        if (animation->loops) {
+            // Skip if already playing
+            return false;
+        }
+        else {
+            // Skip if not ended
+            if (spriteAnimator.time < animation->duration) {
+                return false;
+            }
+        }
     }
 
-    animation.animationIndex = animationIndex;
-    animator.time = 0.0f;
+    spriteAnimation.animationIndex = animationIndex;
+    spriteAnimator.time = 0.0f;
 
     return true;
 }

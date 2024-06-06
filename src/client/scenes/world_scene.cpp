@@ -6,9 +6,12 @@
 #include "core/game_time.h"
 #include "client/world/block/block_renderer_factory.h"
 #include "client/world/entity/components/local_player_component.h"
+#include "client/world/entity/components/sprite_aim_component.h"
 #include "client/world/block/components/block_particle_component.h"
 #include "client/world/entity/systems/particle_system.h"
+#include "client/world/entity/systems/sprite_aim_system.h"
 #include "world/entity/components/sprite_flip_component.h"
+#include "world/entity/components/aim_component.h"
 
 using namespace bf;
 
@@ -68,30 +71,15 @@ void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData 
 	updateBlock(position);
 }
 
-void WorldScene::writePlayerPosition() {
+void WorldScene::writePlayerState() {
 	Packet packet;
 
 	glm::vec2 position = entityRegistry->get<PositionComponent>(clientContent.player).position;
-
-	packet << (int)ClientPacket::PLAYER_POSITION << position;
-	server->writePacket(packet);
-}
-
-void WorldScene::writePlayerSpriteAnimation() {
-	Packet packet;
-
 	SpriteAnimationComponent &animation = entityRegistry->get<SpriteAnimationComponent>(clientContent.player);
-
-	packet << (int)ClientPacket::PLAYER_SPRITE_ANIMATION << animation.animationIndex;
-	server->writePacket(packet);
-}
-
-void WorldScene::writePlayerSpriteFlip() {
-	Packet packet;
-
 	SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(clientContent.player);
+	AimComponent &aim = entityRegistry->get<AimComponent>(clientContent.player);
 
-	packet << (int)ClientPacket::PLAYER_SPRITE_FLIP << spriteFlip.flipX;
+	packet << (int)ClientPacket::PLAYER_STATE << position << animation.animationIndex << spriteFlip.flipX << aim.aim;
 	server->writePacket(packet);
 }
 
@@ -214,17 +202,30 @@ void WorldScene::readEntitySpriteFlip(Packet &packet) {
 	packet >> spriteFlip.flipX;
 }
 
+void WorldScene::readEntitySpriteAim(Packet &packet) {
+	entt::entity entity;
+	
+	if (!readEntityPacket(packet, entity)) {
+		return;
+	}
+
+	AimComponent &aim = entityRegistry->get<AimComponent>(entity);
+	SpriteAimComponent &spriteAim = entityRegistry->get<SpriteAimComponent>(entity);
+	SpriteAnimatorComponent &animator = entityRegistry->get<SpriteAnimatorComponent>(entity);
+
+	packet >> aim.aim;
+
+	animator.frames = SpriteAimSystem::getAimFrames(spriteAim, aim.aim);
+}
+
 void WorldScene::readRemotePlayer(Packet &packet) {
 	int playerID;
 
 	packet >> playerID;
-	
-	PlayerSpawnProperties spawnProperties;
-	packet >> spawnProperties.position >> spawnProperties.spriteAnimationIndex >> spawnProperties.spriteFlipX;
 
 	// Spawn player entity
 	entt::entity player = world.entities.spawnEntity(playerID);
-	clientContent.createPlayer(player, *this, spawnProperties);
+	clientContent.createPlayer(player, *this);
 }
 
 void WorldScene::readPacket(Packet &packet) {
@@ -255,11 +256,20 @@ void WorldScene::readPacket(Packet &packet) {
 	case ServerPacket::ENTITY_SPRITE_FLIP:
 		readEntitySpriteFlip(packet);
 		break;
+
+	case ServerPacket::ENTITY_SPRITE_AIM:
+		readEntitySpriteAim(packet);
+		break;
 	
 	case ServerPacket::REMOTE_PLAYER:
 		readRemotePlayer(packet);
 		break;
 	}
+}
+
+void WorldScene::startClient() {
+	// TODO: Wait for state on server before spawning
+	writePlayerState();
 }
 
 void WorldScene::updateSize(glm::ivec2 size) {
@@ -287,11 +297,11 @@ void WorldScene::render() {
 
 void WorldScene::start() {
 	gameTime.reset();
-	camera.setZoom(3.0f);
 
 	BlockRendererFactory::createRenderers(*this);
 
 	camera.start(*this);
+	camera.setZoom(3.0f);
 }
 
 void WorldScene::end() {

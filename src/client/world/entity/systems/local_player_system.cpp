@@ -4,7 +4,7 @@
 #include "client/scenes/world_scene.h"
 #include "core/game_time.h"
 #include "core/direction.h"
-#include <iostream>
+#include "sprite_aim_system.h"
 
 using namespace bf;
 
@@ -84,11 +84,13 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
     localPlayer.selectedBlockIndex = nextBlockIndex;
 }
 
-void LocalPlayerSystem::aim(LocalPlayerData &playerData) {
+void LocalPlayerSystem::applyAim(LocalPlayerData &playerData) {
     glm::vec2 &movement = playerData.movement;
     LocalPlayerComponent &localPlayer = *playerData.localPlayer;
     SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
     SpriteAnimatorComponent &spriteAnimator = *playerData.spriteAnimator;
+    AimComponent &aim = *playerData.aim;
+    SpriteAimComponent &spriteAim = *playerData.spriteAim;
 
     if (localPlayer.blockTime > 0.0f) {
         return;
@@ -96,24 +98,25 @@ void LocalPlayerSystem::aim(LocalPlayerData &playerData) {
 
     // Flip sprite
     if (movement.x != 0.0f) {
-        spriteFlip.flipX = movement.x < 0.0f;
-    }
+        bool nextSpriteFlip = movement.x < 0.0f;
 
-    if (localPlayer.lastSpriteFlip != spriteFlip.flipX) {
-        scene->writePlayerSpriteFlip();
+        if (nextSpriteFlip != spriteFlip.flipX) {
+            spriteFlip.flipX = nextSpriteFlip;
+            
+            playerData.stateChanged = true;
+        }
     }
-
-    localPlayer.lastSpriteFlip = spriteFlip.flipX;
 
     // Aim vertically
-    if (movement.y < 0.0f) {
-        spriteAnimator.frames = &scene->clientContent.playerUpFrames;
-    }
-    else if (movement.y > 0.0f) {
-        spriteAnimator.frames = &scene->clientContent.playerDownFrames;
-    }
-    else {
-        spriteAnimator.frames = &scene->clientContent.playerForwardFrames;
+    int nextAim = movement.y;
+
+    if (nextAim != aim.aim) {
+        playerData.stateChanged = true;
+
+        aim.aim = nextAim;
+        spriteAnimator.frames = SpriteAimSystem::getAimFrames(spriteAim, aim.aim);
+        
+        playerData.stateChanged = true;
     }
 }
 
@@ -151,9 +154,8 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
         }
     }
 
-    if (SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)animationIndex)) {
-        scene->writePlayerSpriteAnimation();
-    }
+    playerData.stateChanged |= SpriteAnimatorSystem::playAnimation(
+        *playerData.spriteAnimator, *playerData.spriteAnimation, (int)animationIndex);
 }
 
 bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
@@ -302,7 +304,9 @@ void LocalPlayerSystem::update(World &world) {
         SpriteComponent,
         SpriteFlipComponent,
         SpriteAnimationComponent,
-        SpriteAnimatorComponent>();
+        SpriteAnimatorComponent,
+        AimComponent,
+        SpriteAimComponent>();
 
     for (auto [
             entity,
@@ -313,7 +317,9 @@ void LocalPlayerSystem::update(World &world) {
             sprite,
             spriteFlip,
             spriteAnimation,
-            spriteAnimator] : view.each()) {
+            spriteAnimator,
+            aim,
+            spriteAim] : view.each()) {
         
         LocalPlayerData playerData = {
             movement,
@@ -324,9 +330,11 @@ void LocalPlayerSystem::update(World &world) {
             &sprite,
             &spriteFlip,
             &spriteAnimation,
-            &spriteAnimator };
+            &spriteAnimator,
+            &aim,
+            &spriteAim };
 
-        aim(playerData);
+        applyAim(playerData);
         animate(playerData);
 
         selectItems(playerData);
@@ -353,13 +361,15 @@ void LocalPlayerSystem::update(World &world) {
         localPlayer.jumpTime = glm::max(0.0f, localPlayer.jumpTime - deltaTime);
 
         // TODO: Make generic position changed flag
-        // Update last position, used for packet efficiency
-        
         if (position.position != localPlayer.lastPosition) {
-            scene->writePlayerPosition();
+            playerData.stateChanged = true;
         }
 
         localPlayer.lastPosition = position.position;
+
+        if (playerData.stateChanged) {
+            scene->writePlayerState();
+        }
     }
 }
 

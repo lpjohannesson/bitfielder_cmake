@@ -5,6 +5,7 @@
 #include "world/entity/components/position_component.h"
 #include "world/entity/components/sprite_animation_component.h"
 #include "world/entity/components/sprite_flip_component.h"
+#include "world/entity/components/aim_component.h"
 
 using namespace bf;
 
@@ -12,8 +13,7 @@ void Server::addClient(ClientConnection *client) {
     // Create new player object
     client->player = world.entities.spawnEntity();
 
-    PlayerSpawnProperties spawnProperties;
-    world.content.createPlayer(client->player, world, spawnProperties);
+    world.content.createPlayer(client->player, world);
 
     // Send new player between clients
     for (ClientConnection *otherClient : clients) {
@@ -41,6 +41,13 @@ void Server::removeClient(ClientConnection *client) {
     for (ClientConnection *otherClient : clients) {
         writeDespawnEntity(otherClient, playerID);
     }
+}
+
+void Server::writePlayerState(ClientConnection *client, entt::entity player) {
+    writeEntityPosition(client, player);
+    writeEntitySpriteAnimation(client, player);
+    writeEntitySpriteFlip(client, player);
+    writeEntitySpriteAim(client, player);
 }
 
 void Server::writeBlockChunk(ClientConnection *client, BlockChunk *chunk) {
@@ -105,52 +112,38 @@ void Server::writeEntitySpriteFlip(ClientConnection *client, entt::entity entity
     client->writePacket(packet);
 }
 
-void Server::writeRemotePlayer(ClientConnection *client, entt::entity player) {
-    // TODO: Sprite info
+void Server::writeEntitySpriteAim(ClientConnection *client, entt::entity entity) {
     Packet packet;
 
-    int entityID = entityRegistry->get<IDComponent>(player).id;
-    glm::vec2 position = entityRegistry->get<PositionComponent>(player).position;
-    SpriteAnimationComponent &spriteAnimation = entityRegistry->get<SpriteAnimationComponent>(player);
-    SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(player);
+    int entityID = entityRegistry->get<IDComponent>(entity).id;
+    AimComponent &aim = entityRegistry->get<AimComponent>(entity);
 
-    packet << (int)ServerPacket::REMOTE_PLAYER << entityID << position << spriteAnimation.animationIndex << spriteFlip.flipX;
+    packet << (int)ServerPacket::ENTITY_SPRITE_AIM << entityID << aim.aim;
 
     client->writePacket(packet);
 }
 
-void Server::readPlayerPosition(ClientConnection *client, Packet &packet) {
+void Server::writeRemotePlayer(ClientConnection *client, entt::entity player) {
+    // TODO: Spawn entity on client after state recieved
+    Packet packet;
+
+    int entityID = entityRegistry->get<IDComponent>(player).id;
+
+    packet << (int)ServerPacket::REMOTE_PLAYER << entityID;
+
+    client->writePacket(packet);
+    
+    writePlayerState(client, player);
+}
+
+void Server::readPlayerState(ClientConnection *client, Packet &packet) {
     // TODO: Rubber-banding
     PositionComponent &position = entityRegistry->get<PositionComponent>(client->player);
-    packet >> position.position;
-
-    // TODO: Make timed polls
-    for (ClientConnection *otherClient : clients) {
-        if (client == otherClient) {
-            continue;
-        }
-
-        writeEntityPosition(otherClient, client->player);
-    }
-}
-
-void Server::readPlayerSpriteAnimation(ClientConnection *client, Packet &packet) {
     SpriteAnimationComponent &spriteAnimation = entityRegistry->get<SpriteAnimationComponent>(client->player);
-    packet >> spriteAnimation.animationIndex;
-
-    // TODO: Make timed polls
-    for (ClientConnection *otherClient : clients) {
-        if (client == otherClient) {
-            continue;
-        }
-
-        writeEntitySpriteAnimation(otherClient, client->player);
-    }
-}
-
-void Server::readPlayerSpriteFlip(ClientConnection *client, Packet &packet) {
     SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(client->player);
-    packet >> spriteFlip.flipX;
+    AimComponent &aim = entityRegistry->get<AimComponent>(client->player);
+
+    packet >> position.position >> spriteAnimation.animationIndex >> spriteFlip.flipX >> aim.aim;
 
     // TODO: Make timed polls
     for (ClientConnection *otherClient : clients) {
@@ -158,7 +151,7 @@ void Server::readPlayerSpriteFlip(ClientConnection *client, Packet &packet) {
             continue;
         }
 
-        writeEntitySpriteFlip(otherClient, client->player);
+        writePlayerState(otherClient, client->player);
     }
 }
 
@@ -197,16 +190,8 @@ void Server::readPacket(ClientConnection *client, Packet &packet) {
 	packet >> packetID;
 
 	switch ((ClientPacket)packetID) {
-	case ClientPacket::PLAYER_POSITION:
-        readPlayerPosition(client, packet);
-        break;
-
-    case ClientPacket::PLAYER_SPRITE_ANIMATION:
-        readPlayerSpriteAnimation(client, packet);
-        break;
-
-    case ClientPacket::PLAYER_SPRITE_FLIP:
-        readPlayerSpriteFlip(client, packet);
+	case ClientPacket::PLAYER_STATE:
+        readPlayerState(client, packet);
         break;
 
     case ClientPacket::REPLACE_BLOCK:

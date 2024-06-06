@@ -3,11 +3,13 @@
 using namespace bf;
 
 void LocalWorldScene::start() {
+    // Connect to server
     WorldScene::start();
 
-    // Connect to server
     server = &localServerConnection;
     localServer.addClient(&localClientConnection);
+
+    startClient();
 }
 
 void LocalWorldScene::end() {

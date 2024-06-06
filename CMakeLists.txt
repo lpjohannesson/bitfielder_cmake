@@ -64,6 +64,7 @@ add_executable(client
     src/client/world/entity/systems/client_entity_system.cpp
     src/client/world/entity/systems/sprite_system.cpp
     src/client/world/entity/systems/sprite_animator_system.cpp
+    src/client/world/entity/systems/sprite_aim_system.cpp
     src/client/world/entity/systems/particle_system.cpp
     src/client/world/entity/systems/local_player_system.cpp
     

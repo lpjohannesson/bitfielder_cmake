@@ -4,11 +4,13 @@
 #include "../components/local_player_component.h"
 #include "../components/sprite_component.h"
 #include "../components/sprite_animator_component.h"
+#include "../components/sprite_aim_component.h"
 #include "../systems/sprite_animator_system.h"
 #include "world/entity/components/position_component.h"
 #include "world/entity/components/velocity_component.h"
 #include "world/entity/components/body_component.h"
 #include "world/entity/components/sprite_flip_component.h"
+#include "world/entity/components/aim_component.h"
 
 namespace bf {
     struct LocalPlayerData {
@@ -21,13 +23,17 @@ namespace bf {
         SpriteFlipComponent *spriteFlip;
         SpriteAnimationComponent *spriteAnimation;
         SpriteAnimatorComponent *spriteAnimator;
+        AimComponent *aim;
+        SpriteAimComponent *spriteAim;
+
+        bool stateChanged;
     };
 
 	class LocalPlayerSystem : public ClientEntitySystem {
     private:
         void move(LocalPlayerData &playerData);
         void selectItems(LocalPlayerData &playerData);
-        void aim(LocalPlayerData &playerData);
+        void applyAim(LocalPlayerData &playerData);
         void animate(LocalPlayerData &playerData);
         bool tryModifyBlock(LocalPlayerData &playerData);
 

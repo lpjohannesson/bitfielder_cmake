@@ -16,6 +16,8 @@ namespace bf {
 
 		void update() override;
 
+		void start() override;
+
 		RemoteWorldScene(const char *ip, int port);
 		~RemoteWorldScene();
 	};

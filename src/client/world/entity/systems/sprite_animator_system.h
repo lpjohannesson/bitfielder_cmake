@@ -6,7 +6,7 @@
 namespace bf {
 	class SpriteAnimatorSystem : public EntitySystem {
     public:
-        static bool playAnimation(SpriteAnimatorComponent &animator, SpriteAnimationComponent &animation, int animationIndex);
+        static bool playAnimation(SpriteAnimatorComponent &spriteAnimator, SpriteAnimationComponent &spriteAnimation, int animationIndex);
 
         void update(World &world) override;
 	};

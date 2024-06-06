@@ -27,9 +27,7 @@ namespace bf {
 		void placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData, int blockIndex);
 		void destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData);
 
-		void writePlayerPosition();
-		void writePlayerSpriteAnimation();
-		void writePlayerSpriteFlip();
+		void writePlayerState();
 		void writeReplaceBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData);
 
 		bool readEntityPacket(Packet &packet, entt::entity &entity);
@@ -40,9 +38,12 @@ namespace bf {
 		void readEntityPosition(Packet &packet);
 		void readEntitySpriteAnimation(Packet &packet);
 		void readEntitySpriteFlip(Packet &packet);
+		void readEntitySpriteAim(Packet &packet);
 		void readRemotePlayer(Packet &packet);
 
 		void readPacket(Packet &packet);
+
+		void startClient();
 
 		void updateSize(glm::ivec2 size) override;
 

@@ -27,6 +27,11 @@ void RemoteWorldScene::update() {
     WorldScene::update();
 }
 
+void RemoteWorldScene::start() {
+    WorldScene::start();
+    startClient();
+}
+
 RemoteWorldScene::RemoteWorldScene(const char *ip, int port) {
     // Start network
     if (enet_initialize() != 0) {

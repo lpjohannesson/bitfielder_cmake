@@ -2,9 +2,7 @@
 
 namespace bf {
         enum class ClientPacket {
-                PLAYER_POSITION,
-                PLAYER_SPRITE_ANIMATION,
-                PLAYER_SPRITE_FLIP,
+                PLAYER_STATE,
                 REPLACE_BLOCK
         };
 
@@ -15,6 +13,7 @@ namespace bf {
                 ENTITY_POSITION,
                 ENTITY_SPRITE_ANIMATION,
                 ENTITY_SPRITE_FLIP,
-                REMOTE_PLAYER,
+                ENTITY_SPRITE_AIM,
+                REMOTE_PLAYER
         };
 }

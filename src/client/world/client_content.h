@@ -24,8 +24,8 @@ namespace bf {
 
         entt::entity player;
 
-        void createPlayer(entt::entity player, WorldScene &scene, const PlayerSpawnProperties &spawnProperties);
-        void createLocalPlayer(entt::entity player, WorldScene &scene, const PlayerSpawnProperties &spawnProperties);
+        void createPlayer(entt::entity player, WorldScene &scene);
+        void createLocalPlayer(entt::entity player, WorldScene &scene);
 
         ClientContent(WorldScene &scene);
     };

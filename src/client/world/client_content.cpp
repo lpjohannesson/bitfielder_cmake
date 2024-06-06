@@ -3,35 +3,38 @@
 #include "client/scenes/world_scene.h"
 #include "entity/components/sprite_component.h"
 #include "entity/components/sprite_animator_component.h"
+#include "entity/components/sprite_aim_component.h"
 #include "entity/components/local_player_component.h"
 
 using namespace bf;
 
-void ClientContent::createPlayer(entt::entity player, WorldScene &scene, const PlayerSpawnProperties &spawnProperties) {
+void ClientContent::createPlayer(entt::entity player, WorldScene &scene) {
 	World &world = scene.world;
 	WorldRenderer &worldRenderer = scene.worldRenderer;
 	entt::registry &entityRegistry = world.entities.registry;
 
-	world.content.createPlayer(player, world, spawnProperties);
+	world.content.createPlayer(player, world);
 	
 	// Load sprite
 	entityRegistry.emplace<SpriteComponent>(
 		player, SpriteComponent { glm::vec2(1.0f), glm::vec2(-4.0f, -2.0f) / 16.0f });
+
+	SpriteAimComponent &spriteAim = entityRegistry.emplace<SpriteAimComponent>(
+		player, SpriteAimComponent { &playerForwardFrames, &playerUpFrames, &playerDownFrames });
 	
 	entityRegistry.emplace<SpriteAnimatorComponent>(
 		player, SpriteAnimatorComponent { &playerForwardFrames, &playerAnimations });
 }
 
-void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, const PlayerSpawnProperties &spawnProperties) {
+void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene) {
 	World &world = scene.world;
 	entt::registry &entityRegistry = world.entities.registry;
 
 	// Spawn remote player with extra attributes
-	createPlayer(player, scene, spawnProperties);
+	createPlayer(player, scene);
 
-	// Start last position as current
 	entityRegistry.emplace<LocalPlayerComponent>(
-		player, LocalPlayerComponent { spawnProperties.position });
+		player, LocalPlayerComponent {});
 	
 	entityRegistry.emplace<VelocityComponent>(player, VelocityComponent {});
 	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(8.0f, 13.0f) / 16.0f });
@@ -77,11 +80,9 @@ ClientContent::ClientContent(WorldScene &scene) {
 	playerAnimations.addAnimation({ 1 });
 	playerAnimations.addAnimation({ 2 });
 	playerAnimations.addAnimation({ 3 });
-	playerAnimations.addAnimation({ 8, 9, 10 }, 0.3f, false);
+	playerAnimations.addAnimation({ 8, 9, 2 }, 0.3f, false);
 
 	// TODO: Recieve local player ID
 	player = world.entities.spawnEntity(-1);
-
-	PlayerSpawnProperties spawnProperties;
-	createLocalPlayer(player, scene, spawnProperties);
+	createLocalPlayer(player, scene);
 }
