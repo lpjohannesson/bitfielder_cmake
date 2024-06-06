@@ -31,6 +31,14 @@ void WorldRenderer::render(const WorldScene &scene) {
 
     updateTransforms(scene);
 
+    // Get visible chunks
+    Box2 screenBox = scene.worldRenderer.getScreenBox();
+
+    int blockStartX = glm::floor(screenBox.start.x);
+    int blockEndX = glm::floor(screenBox.start.x + screenBox.size.x);
+
+    BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStartX, blockEndX);
+
     // Bind textures
     const Texture &texture = scene.worldRenderer.textureAtlas.texture;
 
@@ -53,8 +61,12 @@ void WorldRenderer::render(const WorldScene &scene) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    for (const auto &[chunkIndex, blockMesh] : map.map.chunks) {
-        client->spriteRenderer.renderMesh(blockMesh.frontMesh, shadowSpriteProgram);
+    for (const BlockMesh *blockMesh : blockMeshes.chunks) {
+        if (blockMesh == nullptr) {
+            continue;
+        }
+
+        client->spriteRenderer.renderMesh(blockMesh->frontMesh, shadowSpriteProgram);
     }
 
     client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, shadowSpriteProgram);
@@ -64,9 +76,13 @@ void WorldRenderer::render(const WorldScene &scene) {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     // TODO: Only render visible chunks
-    for (const auto &[chunkIndex, blockMesh] : map.map.chunks) {
-        client->spriteRenderer.renderMesh(blockMesh.backMesh, backSpriteProgram);
-        client->spriteRenderer.renderMesh(blockMesh.frontMesh, frontSpriteProgram);
+    for (const BlockMesh *blockMesh : blockMeshes.chunks) {
+        if (blockMesh == nullptr) {
+            continue;
+        }
+
+        client->spriteRenderer.renderMesh(blockMesh->backMesh, backSpriteProgram);
+        client->spriteRenderer.renderMesh(blockMesh->frontMesh, frontSpriteProgram);
     }
 
     client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, frontSpriteProgram);
