@@ -9,11 +9,9 @@ namespace bf {
         std::vector<SpriteAnimation> animations;
 
     public:
-        SpriteFrames frames;
-
         SpriteAnimation *getAnimation(int index) const;
-        void addAnimation(const std::vector<int> frames, float duration = 0.0f);
+        void addAnimation(const std::vector<int> frames, float duration = 0.0f, bool loops = true);
 
-        void getFrame(const SpriteAnimation &animation, float time, Box2 &result) const;
+        void getFrame(const SpriteFrames &frames, const SpriteAnimation &animation, float time, Box2 &result) const;
     };
 }

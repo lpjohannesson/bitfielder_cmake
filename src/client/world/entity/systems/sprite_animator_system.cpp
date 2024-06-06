@@ -25,6 +25,12 @@ void SpriteAnimatorSystem::update(World &world) {
 
     for (auto [entity, spriteAnimator, sprite, spriteAnimation] : view.each()) {
         // Get animation or skip
+        SpriteFrames *frames = spriteAnimator.frames;
+
+        if (frames == nullptr) {
+            continue;
+        }
+
         SpriteAnimationSet *animationSet = spriteAnimator.animationSet;
 
         if (animationSet == nullptr) {
@@ -38,13 +44,18 @@ void SpriteAnimatorSystem::update(World &world) {
         }
 
         // Set frame
-        animationSet->getFrame(*animation, spriteAnimator.time, sprite.uvBox);
+        animationSet->getFrame(*frames, *animation, spriteAnimator.time, sprite.uvBox);
 
         // Advance time
         float duration = animation->duration;
 
         if (duration != 0.0f) {
-            spriteAnimator.time = glm::fmod(spriteAnimator.time + deltaTime, duration);
+            if (animation->loops) {
+                spriteAnimator.time = glm::fmod(spriteAnimator.time + deltaTime, duration);
+            }
+            else {
+                spriteAnimator.time = glm::min(spriteAnimator.time + deltaTime, duration);
+            }
         }
     }
 }

@@ -27,6 +27,7 @@ namespace bf {
     private:
         void move(LocalPlayerData &playerData);
         void selectItems(LocalPlayerData &playerData);
+        void aim(LocalPlayerData &playerData);
         void animate(LocalPlayerData &playerData);
         bool tryModifyBlock(LocalPlayerData &playerData);
 

@@ -7,9 +7,10 @@ namespace bf {
     public:   
         std::vector<int> sequence;
         float duration;
+        bool loops;
 
         Box2 getFrame(const SpriteFrames &frames, float time) const;
 
-        SpriteAnimation(const std::vector<int> sequence, float duration);
+        SpriteAnimation(const std::vector<int> sequence, float duration, bool loops);
     };
 }

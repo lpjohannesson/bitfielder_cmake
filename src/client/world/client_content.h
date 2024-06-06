@@ -10,11 +10,12 @@ namespace bf {
     class WorldScene;
 
     enum class PlayerAnimation {
-        IDLE, WALK, JUMP, FALL, SLIDE
+        IDLE, WALK, JUMP, FALL, SLIDE, PUNCH
     };
     
     class ClientContent {
     public:
+        SpriteFrames playerForwardFrames, playerUpFrames, playerDownFrames;
         SpriteAnimationSet playerAnimations;
 
         SpriteAnimatorSystem spriteAnimatorSystem;

@@ -10,10 +10,10 @@ SpriteAnimation *SpriteAnimationSet::getAnimation(int index) const {
     return (SpriteAnimation*)&animations.at(index);
 }
 
-void SpriteAnimationSet::addAnimation(const std::vector<int> sequence, float duration) {
-    animations.emplace_back(sequence, duration);
+void SpriteAnimationSet::addAnimation(const std::vector<int> sequence, float duration, bool loops) {
+    animations.emplace_back(sequence, duration, loops);
 }
 
-void SpriteAnimationSet::getFrame(const SpriteAnimation &animation, float time, Box2 &result) const {
+void SpriteAnimationSet::getFrame(const SpriteFrames &frames, const SpriteAnimation &animation, float time, Box2 &result) const {
     result = animation.getFrame(frames, time);
 }

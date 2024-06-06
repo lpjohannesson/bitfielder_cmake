@@ -19,7 +19,7 @@ void ClientContent::createPlayer(entt::entity player, WorldScene &scene, const P
 		player, SpriteComponent { glm::vec2(1.0f), glm::vec2(-4.0f, -2.0f) / 16.0f });
 	
 	entityRegistry.emplace<SpriteAnimatorComponent>(
-		player, SpriteAnimatorComponent { &playerAnimations });
+		player, SpriteAnimatorComponent { &playerForwardFrames, &playerAnimations });
 }
 
 void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene, const PlayerSpawnProperties &spawnProperties) {
@@ -64,14 +64,20 @@ ClientContent::ClientContent(WorldScene &scene) {
 	worldRenderer.textureAtlas.loadAtlas(texturePaths);
 
 	// Create player animations
-    TextureSection playerTextureSection = scene.worldRenderer.textureAtlas.getSection("assets/textures/player.png");
-    playerAnimations.frames.loadFrames(playerTextureSection.uvBox, { 8, 1 });
+    TextureSection playerForwardTexture = scene.worldRenderer.textureAtlas.getSection("assets/textures/player/forward.png");
+	TextureSection playerUpTexture = scene.worldRenderer.textureAtlas.getSection("assets/textures/player/up.png");
+	TextureSection playerDownTexture = scene.worldRenderer.textureAtlas.getSection("assets/textures/player/down.png");
+
+    playerForwardFrames.loadFrames(playerForwardTexture.uvBox, { 4, 3 });
+	playerUpFrames.loadFrames(playerUpTexture.uvBox, { 4, 3 });
+	playerDownFrames.loadFrames(playerDownTexture.uvBox, { 4, 3 });
 
 	playerAnimations.addAnimation({ 0 });
-	playerAnimations.addAnimation({ 1, 2, 3, 4 }, 0.4f);
-	playerAnimations.addAnimation({ 5 });
-	playerAnimations.addAnimation({ 6 });
-	playerAnimations.addAnimation({ 7 });
+	playerAnimations.addAnimation({ 4, 5, 6, 7 }, 0.4f);
+	playerAnimations.addAnimation({ 1 });
+	playerAnimations.addAnimation({ 2 });
+	playerAnimations.addAnimation({ 3 });
+	playerAnimations.addAnimation({ 8, 9, 10 }, 0.3f, false);
 
 	// TODO: Recieve local player ID
 	player = world.entities.spawnEntity(-1);

@@ -84,14 +84,15 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
     localPlayer.selectedBlockIndex = nextBlockIndex;
 }
 
-void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
-    // TODO: Sprite aim
-
+void LocalPlayerSystem::aim(LocalPlayerData &playerData) {
     glm::vec2 &movement = playerData.movement;
     LocalPlayerComponent &localPlayer = *playerData.localPlayer;
-    VelocityComponent &velocity = *playerData.velocity;
-    BodyComponent &body = *playerData.body;
     SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
+    SpriteAnimatorComponent &spriteAnimator = *playerData.spriteAnimator;
+
+    if (localPlayer.blockTime > 0.0f) {
+        return;
+    }
 
     // Flip sprite
     if (movement.x != 0.0f) {
@@ -104,7 +105,28 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
 
     localPlayer.lastSpriteFlip = spriteFlip.flipX;
 
-    // Animate
+    // Aim vertically
+    if (movement.y < 0.0f) {
+        spriteAnimator.frames = &scene->clientContent.playerUpFrames;
+    }
+    else if (movement.y > 0.0f) {
+        spriteAnimator.frames = &scene->clientContent.playerDownFrames;
+    }
+    else {
+        spriteAnimator.frames = &scene->clientContent.playerForwardFrames;
+    }
+}
+
+void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
+    glm::vec2 &movement = playerData.movement;
+    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
+    VelocityComponent &velocity = *playerData.velocity;
+    BodyComponent &body = *playerData.body;
+    
+    if (localPlayer.blockTime > 0.0f) {
+        return;
+    }
+
     PlayerAnimation animationIndex;
 
     if (body.isOnFloor) {
@@ -232,12 +254,16 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
     }
 
     // Replace block
+    PlayerAnimation animationIndex;
+
     if (placing) {
         scene->placeBlock(*blockPosition, onFrontLayer, blockData, localPlayer.selectedBlockIndex);
     }
     else {
         scene->destroyBlock(*blockPosition, onFrontLayer, blockData);
     }
+
+    SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)PlayerAnimation::PUNCH);
 
     // Send to server
     scene->writeReplaceBlock(*blockPosition, onFrontLayer, blockData);
@@ -249,7 +275,7 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
     localPlayer.blockTime = maxBlockTime;
     localPlayer.blockTweenTime = maxBlockTweenTime;
 
-    // Set up movement tween
+    // Set up movement animation
     glm::vec2 positionOffset = glm::vec2(0.5f) - body.size * 0.5f;
     glm::vec2 endPosition = glm::vec2(forwardBlockPosition) + positionOffset;
 
@@ -300,6 +326,7 @@ void LocalPlayerSystem::update(World &world) {
             &spriteAnimation,
             &spriteAnimator };
 
+        aim(playerData);
         animate(playerData);
 
         selectItems(playerData);
