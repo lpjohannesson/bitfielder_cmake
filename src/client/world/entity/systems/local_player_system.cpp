@@ -5,6 +5,7 @@
 #include "core/game_time.h"
 #include "core/direction.h"
 #include "sprite_aim_system.h"
+#include <iostream>
 
 using namespace bf;
 

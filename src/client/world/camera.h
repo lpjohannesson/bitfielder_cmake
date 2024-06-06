@@ -20,9 +20,9 @@ namespace bf {
         inline float getZoom() const { return zoom; }
         inline glm::mat4 getTransform() const { return transform; }
 
-        float dragDistanceX, offsetSpeedX, maxOffsetX, panSpeedY, blockPanSpeedY;
+        float dragDistanceX, offsetSpeedX, maxOffsetX, panSpeedY, blockPanSpeedY, smooth;
         
-        glm::vec2 position{}, offset{};
+        glm::vec2 position{}, targetPosition{}, offset{};
         float targetY;
 
         void setZoom(float zoom);

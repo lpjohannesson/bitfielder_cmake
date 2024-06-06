@@ -28,20 +28,20 @@ void Camera::update(WorldScene &scene) {
     float dragMinX = playerInfo.position.x - dragDistanceX;
     float dragMaxX = playerInfo.position.x + dragDistanceX;
 
-    float dragX = glm::clamp(position.x, dragMinX, dragMaxX);
+    float dragX = glm::clamp(targetPosition.x, dragMinX, dragMaxX);
 
-    offset.x = glm::clamp(offset.x + (dragX - position.x) * offsetSpeedX, -maxOffsetX, maxOffsetX);
-    position.x = dragX;
+    offset.x = glm::clamp(offset.x + (dragX - targetPosition.x) * offsetSpeedX, -maxOffsetX, maxOffsetX);
+    targetPosition.x = dragX;
 
     // Camera Y
     if (playerInfo.isModifyingBlock) {
         targetY = playerInfo.position.y;
-        Direction::targetAxis(position.y, targetY, blockPanSpeedY * gameTime.getDeltaTime());
+        Direction::targetAxis(targetPosition.y, targetY, blockPanSpeedY * gameTime.getDeltaTime());
     }
     else {
         if (position.y < playerInfo.position.y) {
             // Always pan down
-            position.y = targetY = playerInfo.position.y;
+            targetPosition.y = targetY = playerInfo.position.y;
         }
         else {
             // Pan up if on floor
@@ -49,21 +49,26 @@ void Camera::update(WorldScene &scene) {
                 targetY = playerInfo.position.y;
             }
 
-            Direction::targetAxis(position.y, targetY, panSpeedY * gameTime.getDeltaTime());
+            Direction::targetAxis(targetPosition.y, targetY, panSpeedY * gameTime.getDeltaTime());
         }
     }
 
-    // Round translation to avoid visual glitches
+    // Smooth position to target
+    float deltaTime = gameTime.getDeltaTime();
+    position = glm::lerp(targetPosition, position, glm::pow(smooth, deltaTime));
+
+    // Round position to avoid visual glitches
     glm::vec2 translation = -(position + offset);
 
     glm::vec2 windowSize = engine->getWindowSize();
-    translation = glm::floor(translation * windowSize) / windowSize;
+    glm::vec2 roundedTranslation = glm::floor(translation * windowSize) / windowSize;
 
-    transform = zoomTransform * glm::translate(glm::mat4(1.0f), glm::vec3(translation, 0.0f));
+    transform = zoomTransform * glm::translate(glm::mat4(1.0f), glm::vec3(roundedTranslation, 0.0f));
 }
 
 void Camera::start(WorldScene &scene) {
     position = getPlayerInfo(scene).position;
+    targetPosition = position;
     targetY = position.y;
 
     update(scene);
@@ -75,4 +80,5 @@ Camera::Camera() {
     maxOffsetX = 2.5f;
     panSpeedY = 8.0f;
     blockPanSpeedY = 6.0f;
+    smooth = glm::pow(2.0f, -16.0f);
 }
