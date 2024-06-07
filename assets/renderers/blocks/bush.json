@@ -1,8 +1,8 @@
 {
     "block": {
         "partial": true,
-        "type": "auto",
-        "texture": "leaves"
+        "type": "basic",
+        "texture": "bush"
     },
     "particle": "leaves"
 }

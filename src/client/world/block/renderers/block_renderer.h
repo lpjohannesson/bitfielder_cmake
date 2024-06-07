@@ -6,9 +6,11 @@
 
 namespace bf {
     class BlockMapRenderer;
+    class WorldScene;
 
     class BlockRenderData {
     public:
+        WorldScene *scene;
         BlockMapRenderer *renderer;
         SpriteBatch *spriteBatch;
         BlockSample<BlockChunk> *blockSample;

@@ -2,9 +2,11 @@
 #include <iostream>
 #include "client/scenes/world_scene.h"
 #include "core/file_loader.h"
+#include "renderers/basic_block_renderer.h"
 #include "renderers/auto_block_renderer.h"
 #include "components/block_renderer_component.h"
 #include "components/block_particle_component.h"
+#include "components/partial_block_component.h"
 #include "world/block/components/block_name_component.h"
 #include "core/color.h"
 
@@ -72,6 +74,19 @@ void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entit
     }
 }
 
+BlockRenderer *BlockRendererFactory::createBasicBlockRenderer(const WorldScene &scene, const rapidjson::Value &value) {
+    BasicBlockRenderer *blockRenderer = new BasicBlockRenderer();
+
+    blockRenderer->sprite.box.size = glm::vec2(1.0f);
+    blockRenderer->sprite.uvBox = getBlockTexture(scene, value).uvBox;
+
+    if (value.HasMember("color")) {
+        blockRenderer->sprite.color = Color::parseHex(value["color"].GetString());
+    }
+
+    return blockRenderer;
+}
+
 BlockRenderer *BlockRendererFactory::createAutoBlockRenderer(const WorldScene &scene, const rapidjson::Value &value) {
     AutoBlockRenderer *blockRenderer = new AutoBlockRenderer();
 
@@ -106,14 +121,30 @@ void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity b
         return;
     }
 
-    // Create renderer by type
-    BlockRenderer *blockRenderer;
-
     rapidjson::Value &blockValue = document["block"];
+
+    if (blockValue.HasMember("partial")) {
+        blockRegistry.emplace<PartialBlockComponent>(block, PartialBlockComponent {});
+    }
+
+    // Create particles
+    if (document.HasMember("particle")) {
+        createParticleRenderer(scene, block, blockValue, document["particle"].GetString());
+    }
+
+    // Create renderer by type
+    if (!blockValue.HasMember("type")) {
+        return;
+    }
+    
+    BlockRenderer *blockRenderer;
 
     std::string blockType = blockValue["type"].GetString();
 
-    if (blockType == "auto") {
+    if (blockType == "basic") {
+        blockRenderer = createBasicBlockRenderer(scene, blockValue);
+    }
+    else if (blockType == "auto") {
         blockRenderer = createAutoBlockRenderer(scene, blockValue);
     }
     else {
@@ -121,11 +152,6 @@ void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity b
     }
 
     blockRegistry.emplace<BlockRendererComponent>(block, BlockRendererComponent { blockRenderer });
-
-    // Create particles
-    if (document.HasMember("particle")) {
-        createParticleRenderer(scene, block, blockValue, document["particle"].GetString());
-    }
 }
 
 void BlockRendererFactory::createRenderers(WorldScene &scene) {

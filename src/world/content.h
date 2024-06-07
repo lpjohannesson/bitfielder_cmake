@@ -18,6 +18,8 @@ namespace bf {
             woodLogBlock,
             woodPlanksBlock,
             leavesBlock,
+            bushBlock,
+            mushroomBlock,
             ironBlockBlock,
             goldBlockBlock;
 

@@ -17,6 +17,7 @@ namespace bf {
 
         static void createParticleRenderer(WorldScene &scene, entt::entity block, const rapidjson::Value &blockValue, std::string particleName);
 
+        static BlockRenderer *createBasicBlockRenderer(const WorldScene &scene, const rapidjson::Value &value);
         static BlockRenderer *createAutoBlockRenderer(const WorldScene &scene, const rapidjson::Value &value);
 
         static void createBlockRenderer(WorldScene &scene, entt::entity block);

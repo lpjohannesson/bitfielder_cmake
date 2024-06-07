@@ -1,1 +1,1 @@
-#include "client/world/block/block_map_renderer.h"
+#include "client/scenes/world_scene.h"

@@ -28,6 +28,8 @@ Content::Content(World &world) {
     woodLogBlock = world.blocks.createBlock("wood_log");
     woodPlanksBlock = world.blocks.createBlock("wood_planks");
     leavesBlock = world.blocks.createBlock("leaves");
+    bushBlock = world.blocks.createBlock("bush");
+    mushroomBlock = world.blocks.createBlock("mushroom");
     ironBlockBlock = world.blocks.createBlock("iron_block");
     goldBlockBlock = world.blocks.createBlock("gold_block");
 

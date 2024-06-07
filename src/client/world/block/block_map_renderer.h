@@ -6,17 +6,16 @@
 #include "gfx/sprite/sprite_batch.h"
 
 namespace bf {
-    class World;
     class WorldScene;
 
     class BlockMapRenderer {
     private:
-        void renderBlock(const World &world, const BlockRenderData &renderData);
+        void renderBlock(const BlockRenderData &renderData);
 
     public:
         BlockMap<BlockMesh> map;
         SpriteBatch frontSpriteBatch, backSpriteBatch;
 
-        void createMesh(const World &world, const BlockChunk &chunk);
+        void createMesh(WorldScene &scene, const BlockChunk &chunk);
     };
 }

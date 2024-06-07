@@ -1,0 +1,8 @@
+{
+    "block": {
+        "partial": true,
+        "type": "basic",
+        "texture": "mushroom"
+    },
+    "particle": "wool"
+}

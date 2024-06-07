@@ -5,8 +5,10 @@
 
 using namespace bf;
 
-void BlockMapRenderer::renderBlock(const World &world, const BlockRenderData &renderData) {
+void BlockMapRenderer::renderBlock(const BlockRenderData &renderData) {
+    const World &world = renderData.scene->world;
     const entt::registry &blocksRegistry = world.blocks.registry;
+
     entt::entity block = world.blocks.getBlock(renderData.blockIndex);
 
     // Get renderer or skip
@@ -18,15 +20,16 @@ void BlockMapRenderer::renderBlock(const World &world, const BlockRenderData &re
     blockRenderer->render(renderData);
 }
 
-void BlockMapRenderer::createMesh(const World &world, const BlockChunk &chunk) {
+void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk) {
     int mapIndex = chunk.getMapIndex();
     int blockStartX = mapIndex * BlockChunk::SIZE.x;
 
     // Create block sample, including left and right chunks
-    BlockSample<BlockChunk> blockSample(world.map, blockStartX - BlockChunk::SIZE.x, blockStartX + BlockChunk::SIZE.x);
+    BlockSample<BlockChunk> blockSample(scene.world.map, blockStartX - BlockChunk::SIZE.x, blockStartX + BlockChunk::SIZE.x);
 
     // Create render data
     BlockRenderData renderData;
+    renderData.scene = &scene;
     renderData.renderer = this;
     renderData.blockSample = &blockSample;
 
@@ -42,14 +45,14 @@ void BlockMapRenderer::createMesh(const World &world, const BlockChunk &chunk) {
             renderData.spriteBatch = &frontSpriteBatch;
             renderData.onFrontLayer = true;
 
-			renderBlock(world, renderData);
+			renderBlock(renderData);
 
             // Render back
             renderData.blockIndex = blockData->backIndex;
             renderData.spriteBatch = &backSpriteBatch;
             renderData.onFrontLayer = false;
 
-			renderBlock(world, renderData);
+			renderBlock(renderData);
 		}
 	}
 

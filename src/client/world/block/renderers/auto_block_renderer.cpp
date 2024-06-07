@@ -1,23 +1,47 @@
 #include "auto_block_renderer.h"
 #include "block_renderer_impl.h"
+#include "../components/partial_block_component.h"
 
 using namespace bf;
 
 int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ivec2 offset) {
-    BlockData *neighborBlock = BlockChunk::getSampleBlock(*renderData.blockSample, renderData.position + offset);
+    const World &world = renderData.scene->world;
+    const entt::registry &blocksRegistry = world.blocks.registry;
 
-    if (neighborBlock == nullptr) {
+    BlockData *neighborBlockData = BlockChunk::getSampleBlock(*renderData.blockSample, renderData.position + offset);
+
+    if (neighborBlockData == nullptr) {
         return 0;
     }
 
-    // Front block is not air
-    if (neighborBlock->frontIndex != 0) {
+    // Yes if same block on same layer
+    int neighborBlockIndex;
+
+    if (renderData.onFrontLayer) {
+        neighborBlockIndex = neighborBlockData->frontIndex;
+    }
+    else {
+        neighborBlockIndex = neighborBlockData->backIndex;
+    }
+
+    if (renderData.blockIndex == neighborBlockIndex) {
         return 1;
     }
 
-    // On back and back block is not air
-    if (!renderData.onFrontLayer && neighborBlock->backIndex != 0) {
+    // Yes if front is not partial
+    entt::entity neighborFrontBlock = world.blocks.getBlock(neighborBlockData->frontIndex);
+
+    if (!blocksRegistry.all_of<PartialBlockComponent>(neighborFrontBlock)) {
         return 1;
+    }
+
+    // Yes if on back and back is not partial
+    if (!renderData.onFrontLayer) {
+        entt::entity neighborBackBlock = world.blocks.getBlock(neighborBlockData->backIndex);
+
+        if (!blocksRegistry.all_of<PartialBlockComponent>(neighborBackBlock)) {
+            return 1;
+        }
     }
 
     return 0;

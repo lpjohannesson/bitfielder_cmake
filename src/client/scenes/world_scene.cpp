@@ -27,7 +27,7 @@ void WorldScene::updateBlock(glm::ivec2 position) {
 			continue;
 		}
 
-		worldRenderer.map.createMesh(world, *chunk);
+		worldRenderer.map.createMesh(*this, *chunk);
 	}
 }
 
@@ -120,7 +120,7 @@ void WorldScene::readBlockChunk(Packet &packet) {
 	std::memcpy(chunk.data, chunkData, sizeof(BlockChunk::data));
 
 	// Create mesh
-	worldRenderer.map.createMesh(world, chunk);
+	worldRenderer.map.createMesh(*this, chunk);
 
 	// Update neighbour meshes
 	BlockChunk
@@ -128,11 +128,11 @@ void WorldScene::readBlockChunk(Packet &packet) {
 		*rightChunk = world.map.getChunk(chunkIndex + 1);
 	
 	if (leftChunk != nullptr) {
-		worldRenderer.map.createMesh(world, *leftChunk);
+		worldRenderer.map.createMesh(*this, *leftChunk);
 	}
 
 	if (rightChunk != nullptr) {
-		worldRenderer.map.createMesh(world, *rightChunk);
+		worldRenderer.map.createMesh(*this, *rightChunk);
 	}
 }
 
@@ -268,6 +268,7 @@ void WorldScene::readPacket(Packet &packet) {
 }
 
 void WorldScene::startClient() {
+	// TODO: See if combineable with start
 	// TODO: Wait for state on server before spawning
 	writePlayerState();
 }
