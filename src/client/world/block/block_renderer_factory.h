@@ -15,7 +15,7 @@ namespace bf {
         static TextureSection getBlockTexture(const WorldScene &scene, const rapidjson::Value &value);
         static TextureSection getParticleTexture(const WorldScene &scene, const rapidjson::Value &value);
 
-        static void createParticleRenderer(WorldScene &scene, entt::entity block, std::string particleName);
+        static void createParticleRenderer(WorldScene &scene, entt::entity block, const rapidjson::Value &blockValue, std::string particleName);
 
         static BlockRenderer *createAutoBlockRenderer(const WorldScene &scene, const rapidjson::Value &value);
 

@@ -1,0 +1,7 @@
+{
+    "block": {
+        "type": "auto",
+        "texture": "iron_block"
+    },
+    "particle": "iron_block"
+}

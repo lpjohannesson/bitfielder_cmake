@@ -10,7 +10,16 @@ namespace bf {
     public:
         BodySystem bodySystem;
 
-        entt::entity airBlock, dirtBlock, grassBlock, woodBlock, goldBlock, woolBlock;
+        entt::entity
+            airBlock,
+            dirtBlock,
+            grassBlock,
+            stoneBlock,
+            woodLogBlock,
+            woodPlanksBlock,
+            leavesBlock,
+            ironBlockBlock,
+            goldBlockBlock;
 
         void createPlayer(entt::entity player, World &world);
 

@@ -1,0 +1,7 @@
+{
+    "block": {
+        "type": "auto",
+        "texture": "wood_planks"
+    },
+    "particle": "wood"
+}

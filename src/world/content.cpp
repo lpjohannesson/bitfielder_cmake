@@ -24,7 +24,19 @@ Content::Content(World &world) {
     airBlock = world.blocks.createBlock("air");
     dirtBlock = world.blocks.createBlock("dirt");
     grassBlock = world.blocks.createBlock("grass");
-    woodBlock = world.blocks.createBlock("wood");
-    goldBlock = world.blocks.createBlock("gold");
-    woolBlock = world.blocks.createBlock("wool");
+    stoneBlock = world.blocks.createBlock("stone");
+    woodLogBlock = world.blocks.createBlock("wood_log");
+    woodPlanksBlock = world.blocks.createBlock("wood_planks");
+    leavesBlock = world.blocks.createBlock("leaves");
+    ironBlockBlock = world.blocks.createBlock("iron_block");
+    goldBlockBlock = world.blocks.createBlock("gold_block");
+
+    world.blocks.createBlock("wool_white");
+    world.blocks.createBlock("wool_black");
+    world.blocks.createBlock("wool_red");
+    world.blocks.createBlock("wool_green");
+    world.blocks.createBlock("wool_blue");
+    world.blocks.createBlock("wool_cyan");
+    world.blocks.createBlock("wool_magenta");
+    world.blocks.createBlock("wool_yellow");
 }

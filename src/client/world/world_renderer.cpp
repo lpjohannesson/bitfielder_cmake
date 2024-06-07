@@ -31,10 +31,10 @@ void WorldRenderer::render(const WorldScene &scene) {
 
     updateTransforms(scene);
 
-    // Get visible chunks
+    // Get visible chunks, including shadows
     Box2 screenBox = scene.worldRenderer.getScreenBox();
 
-    int blockStartX = glm::floor(screenBox.start.x);
+    int blockStartX = glm::floor(screenBox.start.x - SHADOW_OFFSET);
     int blockEndX = glm::floor(screenBox.start.x + screenBox.size.x);
 
     BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStartX, blockEndX);
@@ -94,7 +94,7 @@ WorldRenderer::WorldRenderer(WorldScene &scene) :
     shadowSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_shadow.glsl") {
 
     // Set shadow offset
-    shadowTransform = glm::translate(glm::mat4(1.0f), glm::vec3(glm::vec2(2.0f) / 16.0f, 0.0f));
+    shadowTransform = glm::translate(glm::mat4(1.0f), glm::vec3(glm::vec2(SHADOW_OFFSET), 0.0f));
 
     // Bind textures
     GLint

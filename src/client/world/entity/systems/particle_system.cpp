@@ -8,7 +8,7 @@
 
 using namespace bf;
 
-void ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::vec2 size, Box2 frame) {
+void ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::vec2 size, Box2 frame, glm::vec4 color) {
     entt::registry &entityRegistry = scene->world.entities.registry;
 
     // Create entity directly, without ID
@@ -17,10 +17,10 @@ void ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::
     entityRegistry.emplace<ParticleComponent>(particle, ParticleComponent {});
     entityRegistry.emplace<PositionComponent>(particle, PositionComponent { position });
     entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { velocity, velocity });
-    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { size, -size * 0.5f, frame });
+    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { size, -size * 0.5f, frame, color });
 }
 
-void ParticleSystem::spawnParticleExplosion(glm::vec2 position, glm::vec2 size, const SpriteFrames &frames) {
+void ParticleSystem::spawnParticleExplosion(glm::vec2 position, glm::vec2 size, const SpriteFrames &frames, glm::vec4 color) {
     // Random count
     int explosionCountRange = explosionCountMax - explosionCountMin + 1;
     int explosionCount = explosionCountMin + randomInt(randomEngine) % explosionCountRange;
@@ -37,7 +37,7 @@ void ParticleSystem::spawnParticleExplosion(glm::vec2 position, glm::vec2 size, 
         // Random frame
         Box2 frame = frames.frames.at(rand() % frames.frames.size());
 
-        spawnParticle(position, velocity * explosionSpeed, size, frame);
+        spawnParticle(position, velocity * explosionSpeed, size, frame, color);
     }
 }
 

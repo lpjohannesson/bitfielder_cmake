@@ -15,6 +15,8 @@ namespace bf {
         Box2 screenBox;
 
     public:
+        static constexpr float SHADOW_OFFSET = 2.0f / 16.0f;
+
         inline Box2 getScreenBox() const { return screenBox; }
 
         TextureAtlas textureAtlas;

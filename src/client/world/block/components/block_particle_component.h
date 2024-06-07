@@ -6,5 +6,6 @@ namespace bf {
     struct BlockParticleComponent {
         glm::vec2 size;
         SpriteFrames frames;
+        glm::vec4 color{ 1.0f };
     };
 }

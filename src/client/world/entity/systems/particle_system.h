@@ -15,8 +15,8 @@ namespace bf {
         float gravity, explosionSpeedMin, explosionSpeedMax;
         int explosionCountMin, explosionCountMax;
 
-        void spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::vec2 size, Box2 frame);
-        void spawnParticleExplosion(glm::vec2 position, glm::vec2 size, const SpriteFrames &frames);
+        void spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::vec2 size, Box2 frame, glm::vec4 color);
+        void spawnParticleExplosion(glm::vec2 position, glm::vec2 size, const SpriteFrames &frames, glm::vec4 color);
 
         void update(World &world) override;
 

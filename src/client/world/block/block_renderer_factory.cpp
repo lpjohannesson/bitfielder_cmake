@@ -27,7 +27,7 @@ TextureSection BlockRendererFactory::getParticleTexture(const WorldScene &scene,
     return getRendererTexture(scene, value, "assets/textures/blocks/particles/");
 }
 
-void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entity block, std::string particleName) {
+void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entity block, const rapidjson::Value &blockValue, std::string particleName) {
     entt::registry &blockRegistry = scene.world.blocks.registry;
 
     // Load json
@@ -65,6 +65,11 @@ void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entit
     blockParticle.frames.loadFrames(texture.uvBox, { frameCount, 1 });
 
     blockParticle.size = glm::vec2(texture.size.x / frameCount, texture.size.y) / 16.0f;
+
+    // Load same color as block
+    if (blockValue.HasMember("color")) {
+        blockParticle.color = Color::parseHex(blockValue["color"].GetString());
+    }
 }
 
 BlockRenderer *BlockRendererFactory::createAutoBlockRenderer(const WorldScene &scene, const rapidjson::Value &value) {
@@ -119,7 +124,7 @@ void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity b
 
     // Create particles
     if (document.HasMember("particle")) {
-        createParticleRenderer(scene, block, document["particle"].GetString());
+        createParticleRenderer(scene, block, blockValue, document["particle"].GetString());
     }
 }
 

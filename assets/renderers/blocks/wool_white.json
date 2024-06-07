@@ -2,7 +2,7 @@
     "block": {
         "type": "auto",
         "texture": "wool",
-        "color": "ff5050"
+        "color": "ffffff"
     },
     "particle": "wool"
 }

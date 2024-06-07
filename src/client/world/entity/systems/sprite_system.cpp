@@ -35,6 +35,7 @@ void SpriteSystem::render(const WorldScene &scene) {
         batchSprite.box.start += sprite.offset;
 
         batchSprite.uvBox = sprite.uvBox;
+        batchSprite.color = sprite.color;
 
         spriteBatch.drawSprite(batchSprite);
     }

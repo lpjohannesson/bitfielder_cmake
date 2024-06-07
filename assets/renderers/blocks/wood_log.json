@@ -1,0 +1,7 @@
+{
+    "block": {
+        "type": "auto",
+        "texture": "wood_log"
+    },
+    "particle": "wood"
+}
