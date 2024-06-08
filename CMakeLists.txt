@@ -28,6 +28,8 @@ add_executable(client
     src/gfx/sprite/animation/sprite_animation.cpp
     src/gfx/sprite/animation/sprite_animation_set.cpp
 
+    src/gfx/text/font.cpp
+
     src/world/world.cpp
     src/world/content.cpp
 
@@ -68,6 +70,7 @@ add_executable(client
     src/client/world/entity/systems/particle_system.cpp
     src/client/world/entity/systems/local_player_system.cpp
     
+    src/client/scenes/menu_scene.cpp
     src/client/scenes/world_scene.cpp
     src/client/scenes/local_world_scene.cpp
     src/client/scenes/remote_world_scene.cpp

@@ -10,7 +10,16 @@ int TextureAtlas::roundToTwoPower(int n) {
 	return (int)glm::pow(2.0f, glm::ceil(glm::log(n) / glm::log(2.0f)));
 }
 
-void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
+TextureSection TextureAtlas::getSection(const std::string path) const {
+	// TODO: Invalid textures
+	std::string canonicalPath = std::filesystem::canonical(path).string();
+
+	return sections.at(canonicalPath);
+}
+
+SDL_Surface *TextureAtlas::loadSurface(const std::vector<std::string> &paths) {
+	sections.clear();
+
 	std::vector<TextureAtlasEntry> entries;
 	
 	glm::ivec2 atlasSize = { MIN_WIDTH, 0 };
@@ -19,15 +28,16 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 		std::string canonicalPath = std::filesystem::canonical(path).string();
 
 		// Load image
-		SDL_Surface *surface = IMG_Load(canonicalPath.c_str());
+		SDL_Surface *imageSurface = IMG_Load(canonicalPath.c_str());
+		SDL_ConvertSurfaceFormat(imageSurface, SDL_PIXELFORMAT_ARGB32, 0);
 
-		if (surface == nullptr) {
+		if (imageSurface == nullptr) {
 			std::cout << "Texture \"" << path << "\" could not be found." << std::endl;
 			continue;
 		}
 
 		// Add texture
-		glm::ivec2 size = { surface->w, surface->h };
+		glm::ivec2 size = { imageSurface->w, imageSurface->h };
 		Box2i box = { glm::ivec2(0), size };
 
 		// Expand atlas width
@@ -36,7 +46,7 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 		}
 
 		// Add to dictionary
-		entries.push_back({ canonicalPath, surface, box });
+		entries.push_back({ canonicalPath, imageSurface, box });
 	}
 
 	// Sort entries by area
@@ -91,7 +101,7 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 	}
 
 	// Create atlas
-	SDL_Surface *atlasSurface = SDL_CreateRGBSurface(0, atlasSize.x, atlasSize.y, 32,
+	SDL_Surface *surface = SDL_CreateRGBSurface(0, atlasSize.x, atlasSize.y, 32,
 		0x000000FF,
 		0x0000FF00,
 		0x00FF0000,
@@ -100,40 +110,28 @@ void TextureAtlas::loadAtlas(const std::vector<std::string> &paths) {
 	for (const TextureAtlasEntry &entry : entries) {
 		// Blit texture
 		const Box2i &box = entry.box;
-		glm::ivec2 start = box.start, size = box.size;
 
 		SDL_Rect rect{};
 
-		rect.x = start.x;
-		rect.y = start.y;
-		rect.w = size.x;
-		rect.h = size.y;
+		rect.x = box.start.x;
+		rect.y = box.start.y;
+		rect.w = box.size.x;
+		rect.h = box.size.y;
 
-		SDL_BlitSurface(entry.surface, NULL, atlasSurface, &rect);
-		SDL_FreeSurface(entry.surface);
+		SDL_BlitSurface(entry.imageSurface, NULL, surface, &rect);
+		SDL_FreeSurface(entry.imageSurface);
 
-		// Create section
+		// Create section and boxes
 		TextureSection section;
-		section.size = size;
 
-		// Normalize UV box
+		section.box = box;
+
 		glm::vec2 atlasSizeF = atlasSize;
-		section.uvBox = { glm::vec2(start) / atlasSizeF, glm::vec2(size) / atlasSizeF };
+		section.uvBox = { glm::vec2(box.start) / atlasSizeF, glm::vec2(box.size) / atlasSizeF };
 
 		// Map section to image path
 		sections.emplace(entry.path, section);
 	}
 
-	IMG_SavePNG(atlasSurface, "atlas.png");
-
-	// Upload atlas to texture
-	texture.loadSurface(atlasSurface);
-	SDL_FreeSurface(atlasSurface);
-}
-
-TextureSection TextureAtlas::getSection(const std::string path) const {
-	// TODO: Invalid textures
-	std::string canonicalPath = std::filesystem::canonical(path).string();
-
-	return sections.at(canonicalPath);
+	return surface;
 }

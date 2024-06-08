@@ -1,5 +1,6 @@
 #include "engine.h"
 #include <GL/glew.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include "core/game_time.h"
 
 using namespace bf;
@@ -22,6 +23,18 @@ void Engine::changeScene(Scene *scene) {
 	currentScene->updateSize(windowSize);
 }
 
+void Engine::updateSize() {
+	// Get window transform
+	glm::vec2 halfSize = glm::floor(glm::vec2(windowSize) * 0.5f);
+	windowTransform = glm::ortho(-halfSize.x, halfSize.x, halfSize.y, -halfSize.y);
+
+	renderer.updateSize(windowSize);
+	
+	if (currentScene != nullptr) {
+		currentScene->updateSize(windowSize);
+	}
+}
+
 bool Engine::update() {
 	gameTime.update();
 
@@ -37,8 +50,7 @@ bool Engine::update() {
 		case SDL_WINDOWEVENT:
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
 				windowSize = { event.window.data1, event.window.data2 };
-				renderer.updateSize(windowSize);
-				currentScene->updateSize(windowSize);
+				updateSize();
 			}
 			break;
 
@@ -124,10 +136,10 @@ Engine::Engine() : fullscreenAction(input) {
 	glewExperimental = GL_TRUE;
 	glewInit();
 
+	updateSize();
+
 	// Setup joysticks
 	SDL_JoystickEventState(SDL_ENABLE);
-
-	renderer.updateSize(windowSize);
 
 	input.addKeyboardAction(fullscreenAction, SDLK_F11);
 }

@@ -22,11 +22,11 @@ TextureSection BlockRendererFactory::getRendererTexture(const WorldScene &scene,
 }
 
 TextureSection BlockRendererFactory::getBlockTexture(const WorldScene &scene, const rapidjson::Value &value) {
-    return getRendererTexture(scene, value, "assets/textures/blocks/");
+    return getRendererTexture(scene, value, "assets/textures/world/blocks/");
 }
 
 TextureSection BlockRendererFactory::getParticleTexture(const WorldScene &scene, const rapidjson::Value &value) {
-    return getRendererTexture(scene, value, "assets/textures/blocks/particles/");
+    return getRendererTexture(scene, value, "assets/textures/world/blocks/particles/");
 }
 
 void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entity block, const rapidjson::Value &blockValue, std::string particleName) {
@@ -66,7 +66,7 @@ void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entit
 
     blockParticle.frames.loadFrames(texture.uvBox, { frameCount, 1 });
 
-    blockParticle.size = glm::vec2(texture.size.x / frameCount, texture.size.y) / 16.0f;
+    blockParticle.size = glm::vec2(texture.box.size.x / frameCount, texture.box.size.y) / 16.0f;
 
     // Load same color as block
     if (blockValue.HasMember("color")) {

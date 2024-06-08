@@ -11,8 +11,10 @@ namespace bf {
 
 	class WorldRenderer {
     private:
-        glm::mat4 windowTransform, shadowTransform, viewTransform, shadowViewTransform;
+        glm::mat4 shadowTransform, viewTransform, shadowViewTransform;
         Box2 screenBox;
+
+        void loadTextureAtlas();
 
     public:
         static constexpr float SHADOW_OFFSET = 2.0f / 16.0f;
@@ -20,8 +22,9 @@ namespace bf {
         inline Box2 getScreenBox() const { return screenBox; }
 
         TextureAtlas textureAtlas;
+        Texture texture;
 
-        SpriteProgram frontSpriteProgram, backSpriteProgram, shadowSpriteProgram;
+        SpriteProgram backSpriteProgram, shadowSpriteProgram;
         ShadowBuffer shadowBuffer;
 
         BlockMapRenderer map;

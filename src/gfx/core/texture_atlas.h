@@ -4,19 +4,18 @@
 #include <unordered_map>
 #include <SDL2/SDL.h>
 #include "core/box2.h"
-#include "texture.h"
 
 namespace bf {
 	class TextureSection {
 	public:
-		glm::ivec2 size;
+		Box2i box;
 		Box2 uvBox;
 	};
 
 	class TextureAtlasEntry {
 	public:
 		std::string path;
-		SDL_Surface *surface;
+		SDL_Surface *imageSurface;
 		Box2i box;
 	};
 
@@ -27,12 +26,11 @@ namespace bf {
 
 		std::unordered_map<std::string, TextureSection> sections;
 
-		static int roundToTwoPower(int n);
+		static int roundToTwoPower(int n); 
 
 	public:
-		Texture texture;
-
-		void loadAtlas(const std::vector<std::string> &paths);
 		TextureSection getSection(const std::string path) const;
+
+		SDL_Surface *loadSurface(const std::vector<std::string> &paths);
 	};
 }

@@ -1,5 +1,4 @@
 #include "client_content.h"
-#include <filesystem>
 #include "client/scenes/world_scene.h"
 #include "entity/components/sprite_component.h"
 #include "entity/components/sprite_animator_component.h"
@@ -53,23 +52,10 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	world.entities.addSystem(spriteAnimatorSystem);
 
-	// Load texture atlas
-    std::vector<std::string> texturePaths;
-
-	for (auto &textureEntry : std::filesystem::recursive_directory_iterator("assets/textures")) {
-		if (textureEntry.is_directory()) {
-			continue;
-		}
-
-		texturePaths.push_back(textureEntry.path().string());
-	}
-
-	worldRenderer.textureAtlas.loadAtlas(texturePaths);
-
 	// Create player animations
-    TextureSection playerForwardTexture = scene.worldRenderer.textureAtlas.getSection("assets/textures/player/forward.png");
-	TextureSection playerUpTexture = scene.worldRenderer.textureAtlas.getSection("assets/textures/player/up.png");
-	TextureSection playerDownTexture = scene.worldRenderer.textureAtlas.getSection("assets/textures/player/down.png");
+    TextureSection playerForwardTexture = worldRenderer.textureAtlas.getSection("assets/textures/world/player/forward.png");
+	TextureSection playerUpTexture = worldRenderer.textureAtlas.getSection("assets/textures/world/player/up.png");
+	TextureSection playerDownTexture = worldRenderer.textureAtlas.getSection("assets/textures/world/player/down.png");
 
     playerForwardFrames.loadFrames(playerForwardTexture.uvBox, { 4, 3 });
 	playerUpFrames.loadFrames(playerUpTexture.uvBox, { 4, 3 });

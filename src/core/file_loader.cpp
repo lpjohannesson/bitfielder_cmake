@@ -1,4 +1,5 @@
 #include "core/file_loader.h"
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 
@@ -24,3 +25,14 @@ bool FileLoader::loadText(const char *path, std::string &result) {
 	result = stream.str();
 	return true;
 }
+
+void FileLoader::getFilePaths(const char *basePath, std::vector<std::string> &result) {
+	for (auto &entry : std::filesystem::recursive_directory_iterator(basePath)) {
+		if (entry.is_directory()) {
+			continue;
+		}
+
+		result.push_back(entry.path().string());
+	}
+}
+

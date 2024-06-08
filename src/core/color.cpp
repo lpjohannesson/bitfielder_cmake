@@ -23,3 +23,10 @@ glm::vec4 Color::parseHex(std::string hex) {
         1.0f
     };
 }
+
+glm::vec4 Color::getSurfacePixel(SDL_Surface *surface, glm::ivec2 position) {
+    Uint8 *pixelStart =
+        (Uint8*)surface->pixels + position.y * surface->pitch + position.x * surface->format->BytesPerPixel;
+    
+    return glm::vec4(*(pixelStart + 0), *(pixelStart + 1), *(pixelStart + 2), *(pixelStart + 3)) / 255.0f;
+}

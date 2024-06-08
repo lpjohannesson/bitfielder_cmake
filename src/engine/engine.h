@@ -10,6 +10,7 @@ namespace bf {
 	private:
 		bool quitting = false;
 		glm::ivec2 windowSize;
+		glm::mat4 windowTransform;
 
 		SDL_Window *window;
 		SDL_GLContext glContext;
@@ -22,8 +23,11 @@ namespace bf {
 
 		void endCurrentScene();
 
+		void updateSize();
+
 	public:
 		inline glm::ivec2 getWindowSize() const { return windowSize; }
+		inline glm::mat4 getWindowTransform() const { return windowTransform; }
 
 		Renderer renderer;
 		

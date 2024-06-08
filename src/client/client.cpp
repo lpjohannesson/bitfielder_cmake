@@ -1,30 +1,29 @@
 #include "client.h"
-#include <iostream>
+#include <SDL2/SDL_image.h>
+#include "core/file_loader.h"
+#include "scenes/menu_scene.h"
 #include "scenes/local_world_scene.h"
-#include "scenes/remote_world_scene.h"
 
 using namespace bf;
 
 Client *bf::client;
 
-Client::Client(Engine &engine) {
+Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl") {
     client = this;
 
-    std::cout << "\"l\" for local, \"r\" for remote." << std::endl;
+    std::vector<std::string> textTexturePaths;
+	FileLoader::getFilePaths("assets/textures/fonts", textTexturePaths);
 
-    std::string clientMode;
-    std::cin >> clientMode;
+    SDL_Surface *textSurface = textTextureAtlas.loadSurface(textTexturePaths);
 
-    if (clientMode == "l") {
-        engine.changeScene(new LocalWorldScene());
-    }
-    else if (clientMode == "r") {
-        std::cout << "Enter IP:" << std::endl;
+    font.loadFont(textSurface, textTextureAtlas.getSection("assets/textures/fonts/font.png"), 4);
+    fontBold.loadFont(textSurface, textTextureAtlas.getSection("assets/textures/fonts/font_bold.png"), 4);
 
-        std::string ip;
-        std::cin >> ip;
+    textTexture.loadSurface(textSurface);
 
-        engine.changeScene(new RemoteWorldScene(ip.c_str(), 1234));
-    }
-    
+    IMG_SavePNG(textSurface, "textAtlas.png");
+
+    SDL_FreeSurface(textSurface);
+
+    engine.changeScene(new MenuScene());
 }
