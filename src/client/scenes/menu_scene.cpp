@@ -9,13 +9,13 @@ void MenuScene::render() {
     client->spriteProgram.setTransform(glm::scale(engine->getWindowTransform(), glm::vec3(48.0f)));
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, client->textTexture.getGLTexture());
+    glBindTexture(GL_TEXTURE_2D, client->fontTexture.getGLTexture());
 
     client->spriteRenderer.renderMesh(textMesh, client->spriteProgram);
 }
 
 void MenuScene::start() {
-    client->fontBold.drawText("welcome to bitfielder!", textSpriteBatch, { 0.0f, 0.0f });
+    client->font.drawText("welcome to bitfielder!", textSpriteBatch, { 0.0f, 0.0f });
     client->font.drawText("This is a test.", textSpriteBatch, { 0.0f, 1.0f });
 
     textSpriteBatch.uploadMesh(textMesh);

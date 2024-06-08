@@ -12,6 +12,7 @@ namespace bf {
     class BlockRendererFactory {
     private:
         static TextureSection getRendererTexture(const WorldScene &scene, const rapidjson::Value &value, std::string basePath);
+        
         static TextureSection getBlockTexture(const WorldScene &scene, const rapidjson::Value &value);
         static TextureSection getParticleTexture(const WorldScene &scene, const rapidjson::Value &value);
 

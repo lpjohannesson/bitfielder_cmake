@@ -13,9 +13,9 @@ namespace bf {
         SpriteRenderer spriteRenderer;
 		SpriteProgram spriteProgram;
 		
-		TextureAtlas textTextureAtlas;
-		Texture textTexture;
-		Font font, fontBold;
+		TextureAtlas fontTextureAtlas;
+		Texture fontTexture;
+		Font font;
 
         Client(Engine &engine);
 	};

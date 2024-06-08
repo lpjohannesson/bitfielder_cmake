@@ -1,6 +1,7 @@
 #include "client.h"
 #include <SDL2/SDL_image.h>
 #include "core/file_loader.h"
+#include "font_factory.h"
 #include "scenes/menu_scene.h"
 #include "scenes/local_world_scene.h"
 
@@ -11,19 +12,15 @@ Client *bf::client;
 Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl") {
     client = this;
 
-    std::vector<std::string> textTexturePaths;
-	FileLoader::getFilePaths("assets/textures/fonts", textTexturePaths);
+    // Load fonts
+    std::vector<std::string> fontTexturePaths;
+	FileLoader::getFilePaths("assets/textures/fonts", fontTexturePaths);
 
-    SDL_Surface *textSurface = textTextureAtlas.loadSurface(textTexturePaths);
+    SDL_Surface *fontSurface = fontTextureAtlas.loadSurface(fontTexturePaths);
+    fontTexture.loadSurface(fontSurface);
+    SDL_FreeSurface(fontSurface);
 
-    font.loadFont(textSurface, textTextureAtlas.getSection("assets/textures/fonts/font.png"), 4);
-    fontBold.loadFont(textSurface, textTextureAtlas.getSection("assets/textures/fonts/font_bold.png"), 4);
-
-    textTexture.loadSurface(textSurface);
-
-    IMG_SavePNG(textSurface, "textAtlas.png");
-
-    SDL_FreeSurface(textSurface);
+    FontFactory::loadFont("font", fontTextureAtlas, font);
 
     engine.changeScene(new MenuScene());
 }
