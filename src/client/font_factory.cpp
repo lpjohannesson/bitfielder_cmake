@@ -11,6 +11,7 @@ void FontFactory::loadFont(std::string name, const TextureAtlas &textureAtlas, F
     std::string json;
     
     if (!FileLoader::loadText(jsonPath.c_str(), json)) {
+        std::cout << "Font \"" << jsonPath << "\" could not be found." << std::endl;
         return;
     }
 
