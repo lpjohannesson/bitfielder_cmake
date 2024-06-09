@@ -26,7 +26,10 @@ void SpriteRenderer::createIndexBuffer() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
-void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program) const {
+void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program, const Texture &texture) const {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
+
 	glUseProgram(program.getGLProgram());
 
 	glBindVertexArray(mesh.getGLVertexArray());

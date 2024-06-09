@@ -50,6 +50,7 @@ add_executable(client
     src/client/local_server_connection.cpp
     src/client/remote_server_connection.cpp
     src/client/font_factory.cpp
+    src/client/option_list.cpp
     
     src/client/world/client_content.cpp
     src/client/world/world_renderer.cpp

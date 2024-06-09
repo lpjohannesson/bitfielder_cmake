@@ -13,22 +13,38 @@ int Font::getCharacterIndex(char c) {
     return c - 32;
 }
 
-void Font::drawText(std::string text, SpriteBatch &spriteBatch, glm::vec2 position) {
+void Font::drawText(std::string text, FontProperties &properties) {
     Sprite sprite;
 
-    sprite.box.start.y = position.y;
-    sprite.box.size = glm::vec2(frameSize) / 16.0f;
+    sprite.box.start.y = properties.position.y;
+    sprite.box.size = frameSize;
+    sprite.color = properties.color;
 
-    float spacing = 0;
+    float offsetX;
+    
+    if (properties.centered) {
+        float lineLength = 0;
+
+        for (int i = 0; i < text.length(); i++) {
+            lineLength += spacings[getCharacterIndex(text.at(i))];
+        }
+
+        offsetX = lineLength * -0.5f;
+    }
+    else {
+        offsetX = 0.0f;
+    }
+
+    float spacing = 0.0f;
 
     for (int i = 0; i < text.length(); i++) {
         // Draw character
-        sprite.box.start.x = position.x + spacing / 16.0f;
+        sprite.box.start.x = offsetX + properties.position.x + spacing;
 
         int characterIndex = getCharacterIndex(text.at(i));
         sprite.uvBox = frames.frames.at(characterIndex);
 
-        spriteBatch.drawSprite(sprite);
+        properties.spriteBatch->drawSprite(sprite);
 
         // Move forward
         spacing += spacings[characterIndex];

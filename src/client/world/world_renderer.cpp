@@ -7,13 +7,11 @@
 using namespace bf;
 
 void WorldRenderer::loadTextureAtlas() {
-    // Load all images to surface
     std::vector<std::string> texturePaths;
 	FileLoader::getFilePaths("assets/textures/world", texturePaths);
 
 	SDL_Surface *surface = textureAtlas.loadSurface(texturePaths);
 
-    // Upload to texture and delete
 	texture.loadSurface(surface);
 	SDL_FreeSurface(surface);
 }
@@ -48,9 +46,6 @@ void WorldRenderer::render(const WorldScene &scene) {
 
     BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStartX, blockEndX);
 
-    glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
-
     glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, shadowBuffer.texture.getGLTexture());
 
@@ -72,10 +67,10 @@ void WorldRenderer::render(const WorldScene &scene) {
             continue;
         }
 
-        client->spriteRenderer.renderMesh(blockMesh->frontMesh, shadowSpriteProgram);
+        client->spriteRenderer.renderMesh(blockMesh->frontMesh, shadowSpriteProgram, texture);
     }
 
-    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, shadowSpriteProgram);
+    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, shadowSpriteProgram, texture);
 
     // Render main scene
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -87,11 +82,11 @@ void WorldRenderer::render(const WorldScene &scene) {
             continue;
         }
 
-        client->spriteRenderer.renderMesh(blockMesh->backMesh, backSpriteProgram);
-        client->spriteRenderer.renderMesh(blockMesh->frontMesh, client->spriteProgram);
+        client->spriteRenderer.renderMesh(blockMesh->backMesh, backSpriteProgram, texture);
+        client->spriteRenderer.renderMesh(blockMesh->frontMesh, client->spriteProgram, texture);
     }
 
-    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, client->spriteProgram);
+    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, client->spriteProgram, texture);
 }
 
 WorldRenderer::WorldRenderer(WorldScene &scene) :
