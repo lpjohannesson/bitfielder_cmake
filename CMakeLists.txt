@@ -126,10 +126,11 @@ find_package(unofficial-enet CONFIG REQUIRED)
 target_link_libraries(client PRIVATE unofficial::enet::enet)
 target_link_libraries(server PRIVATE unofficial::enet::enet)
 
-target_link_libraries(client PRIVATE ws2_32)
-target_link_libraries(server PRIVATE ws2_32)
+if (WIN32)
+    target_link_libraries(client PRIVATE ws2_32)
+    target_link_libraries(server PRIVATE ws2_32)
+endif()
 
 set(RapidJSON_DIR vcpkg_installed/x64-windows/share/rapidjson)
 find_package(RapidJSON CONFIG REQUIRED)
 target_link_libraries(client PRIVATE rapidjson)
-
