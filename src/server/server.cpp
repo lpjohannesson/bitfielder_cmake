@@ -9,131 +9,115 @@
 
 using namespace bf;
 
-void Server::addClient(ClientConnection *client) {
-    // Create new player object
-    client->player = world.entities.spawnEntity();
-
-    world.content.createPlayer(client->player, world);
-
-    // Send new player between clients
+void Server::broadcastPacket(Packet &packet, ClientConnection *client) {
     for (ClientConnection *otherClient : clients) {
-        writeRemotePlayer(client, otherClient->player);
-        writeRemotePlayer(otherClient, client->player);
-    }
+        if (client == otherClient) {
+            continue;
+        }
 
-    clients.push_back(client);
-
-    // Load chunks
-    for (int i = 0; i < 10; i++) {
-        writeBlockChunk(client, world.map.getChunk(i));
+        otherClient->writePacket(packet);
     }
 }
 
+void Server::addClient(ClientConnection *client) {
+    // Create new player object
+    client->player = world.entities.spawnEntity();
+    world.content.createPlayer(client->player, world);
+
+    // Send world to new player
+    Packet packet;
+
+    for (ClientConnection *otherClient : clients) {
+        writeRemotePlayer(packet, otherClient->player);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        writeBlockChunk(packet, world.map.getChunk(i));
+    }
+
+    clients.push_back(client);
+    client->writePacket(packet);
+
+    // Send new player to others
+    Packet otherPacket;
+    writeRemotePlayer(otherPacket, client->player);
+
+    broadcastPacket(otherPacket, client);
+}
+
 void Server::removeClient(ClientConnection *client) {
+    clients.erase(std::remove(clients.begin(), clients.end(), client));
+
     // Destroy entity, keep ID
     int playerID = entityRegistry->get<IDComponent>(client->player).id;
     world.entities.despawnEntity(playerID);
 
-    // Erase from client list
-    clients.erase(std::remove(clients.begin(), clients.end(), client));
-
     // Send disconnection to others
-    for (ClientConnection *otherClient : clients) {
-        writeDespawnEntity(otherClient, playerID);
-    }
+    Packet despawnPacket;
+    writeDespawnEntity(despawnPacket, playerID);
+
+    broadcastPacket(despawnPacket, client);
 }
 
-void Server::writePlayerState(ClientConnection *client, entt::entity player) {
-    writeEntityPosition(client, player);
-    writeEntitySpriteAnimation(client, player);
-    writeEntitySpriteFlip(client, player);
-    writeEntitySpriteAim(client, player);
+void Server::writePlayerState(Packet &packet, entt::entity player) {
+    writeEntityPosition(packet, player);
+    writeEntitySpriteAnimation(packet, player);
+    writeEntitySpriteFlip(packet, player);
+    writeEntitySpriteAim(packet, player);
 }
 
-void Server::writeBlockChunk(ClientConnection *client, BlockChunk *chunk) {
-    Packet packet;
-
+void Server::writeBlockChunk(Packet &packet, BlockChunk *chunk) {
     packet << (int)ServerPacket::BLOCK_CHUNK << chunk->getMapIndex();
 
     // TODO: Chunk compression, host to network data, private chunk data
 
     // Chunk data
     packet.write((char*)&chunk->data, sizeof(BlockChunk::data));
-
-    client->writePacket(packet);
 }
 
-void Server::writeReplaceBlock(ClientConnection *client, glm::ivec2 position, bool onFrontLayer, int blockIndex) {
-    Packet packet;
-
+void Server::writeReplaceBlock(Packet &packet, glm::ivec2 position, bool onFrontLayer, int blockIndex) {
     packet << (int)ServerPacket::REPLACE_BLOCK << position << onFrontLayer << blockIndex;
-
-    client->writePacket(packet);
 }
 
-void Server::writeDespawnEntity(ClientConnection *client, int entityID) {
-    Packet packet;
-
+void Server::writeDespawnEntity(Packet &packet, int entityID) {
     packet << (int)ServerPacket::DESPAWN_ENTITY << entityID;
-
-    client->writePacket(packet);
 }
 
-void Server::writeEntityPosition(ClientConnection *client, entt::entity entity) {
-    Packet packet;
-
+void Server::writeEntityPosition(Packet &packet, entt::entity entity) {
     int entityID = entityRegistry->get<IDComponent>(entity).id;
     glm::vec2 position = entityRegistry->get<PositionComponent>(entity).position;
 
     packet << (int)ServerPacket::ENTITY_POSITION << entityID << position;
-
-    client->writePacket(packet);
 }
 
-void Server::writeEntitySpriteAnimation(ClientConnection *client, entt::entity entity) {
-    Packet packet;
-
+void Server::writeEntitySpriteAnimation(Packet &packet, entt::entity entity) {
     int entityID = entityRegistry->get<IDComponent>(entity).id;
     SpriteAnimationComponent &animation = entityRegistry->get<SpriteAnimationComponent>(entity);
 
     packet << (int)ServerPacket::ENTITY_SPRITE_ANIMATION << entityID << animation.animationIndex;
-
-    client->writePacket(packet);
 }
 
-void Server::writeEntitySpriteFlip(ClientConnection *client, entt::entity entity) {
-    Packet packet;
-
+void Server::writeEntitySpriteFlip(Packet &packet, entt::entity entity) {
     int entityID = entityRegistry->get<IDComponent>(entity).id;
     SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(entity);
 
     packet << (int)ServerPacket::ENTITY_SPRITE_FLIP << entityID << spriteFlip.flipX;
-
-    client->writePacket(packet);
 }
 
-void Server::writeEntitySpriteAim(ClientConnection *client, entt::entity entity) {
-    Packet packet;
-
+void Server::writeEntitySpriteAim(Packet &packet, entt::entity entity) {
     int entityID = entityRegistry->get<IDComponent>(entity).id;
     AimComponent &aim = entityRegistry->get<AimComponent>(entity);
 
     packet << (int)ServerPacket::ENTITY_SPRITE_AIM << entityID << aim.aim;
-
-    client->writePacket(packet);
 }
 
-void Server::writeRemotePlayer(ClientConnection *client, entt::entity player) {
+void Server::writeRemotePlayer(Packet &packet, entt::entity player) {
     // TODO: Spawn entity on client after state recieved
-    Packet packet;
-
     int entityID = entityRegistry->get<IDComponent>(player).id;
 
     packet << (int)ServerPacket::REMOTE_PLAYER << entityID;
-
-    client->writePacket(packet);
     
-    writePlayerState(client, player);
+    writePlayerState(packet, player);
 }
 
 void Server::readPlayerState(ClientConnection *client, Packet &packet) {
@@ -146,13 +130,10 @@ void Server::readPlayerState(ClientConnection *client, Packet &packet) {
     packet >> position.position >> spriteAnimation.animationIndex >> spriteFlip.flipX >> aim.aim;
 
     // TODO: Make timed polls
-    for (ClientConnection *otherClient : clients) {
-        if (client == otherClient) {
-            continue;
-        }
+    Packet castPacket;
+    writePlayerState(castPacket, client->player);
 
-        writePlayerState(otherClient, client->player);
-    }
+    broadcastPacket(castPacket, client);
 }
 
 void Server::readReplaceBlock(ClientConnection *client, Packet &packet) {
@@ -176,16 +157,14 @@ void Server::readReplaceBlock(ClientConnection *client, Packet &packet) {
         blockData->backIndex = blockIndex;
     }
 
-    for (ClientConnection *otherClient : clients) {
-        if (client == otherClient) {
-            continue;
-        }
+    Packet castPacket;
+    writeReplaceBlock(castPacket, position, onFrontLayer, blockIndex);
 
-        writeReplaceBlock(otherClient, position, onFrontLayer, blockIndex);
-    }
+    broadcastPacket(castPacket, client);
 }
 
 void Server::readPacket(ClientConnection *client, Packet &packet) {
+    // TODO: AFK checks
     int packetID;
 	packet >> packetID;
 

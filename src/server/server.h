@@ -14,19 +14,21 @@ namespace bf {
                 World world;
                 BlockMapGenerator mapGenerator;
 
+                void broadcastPacket(Packet &packet, ClientConnection *client);
+
                 void addClient(ClientConnection *client);
                 void removeClient(ClientConnection *client);
 
-                void writePlayerState(ClientConnection *client, entt::entity player);
-
-                void writeBlockChunk(ClientConnection *client, BlockChunk *chunk);
-                void writeReplaceBlock(ClientConnection *client, glm::ivec2 position, bool onFrontLayer, int blockIndex);
-                void writeDespawnEntity(ClientConnection *client, int playerID);
-                void writeEntityPosition(ClientConnection *client, entt::entity entity);
-                void writeEntitySpriteAnimation(ClientConnection *client, entt::entity entity);
-                void writeEntitySpriteFlip(ClientConnection *client, entt::entity entity);
-                void writeEntitySpriteAim(ClientConnection *client, entt::entity entity);
-                void writeRemotePlayer(ClientConnection *client, entt::entity player);
+                void writePacketCount(Packet &packet, int count);
+                void writePlayerState(Packet &packet, entt::entity player);
+                void writeBlockChunk(Packet &packet, BlockChunk *chunk);
+                void writeReplaceBlock(Packet &packet, glm::ivec2 position, bool onFrontLayer, int blockIndex);
+                void writeDespawnEntity(Packet &packet, int playerID);
+                void writeEntityPosition(Packet &packet, entt::entity entity);
+                void writeEntitySpriteAnimation(Packet &packet, entt::entity entity);
+                void writeEntitySpriteFlip(Packet &packet, entt::entity entity);
+                void writeEntitySpriteAim(Packet &packet, entt::entity entity);
+                void writeRemotePlayer(Packet &packet, entt::entity player);
 
                 void readPlayerState(ClientConnection *client, Packet &packet);
                 void readReplaceBlock(ClientConnection *client, Packet &packet);

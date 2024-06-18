@@ -1,5 +1,6 @@
 #include "option_list.h"
 #include "client/client.h"
+#include "core/direction.h"
 
 using namespace bf;
 
@@ -18,7 +19,7 @@ void OptionList::updateMesh() {
         fontProperties.position.y = i * font.lineHeight;
 
         if (i == selectedIndex) {
-            fontProperties.color = { 1.0f, 1.0f, 0.0f, 1.0f };
+            fontProperties.color = { 1.0f, 0.5f, 0.0f, 1.0f };
         }
         else {
             fontProperties.color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -36,7 +37,18 @@ void OptionList::setOptions(const std::vector<std::string> &options) {
 }
 
 void OptionList::update() {
+    int selectDirection = 
+        (int)client->clientInput.down.justPressed() -
+        (int)client->clientInput.up.justPressed();
     
+    if (selectDirection != 0) {
+        selectedIndex = Direction::posmod(selectedIndex + selectDirection, options.size());
+        updateMesh();
+    }
+
+    if (client->clientInput.jump.justPressed()) {
+        
+    }
 }
 
 void OptionList::render() {

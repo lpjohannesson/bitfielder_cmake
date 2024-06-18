@@ -8,6 +8,8 @@ namespace bf {
         std::vector<char> data;
         int dataPosition = 0;
 
+        bool ended() const;
+
         void write(const char *value, int size);
         char* read(int size);
 

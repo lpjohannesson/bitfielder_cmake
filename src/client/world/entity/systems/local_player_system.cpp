@@ -73,16 +73,7 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
 
     // Select item with wrap-around
     int nextBlockIndex = localPlayer.selectedBlockIndex + selectDirection;
-    int blockCount = scene->world.blocks.blocks.size();
-
-    if (nextBlockIndex < 1) {
-        nextBlockIndex = blockCount - 1;
-    }
-    else if (nextBlockIndex >= blockCount) {
-        nextBlockIndex = 1;
-    }
-
-    localPlayer.selectedBlockIndex = nextBlockIndex;
+    localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, scene->world.blocks.blocks.size());
 }
 
 void LocalPlayerSystem::applyAim(LocalPlayerData &playerData) {

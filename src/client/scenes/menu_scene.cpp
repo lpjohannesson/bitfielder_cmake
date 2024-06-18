@@ -4,6 +4,10 @@
 
 using namespace bf;
 
+void MenuScene::update() {
+    optionList.update();
+}
+
 void MenuScene::render() {
     engine->renderer.clearScreen({ 0.0f, 0.5f, 0.5f, 1.0f });
 

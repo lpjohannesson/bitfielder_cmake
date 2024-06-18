@@ -15,6 +15,7 @@ namespace bf {
 
         OptionList optionList;
 
+        void update() override;
         void render() override;
 
         void start() override;

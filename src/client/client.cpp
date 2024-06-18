@@ -4,6 +4,7 @@
 #include "font_factory.h"
 #include "scenes/menu_scene.h"
 #include "scenes/local_world_scene.h"
+#include "scenes/remote_world_scene.h"
 
 using namespace bf;
 
@@ -22,5 +23,5 @@ Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "as
 
     FontFactory::loadFont("font", fontTextureAtlas, font);
 
-    engine.changeScene(new MenuScene());
+    engine.changeScene(new RemoteWorldScene("localhost", 1234));
 }

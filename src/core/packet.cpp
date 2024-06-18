@@ -3,6 +3,10 @@
 
 using namespace bf;
 
+bool Packet::ended() const {
+    return dataPosition >= data.size();
+}
+
 void Packet::write(const char *value, int size) {
     // Append data
     data.insert(data.end(), value, value + size);

@@ -229,41 +229,43 @@ void WorldScene::readRemotePlayer(Packet &packet) {
 }
 
 void WorldScene::readPacket(Packet &packet) {
-	int packetID;
-	packet >> packetID;
+	while (!packet.ended()) {
+		int packetID;
+		packet >> packetID;
 
-	switch ((ServerPacket)packetID) {
-	case ServerPacket::BLOCK_CHUNK:
-		readBlockChunk(packet);
-		break;
+		switch ((ServerPacket)packetID) {
+		case ServerPacket::BLOCK_CHUNK:
+			readBlockChunk(packet);
+			break;
 
-	case ServerPacket::REPLACE_BLOCK:
-		readReplaceBlock(packet);
-		break;
-	
-	case ServerPacket::DESPAWN_ENTITY:
-		readDespawnEntity(packet);
-		break;
-	
-	case ServerPacket::ENTITY_POSITION:
-		readEntityPosition(packet);
-		break;
+		case ServerPacket::REPLACE_BLOCK:
+			readReplaceBlock(packet);
+			break;
+		
+		case ServerPacket::DESPAWN_ENTITY:
+			readDespawnEntity(packet);
+			break;
+		
+		case ServerPacket::ENTITY_POSITION:
+			readEntityPosition(packet);
+			break;
 
-	case ServerPacket::ENTITY_SPRITE_ANIMATION:
-		readEntitySpriteAnimation(packet);
-		break;
+		case ServerPacket::ENTITY_SPRITE_ANIMATION:
+			readEntitySpriteAnimation(packet);
+			break;
 
-	case ServerPacket::ENTITY_SPRITE_FLIP:
-		readEntitySpriteFlip(packet);
-		break;
+		case ServerPacket::ENTITY_SPRITE_FLIP:
+			readEntitySpriteFlip(packet);
+			break;
 
-	case ServerPacket::ENTITY_SPRITE_AIM:
-		readEntitySpriteAim(packet);
-		break;
-	
-	case ServerPacket::REMOTE_PLAYER:
-		readRemotePlayer(packet);
-		break;
+		case ServerPacket::ENTITY_SPRITE_AIM:
+			readEntitySpriteAim(packet);
+			break;
+		
+		case ServerPacket::REMOTE_PLAYER:
+			readRemotePlayer(packet);
+			break;
+		}
 	}
 }
 
