@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 namespace bf {
 	class SpriteRenderer;

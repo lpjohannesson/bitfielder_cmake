@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <SDL2/SDL.h>
 
 namespace bf {

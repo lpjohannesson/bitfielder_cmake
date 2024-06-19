@@ -1,5 +1,5 @@
 #include "engine.h"
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "core/game_time.h"
 
@@ -133,8 +133,7 @@ Engine::Engine() : fullscreenAction(input) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	glewExperimental = GL_TRUE;
-	glewInit();
+	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
 	updateSize();
 

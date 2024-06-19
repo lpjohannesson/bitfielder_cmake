@@ -4,7 +4,7 @@
     "libpng",
     "sdl2",
     "sdl2-image",
-    "glew",
+    "glad",
     "glm",
     "entt",
     "enet",

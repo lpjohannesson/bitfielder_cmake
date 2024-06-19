@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include "sprite_mesh.h"
 #include "sprite_program.h"
 #include "gfx/core/texture.h"

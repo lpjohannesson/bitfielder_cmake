@@ -124,8 +124,8 @@ target_link_libraries(server PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2
 find_package(SDL2_image CONFIG REQUIRED)
 target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
 
-find_package(GLEW REQUIRED)
-target_link_libraries(client PRIVATE GLEW::GLEW)
+find_package(glad CONFIG REQUIRED)
+target_link_libraries(client PRIVATE glad::glad)
 
 find_package(EnTT CONFIG REQUIRED)
 target_link_libraries(client PRIVATE EnTT::EnTT)
