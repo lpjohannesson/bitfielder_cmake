@@ -10,7 +10,7 @@ Box2 SpriteAnimation::getFrame(const SpriteFrames &frames, float time) const {
         sequenceIndex = 0;
     }
     else {
-        int timeIndex = glm::floor(time / duration * sequence.size());
+        int timeIndex = (int)glm::floor(time / duration * sequence.size());
         sequenceIndex = glm::min((int)sequence.size() - 1, timeIndex);
     }
 

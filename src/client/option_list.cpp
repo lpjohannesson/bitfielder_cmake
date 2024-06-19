@@ -16,7 +16,7 @@ void OptionList::updateMesh() {
     for (int i = 0; i < options.size(); i++) {
         const std::string &option = options[i];
 
-        fontProperties.position.y = i * font.lineHeight;
+        fontProperties.position.y = (float)i * font.lineHeight;
 
         if (i == selectedIndex) {
             fontProperties.color = { 1.0f, 0.5f, 0.0f, 1.0f };
@@ -42,7 +42,7 @@ void OptionList::update() {
         (int)client->clientInput.up.justPressed();
     
     if (selectDirection != 0) {
-        selectedIndex = Direction::posmod(selectedIndex + selectDirection, options.size());
+        selectedIndex = Direction::posmod(selectedIndex + selectDirection, (int)options.size());
         updateMesh();
     }
 

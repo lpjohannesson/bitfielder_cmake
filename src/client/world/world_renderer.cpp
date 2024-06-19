@@ -41,8 +41,8 @@ void WorldRenderer::render(const WorldScene &scene) {
     // Get visible chunks, including shadows
     Box2 screenBox = scene.worldRenderer.getScreenBox();
 
-    int blockStartX = glm::floor(screenBox.start.x - SHADOW_OFFSET);
-    int blockEndX = glm::floor(screenBox.start.x + screenBox.size.x);
+    int blockStartX = (int)glm::floor(screenBox.start.x - SHADOW_OFFSET);
+    int blockEndX = (int)glm::floor(screenBox.start.x + screenBox.size.x);
 
     BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStartX, blockEndX);
 

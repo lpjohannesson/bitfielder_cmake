@@ -16,7 +16,7 @@ glm::ivec2 chunkPosition = worldToChunk(position, chunkIndex);\
 return chunk->getBlockChecked(chunkPosition);
 
 int BlockChunk::getChunkIndex(int blockX) {
-	return glm::floor(blockX / (float)SIZE.x);
+	return (int)glm::floor(blockX / (float)SIZE.x);
 }
 
 glm::ivec2 BlockChunk::worldToChunk(glm::ivec2 position, int chunkIndex) {

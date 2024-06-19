@@ -12,5 +12,8 @@ SpriteFrames *SpriteAimSystem::getAimFrames(const SpriteAimComponent &spriteAim,
 
     case 1:
         return spriteAim.downFrames;
+
+    default:
+        return spriteAim.forwardFrames;
     }
 }

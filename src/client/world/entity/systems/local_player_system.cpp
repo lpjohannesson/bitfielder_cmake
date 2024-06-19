@@ -73,7 +73,7 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
 
     // Select item with wrap-around
     int nextBlockIndex = localPlayer.selectedBlockIndex + selectDirection;
-    localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, scene->world.blocks.blocks.size());
+    localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, (int)scene->world.blocks.blocks.size());
 }
 
 void LocalPlayerSystem::applyAim(LocalPlayerData &playerData) {
@@ -100,7 +100,7 @@ void LocalPlayerSystem::applyAim(LocalPlayerData &playerData) {
     }
 
     // Aim vertically
-    int nextAim = movement.y;
+    int nextAim = (int)movement.y;
 
     if (nextAim != aim.aim) {
         playerData.stateChanged = true;
@@ -248,8 +248,6 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
     }
 
     // Replace block
-    PlayerAnimation animationIndex;
-
     if (placing) {
         scene->placeBlock(*blockPosition, onFrontLayer, blockData, localPlayer.selectedBlockIndex);
     }
@@ -257,6 +255,7 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
         scene->destroyBlock(*blockPosition, onFrontLayer, blockData);
     }
 
+    // Play animation
     SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)PlayerAnimation::PUNCH);
 
     // Send to server

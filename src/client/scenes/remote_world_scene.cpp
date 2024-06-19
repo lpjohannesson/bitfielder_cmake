@@ -14,7 +14,7 @@ void RemoteWorldScene::update() {
     
         case ENET_EVENT_TYPE_RECEIVE: {
             Packet packet;
-            packet.write((char*)event.packet->data, event.packet->dataLength);
+            packet.write((char*)event.packet->data, (int)event.packet->dataLength);
             readPacket(packet);
 
             enet_packet_destroy(event.packet);

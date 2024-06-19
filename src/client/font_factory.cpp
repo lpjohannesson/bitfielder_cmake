@@ -30,7 +30,7 @@ void FontFactory::loadFont(std::string name, const TextureAtlas &textureAtlas, F
 
     auto spacings = document["spacings"].GetArray();
 
-    for (int i = 0; i < spacings.Size(); i++) {
+    for (int i = 0; i < (int)spacings.Size(); i++) {
         font.spacings[i] = spacings[i].GetInt();
     }
 }

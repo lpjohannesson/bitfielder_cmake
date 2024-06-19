@@ -78,19 +78,19 @@ using namespace bf;
     int blockForwardStart, blockForwardEnd;\
     \
     if (velocity.velocity.AXIS < 0.0f) {\
-        blockForwardStart = glm::floor(position.AXIS);\
-        blockForwardEnd = glm::floor(endPosition);\
+        blockForwardStart = (int)glm::floor(position.AXIS);\
+        blockForwardEnd = (int)glm::floor(endPosition);\
     }\
     else {\
-        blockForwardStart = glm::floor(position.AXIS + body.size.AXIS);\
-        blockForwardEnd = glm::floor(endPosition + body.size.AXIS);\
+        blockForwardStart = (int)glm::floor(position.AXIS + body.size.AXIS);\
+        blockForwardEnd = (int)glm::floor(endPosition + body.size.AXIS);\
     }\
     \
     int blockForwardSign = glm::sign(blockForwardEnd - blockForwardStart);\
     \
     /* Find extents along other axis */\
-    int blockSideStart = glm::floor(mover.start.OTHER_AXIS);\
-    int blockSideEnd = glm::floor(mover.start.OTHER_AXIS + mover.size.OTHER_AXIS);\
+    int blockSideStart = (int)glm::floor(mover.start.OTHER_AXIS);\
+    int blockSideEnd = (int)glm::floor(mover.start.OTHER_AXIS + mover.size.OTHER_AXIS);\
     \
     /* Get block sample */\
     int blockSampleStart = glm::min(BLOCK_SAMPLE_START, BLOCK_SAMPLE_END);\

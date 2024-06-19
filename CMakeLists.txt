@@ -101,10 +101,21 @@ add_executable(server
 
     src/server/main.cpp)
 
+target_compile_definitions(client PUBLIC GLM_ENABLE_EXPERIMENTAL)
+target_compile_definitions(server PUBLIC GLM_ENABLE_EXPERIMENTAL)
+
 add_custom_command(TARGET client POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
     $<TARGET_FILE_DIR:client>/assets)
+
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/share)
+
+find_package(ZLIB REQUIRED)
+target_link_libraries(client PRIVATE ZLIB::ZLIB)
+
+find_package(PNG REQUIRED)
+target_link_libraries(client PRIVATE PNG::PNG)
 
 find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
@@ -116,12 +127,10 @@ target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image
 find_package(GLEW REQUIRED)
 target_link_libraries(client PRIVATE GLEW::GLEW)
 
-set(EnTT_DIR vcpkg_installed/x64-windows/share/entt)
 find_package(EnTT CONFIG REQUIRED)
 target_link_libraries(client PRIVATE EnTT::EnTT)
 target_link_libraries(server PRIVATE EnTT::EnTT)
 
-set(unofficial-enet_DIR vcpkg_installed/x64-windows/share/unofficial-enet)
 find_package(unofficial-enet CONFIG REQUIRED)
 target_link_libraries(client PRIVATE unofficial::enet::enet)
 target_link_libraries(server PRIVATE unofficial::enet::enet)
@@ -131,6 +140,5 @@ if (WIN32)
     target_link_libraries(server PRIVATE ws2_32)
 endif()
 
-set(RapidJSON_DIR vcpkg_installed/x64-windows/share/rapidjson)
 find_package(RapidJSON CONFIG REQUIRED)
 target_link_libraries(client PRIVATE rapidjson)
