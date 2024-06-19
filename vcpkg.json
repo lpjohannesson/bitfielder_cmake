@@ -6,7 +6,10 @@
     "glm",
     "entt",
     "enet",
-    "winsock2",
+    {
+      "name": "winsock2",
+      "platform": "windows"
+    },
     "rapidjson"
   ]
 }
