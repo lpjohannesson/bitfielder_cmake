@@ -1,5 +1,10 @@
 #include "packet.h"
-#include <winsock.h>
+
+#ifdef _WIN32
+	#include <winsock.h>
+#else
+	#include <arpa/inet.h>
+#endif
 
 using namespace bf;
 
