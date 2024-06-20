@@ -7,6 +7,41 @@ using namespace bf;
 
 Engine *bf::engine;
 
+SDL_GameControllerButton Engine::getControllerJoyButton(Uint8 button) {
+	SDL_GameControllerButton buttons[] {
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+	};
+
+	return buttons[button];
+}
+
 void Engine::endCurrentScene() {
 	if (currentScene != nullptr) {
 		currentScene->end();
@@ -81,6 +116,14 @@ bool Engine::update() {
 		case SDL_CONTROLLERAXISMOTION:
 			input.joyAxisMotion((SDL_GameControllerAxis)event.caxis.axis, event.caxis.value);
 			break;
+
+		case SDL_JOYBUTTONDOWN:
+			input.joyButtonDown(getControllerJoyButton(event.jbutton.button));
+			break;
+
+		case SDL_JOYBUTTONUP:
+			input.joyButtonUp(getControllerJoyButton(event.jbutton.button));
+			break;
 		}
 	}
 
@@ -116,7 +159,7 @@ Engine::Engine() : fullscreenAction(input) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
 	//SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 
 	windowSize = { 1280, 720 };
 
@@ -139,6 +182,12 @@ Engine::Engine() : fullscreenAction(input) {
 
 	// Setup joysticks
 	SDL_JoystickEventState(SDL_ENABLE);
+
+	if (SDL_IsGameController(0)) {
+		gameController = SDL_GameControllerOpen(0);
+	}
+
+	SDL_JoystickOpen(0);
 }
 
 Engine::~Engine() {

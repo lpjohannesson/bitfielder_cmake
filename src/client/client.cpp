@@ -23,5 +23,5 @@ Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "as
 
     FontFactory::loadFont("font", fontTextureAtlas, font);
 
-    engine.changeScene(new RemoteWorldScene("localhost", 1234));
+    engine.changeScene(new LocalWorldScene());
 }

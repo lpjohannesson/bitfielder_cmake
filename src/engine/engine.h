@@ -21,6 +21,8 @@ namespace bf {
 
 		bool fullscreen = false;
 
+		SDL_GameControllerButton getControllerJoyButton(Uint8 button);
+
 		void endCurrentScene();
 
 		void updateSize();
