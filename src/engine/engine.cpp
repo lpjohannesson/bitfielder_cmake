@@ -110,6 +110,11 @@ bool Engine::update() {
 Engine::Engine() : fullscreenAction(input) {
 	engine = this;
 
+	// Use OpenGL
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+
 	//SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 
@@ -121,26 +126,19 @@ Engine::Engine() : fullscreenAction(input) {
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		windowSize.x, windowSize.y,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
 	glContext = SDL_GL_CreateContext(window);
 
+	gladLoadGLLoader(SDL_GL_GetProcAddress);
+
 	// Enable vsync
 	SDL_GL_SetSwapInterval(1);
-
-	// Use OpenGL
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-
-	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
 	updateSize();
 
 	// Setup joysticks
 	SDL_JoystickEventState(SDL_ENABLE);
-
-	input.addKeyboardAction(fullscreenAction, SDLK_F11);
 }
 
 Engine::~Engine() {

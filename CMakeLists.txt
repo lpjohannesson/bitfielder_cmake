@@ -104,10 +104,7 @@ add_executable(server
 target_compile_definitions(client PUBLIC GLM_ENABLE_EXPERIMENTAL)
 target_compile_definitions(server PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
-add_custom_command(TARGET client POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:client>/assets)
+file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/share)
 

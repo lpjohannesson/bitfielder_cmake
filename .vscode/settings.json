@@ -6,6 +6,9 @@
     "cmake.debugConfig": {
         "console": "integratedTerminal",
     },
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "/home/admin1/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    },
     "vcpkg.target.installDependencies": true,
     "vcpkg.target.preferSystemLibs": false,
     "vcpkg.target.useManifest": false,
