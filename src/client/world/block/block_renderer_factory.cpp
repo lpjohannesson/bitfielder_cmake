@@ -55,14 +55,7 @@ void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entit
     TextureSection texture = getParticleTexture(scene, document.GetObject());
 
     // Load frames
-    int frameCount;
-
-    if (document.HasMember("frameCount")) {
-        frameCount = document["frameCount"].GetInt();
-    }
-    else {
-        frameCount = 1;
-    }
+    int frameCount = document["frameCount"].GetInt();
 
     blockParticle.frames.loadFrames(texture.uvBox, { frameCount, 1 });
 

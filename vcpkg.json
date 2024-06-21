@@ -1,17 +1,19 @@
 {
   "dependencies": [
-    "zlib",
-    "libpng",
-    "sdl2",
-    "sdl2-image",
-    "glad",
     "glm",
+    "sdl2",
     "entt",
     "enet",
+    "rapidjson",
+
+    "zlib",
+    "libpng",
+    "sdl2-image",
+    "glad",
+    
     {
       "name": "winsock2",
       "platform": "windows"
-    },
-    "rapidjson"
+    }
   ]
 }
