@@ -5,6 +5,7 @@
 #include "entity/systems/sprite_animator_system.h"
 #include "entity/systems/local_player_system.h"
 #include "entity/systems/particle_system.h"
+#include "entity/systems/effect_sprite_system.h"
 
 namespace bf {
     class WorldScene;
@@ -18,9 +19,12 @@ namespace bf {
         SpriteFrames playerForwardFrames, playerUpFrames, playerDownFrames;
         SpriteAnimationSet playerAnimations;
 
+        EffectSpriteProperties placeEffectProperties, destroyEffectProperties;
+
         SpriteAnimatorSystem spriteAnimatorSystem;
         LocalPlayerSystem localPlayerSystem;
         ParticleSystem particleSystem;
+        EffectSpriteSystem effectSpriteSystem;
 
         entt::entity player;
 

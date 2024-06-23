@@ -4,7 +4,8 @@
 using namespace bf;
 
 SDL_GameControllerButton Input::getControllerJoyButton(Uint8 button) {
-	SDL_GameControllerButton buttons[] {
+#ifdef NX
+    SDL_GameControllerButton buttons[] {
 		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
 		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
 		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X,
@@ -36,6 +37,11 @@ SDL_GameControllerButton Input::getControllerJoyButton(Uint8 button) {
 	};
 
 	return buttons[button];
+
+#else
+    return SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_INVALID;
+
+#endif
 }
 
 void Input::applyStickInput(float &axis, const float &nextAxis, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton) {

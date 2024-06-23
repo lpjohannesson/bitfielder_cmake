@@ -31,4 +31,4 @@ ClientInput::ClientInput() {
     input.addJoyButtonAction(pause, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START);
     input.addJoyButtonAction(zoomIn, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK);
     input.addJoyButtonAction(zoomOut, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK);
-}
+} 

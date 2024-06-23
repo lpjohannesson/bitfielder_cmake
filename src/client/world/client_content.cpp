@@ -42,6 +42,7 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene) {
 ClientContent::ClientContent(WorldScene &scene) {
 	World &world = scene.world;
 	WorldRenderer &worldRenderer = scene.worldRenderer;
+	TextureAtlas &textureAtlas = worldRenderer.textureAtlas;
 
 	// Add entity systems in order
 	world.entities.addSystem(localPlayerSystem);
@@ -51,11 +52,12 @@ ClientContent::ClientContent(WorldScene &scene) {
 	particleSystem.loadScene(scene);
 
 	world.entities.addSystem(spriteAnimatorSystem);
+	world.entities.addSystem(effectSpriteSystem);
 
 	// Create player animations
-    TextureSection playerForwardTexture = worldRenderer.textureAtlas.getSection("assets/textures/world/player/forward.png");
-	TextureSection playerUpTexture = worldRenderer.textureAtlas.getSection("assets/textures/world/player/up.png");
-	TextureSection playerDownTexture = worldRenderer.textureAtlas.getSection("assets/textures/world/player/down.png");
+    TextureSection playerForwardTexture = textureAtlas.getSection("assets/textures/world/player/forward.png");
+	TextureSection playerUpTexture = textureAtlas.getSection("assets/textures/world/player/up.png");
+	TextureSection playerDownTexture = textureAtlas.getSection("assets/textures/world/player/down.png");
 
     playerForwardFrames.loadFrames(playerForwardTexture.uvBox, { 4, 3 });
 	playerUpFrames.loadFrames(playerUpTexture.uvBox, { 4, 3 });
@@ -71,4 +73,19 @@ ClientContent::ClientContent(WorldScene &scene) {
 	// TODO: Recieve local player ID
 	player = world.entities.spawnEntity(-1);
 	createLocalPlayer(player, scene);
+
+	// Create effect sprites
+	placeEffectProperties.createProperties(
+        { 1.0f, 1.0f },
+        textureAtlas.getSection("assets/textures/world/effects/place.png").uvBox,
+        { 3, 1 },
+		{ 0, 1, 2 },
+		0.3f);
+
+	destroyEffectProperties.createProperties(
+        { 1.0f, 1.0f },
+        textureAtlas.getSection("assets/textures/world/effects/destroy.png").uvBox,
+        { 3, 1 },
+		{ 0, 1, 2 },
+		0.3f);
 }

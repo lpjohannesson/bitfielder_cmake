@@ -19,8 +19,6 @@ namespace bf {
     public:
         static constexpr float SHADOW_OFFSET = 2.0f / 16.0f;
 
-        inline Box2 getScreenBox() const { return screenBox; }
-
         TextureAtlas textureAtlas;
         Texture texture;
 
@@ -29,6 +27,10 @@ namespace bf {
 
         BlockMapRenderer map;
         EntityRenderer entities;
+
+        glm::vec4 backgroundColor;
+
+        inline Box2 getScreenBox() const { return screenBox; }
 
         void updateTransforms(const WorldScene &scene);
         void updateSize(glm::ivec2 size, const WorldScene &scene);

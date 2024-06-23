@@ -51,6 +51,9 @@ void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData *b
 		blockData->backIndex = blockIndex;
 	}
 
+	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
+		clientContent.placeEffectProperties);
+
 	updateBlock(position);
 }
 
@@ -65,6 +68,9 @@ void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData 
 		blockIndex = blockData->backIndex;
 		blockData->backIndex = 0;
 	}
+
+	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
+		clientContent.destroyEffectProperties);
 
 	entt::entity block = world.blocks.getBlock(blockIndex);
 	spawnBlockParticles(position, block);
@@ -324,7 +330,6 @@ void WorldScene::update() {
 }
 
 void WorldScene::render() {
-	engine->renderer.clearScreen({ 0.5f, 1.0f, 1.0f, 0.0f });
 	worldRenderer.render(*this);
 
 	if (paused) {

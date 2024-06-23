@@ -8,7 +8,7 @@
 
 using namespace bf;
 
-void ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::vec2 size, Box2 frame, glm::vec4 color) {
+entt::entity ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::vec2 size, Box2 frame, glm::vec4 color) {
     entt::registry &entityRegistry = scene->world.entities.registry;
 
     // Create entity directly, without ID
@@ -18,6 +18,8 @@ void ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::
     entityRegistry.emplace<PositionComponent>(particle, PositionComponent { position });
     entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { velocity, velocity });
     entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { size, -size * 0.5f, frame, color });
+
+    return particle;
 }
 
 void ParticleSystem::spawnParticleExplosion(glm::vec2 position, glm::vec2 size, const SpriteFrames &frames, glm::vec4 color) {

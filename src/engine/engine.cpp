@@ -118,6 +118,8 @@ Engine::Engine() : fullscreenAction(input) {
 
 	updateSize();
 
+	input.addKeyboardAction(fullscreenAction, SDLK_F11);
+
 	// Setup joysticks
 	SDL_JoystickEventState(SDL_ENABLE);
 

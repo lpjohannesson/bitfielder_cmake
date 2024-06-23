@@ -87,6 +87,7 @@ if (CLIENT)
         src/client/world/entity/systems/sprite_animator_system.cpp
         src/client/world/entity/systems/sprite_aim_system.cpp
         src/client/world/entity/systems/particle_system.cpp
+        src/client/world/entity/systems/effect_sprite_system.cpp
         src/client/world/entity/systems/local_player_system.cpp
         
         src/client/scenes/menu_scene.cpp
@@ -95,6 +96,10 @@ if (CLIENT)
         src/client/scenes/remote_world_scene.cpp
 
         src/client/main.cpp)
+    
+    set_target_properties(client
+        PROPERTIES 
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 if (SERVER)
@@ -184,7 +189,8 @@ elseif(NX)
         ${LIBNX_LIBS}/libnx.a)
 
     add_nro_target(client)
-    
 endif()
 
-file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_target(copy-runtime-files ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+    DEPENDS client)

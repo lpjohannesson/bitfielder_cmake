@@ -3,6 +3,7 @@
 #include "client/scenes/world_scene.h"
 #include "client/client.h"
 #include "core/file_loader.h"
+#include "core/color.h"
 
 using namespace bf;
 
@@ -46,6 +47,7 @@ void WorldRenderer::render(const WorldScene &scene) {
 
     BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStartX, blockEndX);
 
+    // Render shadow to framebuffer
     glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, shadowBuffer.texture.getGLTexture());
 
@@ -54,8 +56,7 @@ void WorldRenderer::render(const WorldScene &scene) {
     shadowSpriteProgram.setTransform(shadowViewTransform);
     
     glm::ivec2 windowSize = engine->getWindowSize();
-
-    // Render shadow to framebuffer
+    
     glBindFramebuffer(GL_FRAMEBUFFER, shadowBuffer.getGLFramebuffer());
     glViewport(0, 0, windowSize.x, windowSize.y);
 
@@ -76,7 +77,8 @@ void WorldRenderer::render(const WorldScene &scene) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, windowSize.x, windowSize.y);
 
-    // TODO: Only render visible chunks
+    engine->renderer.clearScreen(backgroundColor);
+
     for (const BlockMesh *blockMesh : blockMeshes.chunks) {
         if (blockMesh == nullptr) {
             continue;
@@ -106,4 +108,6 @@ WorldRenderer::WorldRenderer(WorldScene &scene) :
     glUniform1i(backShadowTextureLocation, 1);
 
     loadTextureAtlas();
+
+    backgroundColor = Color::parseHex("56f9d3");
 }
