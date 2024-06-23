@@ -26,7 +26,7 @@ void FontFactory::loadFont(std::string name, const TextureAtlas &textureAtlas, F
     std::string texturePath = "assets/textures/fonts/" + std::string(document["texture"].GetString()) + ".png";
     font.loadFont(textureAtlas.getSection(texturePath));
 
-    font.lineHeight = document["lineHeight"].GetInt();
+    font.lineHeight = document["lineHeight"].GetFloat();
 
     auto spacings = document["spacings"].GetArray();
 

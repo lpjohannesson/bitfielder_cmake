@@ -4,6 +4,7 @@
 #include "engine/engine.h"
 #include "core/packet_types.h"
 #include "core/game_time.h"
+#include "menu_scene.h"
 #include "client/world/block/block_renderer_factory.h"
 #include "client/world/entity/components/local_player_component.h"
 #include "client/world/entity/components/sprite_aim_component.h"
@@ -275,27 +276,64 @@ void WorldScene::startClient() {
 	writePlayerState();
 }
 
+void WorldScene::updatePauseMenu() {
+	pauseOptionList.update();
+	ListOption *pressedOption = pauseOptionList.getPressedOption();
+
+	if (pressedOption == nullptr) {
+		return;
+	}
+
+	if (pressedOption == &pauseContinueOption) {
+		paused = false;
+		return;
+	}
+
+	if (pressedOption == &pauseTitleOption) {
+		engine->changeScene(new MenuScene());
+		return;
+	}
+}
+
 void WorldScene::updateSize(glm::ivec2 size) {
 	worldRenderer.updateSize(size, *this);
+
+	menuTransform = Client::getMenuTransform();
 }
 
 void WorldScene::update() {
-	float zoomDirection = 
+	if (client->clientInput.pause.justPressed()) {
+		paused = !paused;
+	}
+
+	if (paused) {
+		updatePauseMenu();
+	}
+	else {
+		float zoomDirection = 
         (float)client->clientInput.zoomIn.justPressed() -
         (float)client->clientInput.zoomOut.justPressed();
 	
-	if (zoomDirection != 0.0f) {
-		camera.setZoom(glm::max(1.0f, camera.getZoom() + zoomDirection));
-		worldRenderer.updateTransforms(*this);
+		if (zoomDirection != 0.0f) {
+			camera.setZoom(glm::max(1.0f, camera.getZoom() + zoomDirection));
+			worldRenderer.updateTransforms(*this);
+		}
 	}
 
-	world.update();
 	camera.update(*this);
 }
 
 void WorldScene::render() {
 	engine->renderer.clearScreen({ 0.5f, 1.0f, 1.0f, 0.0f });
 	worldRenderer.render(*this);
+
+	if (paused) {
+		// Render pause screen
+		client->spriteProgram.setTransform(menuTransform);
+		client->spriteRenderer.renderMesh(pauseLogoMesh, client->spriteProgram, worldRenderer.texture);
+
+		pauseOptionList.render();
+	}
 }
 
 void WorldScene::start() {
@@ -305,12 +343,26 @@ void WorldScene::start() {
 
 	camera.start(*this);
 	camera.setZoom(3.0f);
+
+	// Create pause screen
+	TextureSection pausedLogoTexture = worldRenderer.textureAtlas.getSection("assets/textures/world/paused_logo.png");
+	Client::renderLogo(pausedLogoTexture, pauseLogoMesh);
+
+	pauseContinueOption.text = "Continue";
+	pauseTitleOption.text = "Return to title";
+
+	pauseOptionList.setOptions({ &pauseContinueOption, &pauseTitleOption });
 }
 
 void WorldScene::end() {
 	BlockRendererFactory::destroyRenderers(*this);
 }
 
-WorldScene::WorldScene() : worldRenderer(*this), clientContent(*this) {
+WorldScene::WorldScene() :
+	worldRenderer(*this),
+	clientContent(*this),
+	pauseOptionList(optionListRenderer),
+	pauseLogoMesh(client->spriteRenderer) {
+
 	entityRegistry = &world.entities.registry;
 }

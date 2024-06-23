@@ -62,7 +62,12 @@ if (CLIENT)
         src/client/local_server_connection.cpp
         src/client/remote_server_connection.cpp
         src/client/font_factory.cpp
-        src/client/option_list.cpp
+
+        src/client/menu/option_list.cpp
+        src/client/menu/option_list_renderer.cpp
+
+        src/client/menu/text_list_option.cpp
+        src/client/menu/input_list_option.cpp
         
         src/client/world/client_content.cpp
         src/client/world/world_renderer.cpp

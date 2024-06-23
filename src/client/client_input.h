@@ -9,6 +9,7 @@ namespace bf {
 			jump,
 			modifyBlockFront, modifyBlockBack, 
 			selectItemLeft, selectItemRight,
+			pause,
 			zoomIn, zoomOut;
 
         ClientInput();

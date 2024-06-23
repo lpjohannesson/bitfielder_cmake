@@ -13,6 +13,33 @@ int Font::getCharacterIndex(char c) {
     return c - 32;
 }
 
+float Font::getTextLength(std::string text, int end) const {
+    float lineLength = 0;
+
+    for (int i = 0; i < end; i++) {
+        lineLength += spacings[getCharacterIndex(text.at(i))];
+    }
+
+    return lineLength;
+}
+
+glm::vec2 Font::getRenderPosition(std::string text, FontProperties &properties) const {
+    float offsetX;
+    
+    if (properties.centered) {
+        float lineLength = getTextLength(text, text.length());
+        offsetX = lineLength * -0.5f;
+    }
+    else {
+        offsetX = 0.0f;
+    }
+
+    glm::vec2 renderPosition = properties.position;
+    renderPosition.x += offsetX;
+
+    return renderPosition;
+}
+
 void Font::drawText(std::string text, FontProperties &properties) {
     Sprite sprite;
 
@@ -20,34 +47,19 @@ void Font::drawText(std::string text, FontProperties &properties) {
     sprite.box.size = frameSize;
     sprite.color = properties.color;
 
-    float offsetX;
-    
-    if (properties.centered) {
-        float lineLength = 0;
-
-        for (int i = 0; i < text.length(); i++) {
-            lineLength += spacings[getCharacterIndex(text.at(i))];
-        }
-
-        offsetX = lineLength * -0.5f;
-    }
-    else {
-        offsetX = 0.0f;
-    }
+    sprite.box.start = getRenderPosition(text, properties);
 
     float spacing = 0.0f;
 
     for (int i = 0; i < text.length(); i++) {
         // Draw character
-        sprite.box.start.x = offsetX + properties.position.x + spacing;
-
         int characterIndex = getCharacterIndex(text.at(i));
         sprite.uvBox = frames.frames.at(characterIndex);
 
         properties.spriteBatch->drawSprite(sprite);
 
         // Move forward
-        spacing += spacings[characterIndex];
+        sprite.box.start.x += spacings[characterIndex];
     }
 }
 

@@ -20,6 +20,9 @@ namespace bf {
 
 		Font font;
 
+		static glm::mat4 getMenuTransform();
+		static void renderLogo(TextureSection texture, SpriteMesh &mesh);
+
         Client(Engine &engine);
 	};
 

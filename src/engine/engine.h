@@ -8,7 +8,6 @@
 namespace bf {
 	class Engine {
 	private:
-		bool quitting = false;
 		glm::ivec2 windowSize;
 		glm::mat4 windowTransform;
 
@@ -21,8 +20,6 @@ namespace bf {
 
 		bool fullscreen = false;
 
-		SDL_GameControllerButton getControllerJoyButton(Uint8 button);
-
 		void endCurrentScene();
 
 		void updateSize();
@@ -30,6 +27,8 @@ namespace bf {
 	public:
 		inline glm::ivec2 getWindowSize() const { return windowSize; }
 		inline glm::mat4 getWindowTransform() const { return windowTransform; }
+
+		bool quitting = false;
 
 		Renderer renderer;
 		

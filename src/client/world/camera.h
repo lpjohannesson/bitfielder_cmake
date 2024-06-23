@@ -6,6 +6,7 @@ namespace bf {
 
     struct CameraPlayerInfo {
         glm::vec2 position;
+        float aim;
         bool isOnFloor, isModifyingBlock;
     };
 
@@ -20,9 +21,9 @@ namespace bf {
         inline float getZoom() const { return zoom; }
         inline glm::mat4 getTransform() const { return transform; }
 
-        float dragDistanceX, offsetSpeedX, maxOffsetX, panSpeedY, blockPanSpeedY, smooth;
+        float dragDistanceX, dragSpeedX, maxOffsetX, panSpeedY, slowPanSpeedY, aimHeight, smooth;
         
-        glm::vec2 position{}, targetPosition{}, offset{};
+        glm::vec2 position{}, targetPosition{}, offset{}, targetOffset{};
         float targetY;
 
         void setZoom(float zoom);

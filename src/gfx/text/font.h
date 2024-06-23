@@ -24,7 +24,10 @@ namespace bf {
 
 	public:
 		int spacings[FRAME_COUNTS.x * FRAME_COUNTS.y];
-		int lineHeight = 0;
+		float lineHeight = 0.0f;
+
+		float getTextLength(std::string text, int end) const;
+		glm::vec2 getRenderPosition(std::string text, FontProperties &properties) const;
 
 		void drawText(std::string text, FontProperties &properties);
 

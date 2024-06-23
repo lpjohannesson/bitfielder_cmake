@@ -3,12 +3,29 @@
 #include "core/file_loader.h"
 #include "font_factory.h"
 #include "scenes/menu_scene.h"
-#include "scenes/local_world_scene.h"
-#include "scenes/remote_world_scene.h"
 
 using namespace bf;
 
 Client *bf::client;
+
+glm::mat4 Client::getMenuTransform() {
+    return glm::scale(engine->getWindowTransform(), glm::vec3(3.0f));
+}
+
+void Client::renderLogo(TextureSection texture, SpriteMesh &mesh) {
+    SpriteBatch spriteBatch;
+    Sprite logoSprite;
+
+    logoSprite.uvBox = texture.uvBox;
+    logoSprite.box.size = glm::vec2(texture.box.size) * 2.0f;
+
+    // Center bottom
+    logoSprite.box.start.x = -logoSprite.box.size.x * 0.5f;
+    logoSprite.box.start.y = -logoSprite.box.size.y;
+
+    spriteBatch.drawSprite(logoSprite);
+    spriteBatch.uploadMesh(mesh);
+}
 
 Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl") {
     client = this;
@@ -23,5 +40,5 @@ Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "as
 
     FontFactory::loadFont("font", fontTextureAtlas, font);
 
-    engine.changeScene(new LocalWorldScene());
+    engine.changeScene(new MenuScene());
 }

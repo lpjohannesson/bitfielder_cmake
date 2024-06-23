@@ -11,6 +11,8 @@ namespace bf {
 		LocalClientConnection localClientConnection;
 		LocalServerConnection localServerConnection;
         
+		void update() override;
+
         void start() override;
 		void end() override;
 

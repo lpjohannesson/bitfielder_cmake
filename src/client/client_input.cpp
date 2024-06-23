@@ -15,6 +15,7 @@ ClientInput::ClientInput() {
     input.addKeyboardAction(modifyBlockBack, SDLK_c);
     input.addKeyboardAction(selectItemLeft, SDLK_a);
     input.addKeyboardAction(selectItemRight, SDLK_s);
+    input.addKeyboardAction(pause, SDLK_ESCAPE);
     input.addKeyboardAction(zoomIn, SDLK_EQUALS);
     input.addKeyboardAction(zoomOut, SDLK_MINUS);
 
@@ -27,6 +28,7 @@ ClientInput::ClientInput() {
     input.addJoyButtonAction(modifyBlockBack, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B);
     input.addJoyButtonAction(selectItemLeft, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
     input.addJoyButtonAction(selectItemRight, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
-    input.addJoyButtonAction(zoomIn, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START);
-    input.addJoyButtonAction(zoomOut, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK);
+    input.addJoyButtonAction(pause, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START);
+    input.addJoyButtonAction(zoomIn, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK);
+    input.addJoyButtonAction(zoomOut, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK);
 }

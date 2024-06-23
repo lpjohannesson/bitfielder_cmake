@@ -5,6 +5,8 @@
 #include "client/world/world_renderer.h"
 #include "client/world/client_content.h"
 #include "client/world/camera.h"
+#include "client/menu/option_list.h"
+#include "client/menu/text_list_option.h"
 
 namespace bf {
 	class WorldScene : public Scene {
@@ -18,7 +20,18 @@ namespace bf {
 		WorldRenderer worldRenderer;
 		Camera camera;
 
+		OptionList pauseOptionList;
+		TextListOption pauseContinueOption, pauseTitleOption;
+
+		OptionListRenderer optionListRenderer;
+
+		SpriteMesh pauseLogoMesh;
+
 		ClientContent clientContent;
+
+		glm::mat4 menuTransform;
+
+		bool paused = false;
 
 		void updateBlock(glm::ivec2 position);
 
@@ -43,6 +56,8 @@ namespace bf {
 
 		void readPacket(Packet &packet);
 
+		void updatePauseMenu();
+
 		void startClient();
 
 		void updateSize(glm::ivec2 size) override;
@@ -54,5 +69,7 @@ namespace bf {
 		void end() override;
 
 		WorldScene();
+
+		inline virtual ~WorldScene() {}
 	};
 }

@@ -2,6 +2,14 @@
 
 using namespace bf;
 
+void LocalWorldScene::update() {
+    WorldScene::update();
+
+    if (!paused) {
+        world.update();
+    }
+}
+
 void LocalWorldScene::start() {
     // Connect to server
     WorldScene::start();

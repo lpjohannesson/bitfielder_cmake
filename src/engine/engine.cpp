@@ -7,45 +7,9 @@ using namespace bf;
 
 Engine *bf::engine;
 
-SDL_GameControllerButton Engine::getControllerJoyButton(Uint8 button) {
-	SDL_GameControllerButton buttons[] {
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-	};
-
-	return buttons[button];
-}
-
 void Engine::endCurrentScene() {
 	if (currentScene != nullptr) {
 		currentScene->end();
-		delete currentScene;
 	}
 }
 
@@ -89,14 +53,6 @@ bool Engine::update() {
 			}
 			break;
 
-		case SDL_KEYDOWN:
-			input.keyDown(event.key.keysym.sym);
-			break;
-		
-		case SDL_KEYUP:
-			input.keyUp(event.key.keysym.sym);
-			break;
-
 		case SDL_CONTROLLERDEVICEADDED:
 			if (gameController != nullptr) {
 				SDL_GameControllerClose(gameController);
@@ -104,27 +60,9 @@ bool Engine::update() {
 
 			gameController = SDL_GameControllerOpen(event.cdevice.which);
 			break;
-
-		case SDL_CONTROLLERBUTTONDOWN:
-			input.joyButtonDown((SDL_GameControllerButton)event.cbutton.button);
-			break;
-
-		case SDL_CONTROLLERBUTTONUP:
-			input.joyButtonUp((SDL_GameControllerButton)event.cbutton.button);
-			break;
-
-		case SDL_CONTROLLERAXISMOTION:
-			input.joyAxisMotion((SDL_GameControllerAxis)event.caxis.axis, event.caxis.value);
-			break;
-
-		case SDL_JOYBUTTONDOWN:
-			input.joyButtonDown(getControllerJoyButton(event.jbutton.button));
-			break;
-
-		case SDL_JOYBUTTONUP:
-			input.joyButtonUp(getControllerJoyButton(event.jbutton.button));
-			break;
 		}
+
+		input.processEvent(event);
 	}
 
 	if (quitting) {

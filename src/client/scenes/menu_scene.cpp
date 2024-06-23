@@ -1,22 +1,80 @@
 #include "menu_scene.h"
 #include "engine/engine.h"
 #include "core/file_loader.h"
+#include "local_world_scene.h"
+#include "remote_world_scene.h"
 
 using namespace bf;
 
+void MenuScene::updateSize(glm::ivec2 size) {
+    menuTransform = Client::getMenuTransform();
+}
+
 void MenuScene::update() {
-    optionList.update();
+    switch (menuState) {
+        case MenuState::HOME: {
+            homeOptionList.update();
+            ListOption *pressedOption = homeOptionList.getPressedOption();
+
+            if (pressedOption == nullptr) {
+                break;
+            }
+
+            if (pressedOption == &localPlayOption) {
+                engine->changeScene(new LocalWorldScene());
+                break;
+            }
+
+            if (pressedOption == &remotePlayOption) {
+                menuState = MenuState::REMOTE;
+                break;
+            }
+
+            if (pressedOption == &quitOption) {
+                engine->quitting = true;
+                break;
+            }
+
+            break;
+        }
+        
+        case MenuState::REMOTE: {
+            remoteOptionList.update();
+            ListOption *pressedOption = remoteOptionList.getPressedOption();
+
+            if (pressedOption == nullptr) {
+                break;
+            }
+
+            if (pressedOption == &remoteBackOption) {
+                menuState = MenuState::HOME;
+                break;
+            }
+            
+            break;
+        }
+
+    }
 }
 
 void MenuScene::render() {
     engine->renderer.clearScreen({ 0.0f, 0.5f, 0.5f, 1.0f });
 
-    client->spriteProgram.setTransform(glm::scale(engine->getWindowTransform(), glm::vec3(3.0f)));
+    client->spriteProgram.setTransform(menuTransform);
 
     // Render logo
     client->spriteRenderer.renderMesh(logoMesh, client->spriteProgram, texture);
 
-    optionList.render();
+    // Render menu
+    switch (menuState) {
+        case MenuState::HOME:
+            homeOptionList.render();
+            break;
+        
+        case MenuState::REMOTE:
+            remoteOptionList.render();
+            break;
+    }
 }
 
 void MenuScene::start() {
@@ -29,20 +87,20 @@ void MenuScene::start() {
 	texture.loadSurface(surface);
 	SDL_FreeSurface(surface);
 
-    optionList.setOptions({ "Play locally", "Join a server", "Quit game" });
+    localPlayOption.text = "Local play";
+    remotePlayOption.text = "Remote play";
+    quitOption.text = "Quit game";
+
+    homeOptionList.setOptions({ &localPlayOption, &remotePlayOption, &quitOption });
+    
+    remoteIPOption.headerText = "Enter IP:";
+
+    remoteConnectOption.text = "Connect";
+    remoteBackOption.text = "Back";
+
+    remoteOptionList.setOptions({ &remoteIPOption, &remoteConnectOption, &remoteBackOption });
 
     // Draw logo
     TextureSection logoTexture = textureAtlas.getSection("assets/textures/menu/logo.png");
-
-    SpriteBatch logoSpriteBatch;
-    Sprite logoSprite;
-
-    logoSprite.uvBox = logoTexture.uvBox;
-    logoSprite.box.size = glm::vec2(logoTexture.box.size) * 2.0f;
-
-    logoSprite.box.start.x = -logoSprite.box.size.x * 0.5f;
-    logoSprite.box.start.y = -logoSprite.box.size.y;
-
-    logoSpriteBatch.drawSprite(logoSprite);
-    logoSpriteBatch.uploadMesh(logoMesh);
+    Client::renderLogo(logoTexture, logoMesh);
 }

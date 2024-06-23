@@ -10,6 +10,8 @@ void RemoteWorldScene::update() {
         switch (event.type) {
         case ENET_EVENT_TYPE_DISCONNECT: {
             // TODO: Server disconnect
+
+            break;
         }
     
         case ENET_EVENT_TYPE_RECEIVE: {
