@@ -18,8 +18,7 @@ namespace bf {
 
                 void addClient(ClientConnection *client);
                 void removeClient(ClientConnection *client);
-
-                void writePacketCount(Packet &packet, int count);
+                
                 void writePlayerState(Packet &packet, entt::entity player);
                 void writeBlockChunk(Packet &packet, BlockChunk *chunk);
                 void writeReplaceBlock(Packet &packet, glm::ivec2 position, bool onFrontLayer, int blockIndex);

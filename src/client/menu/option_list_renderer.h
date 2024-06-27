@@ -7,11 +7,11 @@ namespace bf {
 
     class OptionListRenderer {
     public:
-        FontProperties fontProperties, cursorFontProperties;
+        FontProperties optionFontProperties, headerFontProperties, cursorFontProperties;
         glm::vec2 optionPosition;
         float cursorProgress = 0.0f;
 
-        void renderText(std::string text);
+        void renderText(std::string text, FontProperties &properties);
 
         OptionListRenderer();
     };

@@ -13,8 +13,6 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
     float deltaTime = gameTime.getDeltaTime();
 
     glm::vec2 &movement = playerData.movement;
-    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
-    PositionComponent &position = *playerData.position;
     VelocityComponent &velocity = *playerData.velocity;
     BodyComponent &body = *playerData.body;
 
@@ -22,6 +20,15 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
     if (body.isOnFloor || movement.x != 0.0f) {
         Direction::targetAxis(velocity.velocity.x, movement.x * speed, acceleration * deltaTime);
     }
+
+    // Fall
+    velocity.velocity.y += gravity * deltaTime;
+}
+
+void LocalPlayerSystem::jump(LocalPlayerData &playerData) {
+    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
+    VelocityComponent &velocity = *playerData.velocity;
+    BodyComponent &body = *playerData.body;
 
     // Update jump timer, allowing early jumps
     if (client->clientInput.jump.justPressed()) {
@@ -33,7 +40,7 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
         localPlayer.floorTime = maxFloorTime;
     }
 
-    bool canJump = localPlayer.floorTime > 0.0f;
+    bool canJump = !scene->paused && localPlayer.floorTime > 0.0f;
 
     if (canJump) {
         // Jump
@@ -47,20 +54,23 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
     }
     else {
         // Stop jump on release
+        bool jumpReleased = scene->paused || !client->clientInput.jump.pressed;
+
         if (!localPlayer.jumpStopped &&
             velocity.velocity.y < 0.0f &&
-            !client->clientInput.jump.pressed) {
+            jumpReleased) {
             
             velocity.velocity.y *= jumpStop;
             localPlayer.jumpStopped = true;
         }
     }
-
-    // Fall
-    velocity.velocity.y += gravity * deltaTime;
 }
 
 void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
+    if (scene->paused) {
+        return;
+    }
+
     LocalPlayerComponent &localPlayer = *playerData.localPlayer;
 
     int selectDirection = 
@@ -77,6 +87,10 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
 }
 
 void LocalPlayerSystem::applyAim(LocalPlayerData &playerData) {
+    if (scene->paused) {
+        return;
+    }
+
     glm::vec2 &movement = playerData.movement;
     LocalPlayerComponent &localPlayer = *playerData.localPlayer;
     SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
@@ -151,6 +165,10 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
 }
 
 bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
+    if (scene->paused) {
+        return false;
+    }
+
     // Check input
     bool onFrontLayer;
 
@@ -282,10 +300,17 @@ void LocalPlayerSystem::update(World &world) {
     float deltaTime = gameTime.getDeltaTime();
 
     // Input direction
-    glm::vec2 movement = {
+    glm::vec2 movement;
+
+    if (scene->paused) {
+        movement = { 0.0f, 0.0f };
+    }
+    else {
+        movement = {
         (float)client->clientInput.right.pressed - (float)client->clientInput.left.pressed,
         (float)client->clientInput.down.pressed - (float)client->clientInput.up.pressed
     };
+    }
 
     auto view = world.entities.registry.view<
         LocalPlayerComponent,
@@ -333,6 +358,7 @@ void LocalPlayerSystem::update(World &world) {
         if (localPlayer.blockTime == 0.0f) {
             if (!tryModifyBlock(playerData)) {
                 move(playerData);
+                jump(playerData);
             }
         }
         else {

@@ -113,6 +113,7 @@
         "shared_mutex": "cpp",
         "stdfloat": "cpp",
         "cinttypes": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "resumable": "cpp"
     }
 }

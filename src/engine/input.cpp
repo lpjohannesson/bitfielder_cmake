@@ -142,7 +142,7 @@ void Input::startTextMode(std::string inputText) {
     SDL_StartTextInput();
 
     this->inputText = inputText;
-    textCursor = inputText.length();
+    textCursor = (int)inputText.length();
 
     // Release all actions
     for (InputAction *action : actions) {
@@ -212,8 +212,8 @@ void Input::processEvent(SDL_Event &event) {
                     break;
                 }
 
-                inputText.erase(textCursor - 1, 1);
-                textCursor = glm::min(textCursor - 1, (int)inputText.length());
+                textCursor--;
+                inputText.erase(textCursor, 1);
 
                 break;
             }

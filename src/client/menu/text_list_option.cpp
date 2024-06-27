@@ -3,5 +3,5 @@
 using namespace bf;
 
 void TextListOption::render(OptionListRenderer &renderer) {
-    renderer.renderText(text);
+    renderer.renderText(text, renderer.optionFontProperties);
 }

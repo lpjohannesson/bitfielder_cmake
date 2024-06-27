@@ -5,17 +5,20 @@
 
 using namespace bf;
 
-void OptionListRenderer::renderText(std::string text) {
-    fontProperties.position = optionPosition;
-    client->font.drawText(text, fontProperties);
+void OptionListRenderer::renderText(std::string text, FontProperties &properties) {
+    properties.position = optionPosition;
+    client->font.drawText(text, properties);
 
     optionPosition.y += client->font.lineHeight;
 }
 
 OptionListRenderer::OptionListRenderer() {
-    fontProperties.spriteBatch = &client->fontSpriteBatch;
-    cursorFontProperties.spriteBatch = &client->fontSpriteBatch;
+    optionFontProperties.spriteBatch =
+        headerFontProperties.spriteBatch = 
+        cursorFontProperties.spriteBatch = 
+        &client->fontSpriteBatch;
 
-    fontProperties.centered = true;
+    optionFontProperties.centered = true;
+    headerFontProperties.centered = true;
     cursorFontProperties.centered = false;
 }

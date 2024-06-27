@@ -7,11 +7,11 @@
 #include "client/client.h"
 #include "client/menu/text_list_option.h"
 #include "client/menu/input_list_option.h"
+#include "client/remote_server_connection.h"
 
 namespace bf {
     enum class MenuState {
-        HOME,
-        REMOTE
+        HOME, REMOTE, CONNECTING, DISCONNECTED
     };
 
 	class MenuScene : public Scene {
@@ -25,28 +25,35 @@ namespace bf {
             localPlayOption,
             remotePlayOption,
             quitOption,
+
             remoteConnectOption,
-            remoteBackOption;
+            remoteBackOption,
+
+            connectingBackOption,
+            
+            disconnectedBackOption;
         
         InputListOption remoteIPOption;
 
-        OptionList homeOptionList, remoteOptionList;
+        OptionList homeOptionList, remoteOptionList, connectingOptionList, disconnectedOptionList;
         OptionListRenderer optionListRenderer;
 
-        MenuState menuState = MenuState::HOME;
+        MenuState menuState;
 
         glm::mat4 menuTransform;
+
+        RemoteServerConnection *remoteServerConnection = nullptr;
+        float remoteTime = 0.0f, maxRemoteTime;
+
+        void endRemoteServerConnection();
+
+        void changeState(MenuState menuState);
 
         void updateSize(glm::ivec2 size) override;
 
         void update() override;
         void render() override;
 
-        void start() override;
-
-        inline MenuScene() :
-            logoMesh(client->spriteRenderer),
-            homeOptionList(optionListRenderer),
-            remoteOptionList(optionListRenderer) {}
+        MenuScene();
 	};
 }

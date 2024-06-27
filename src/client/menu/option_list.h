@@ -16,6 +16,8 @@ namespace bf {
         std::vector<ListOption*> options;
         int selectedIndex = 0;
 
+        std::string headerText;
+
         inline OptionListRenderer *getRenderer() const { return renderer; }
 
         SpriteMesh mesh;

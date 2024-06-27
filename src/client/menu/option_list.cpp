@@ -17,23 +17,26 @@ ListOption *OptionList::getPressedOption() const {
 
 void OptionList::setOptions(const std::vector<ListOption*> &options) {
     this->options = options;
-    updateMesh();
 }
 
 void OptionList::updateMesh() {
-    Font &font = client->font;
-
+    // Reset position
     renderer->optionPosition = { 0.0f, 0.0f };
+
+    // Render header text
+    if (!headerText.empty()) {
+        renderer->renderText(headerText, renderer->headerFontProperties);
+    }
 
     for (int i = 0; i < options.size(); i++) {
         ListOption *option = options[i];
 
         // Select color
         if (i == selectedIndex) {
-            renderer->fontProperties.color = { 1.0f, 0.5f, 0.0f, 1.0f };
+            renderer->optionFontProperties.color = { 1.0f, 0.5f, 0.0f, 1.0f };
         }
         else {
-            renderer->fontProperties.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+            renderer->optionFontProperties.color = { 1.0f, 1.0f, 1.0f, 1.0f };
         }
 
         option->render(*renderer);

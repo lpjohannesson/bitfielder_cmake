@@ -29,8 +29,8 @@ void InputListOption::optionHoverUpdate(OptionList &optionList) {
 }
 
 void InputListOption::render(OptionListRenderer &renderer) {
-    renderer.renderText(headerText);
-    renderer.renderText(inputText);
+    renderer.renderText(headerText, renderer.optionFontProperties);
+    renderer.renderText(inputText, renderer.optionFontProperties);
 
     // Render cursor
     if (!inputActive) {
@@ -41,7 +41,7 @@ void InputListOption::render(OptionListRenderer &renderer) {
         return;
     }
 
-    glm::vec2 renderPosition = client->font.getRenderPosition(inputText, renderer.fontProperties);
+    glm::vec2 renderPosition = client->font.getRenderPosition(inputText, renderer.optionFontProperties);
     renderer.cursorFontProperties.position = renderPosition;
 
     int textCursor = engine->input.getTextCursor();

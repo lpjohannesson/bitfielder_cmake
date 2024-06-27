@@ -1,16 +1,12 @@
 #pragma once
 #include "server/client_connection.h"
+#include "scenes/world_scene.h"
 
 namespace bf {
-    class LocalWorldScene;
-
 	class LocalClientConnection : public ClientConnection {
-    private:
-        LocalWorldScene *scene;
-
 	public:
-        void writePacket(Packet &packet) override;
+        WorldScene *scene;
 
-        LocalClientConnection(LocalWorldScene *scene);
+        void writePacket(Packet &packet) override;
 	};
 }

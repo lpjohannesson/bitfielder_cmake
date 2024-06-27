@@ -40,5 +40,8 @@ Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "as
 
     FontFactory::loadFont("font", fontTextureAtlas, font);
 
-    engine.changeScene(new MenuScene());
+    MenuScene *menuScene = new MenuScene();
+    menuScene->changeState(MenuState::HOME);
+
+    engine.changeScene(menuScene);
 }

@@ -32,6 +32,7 @@ namespace bf {
 	class LocalPlayerSystem : public ClientEntitySystem {
     private:
         void move(LocalPlayerData &playerData);
+        void jump(LocalPlayerData &playerData);
         void selectItems(LocalPlayerData &playerData);
         void applyAim(LocalPlayerData &playerData);
         void animate(LocalPlayerData &playerData);

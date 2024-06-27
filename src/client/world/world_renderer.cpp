@@ -1,4 +1,5 @@
 #include "world_renderer.h"
+#include <SDL2/SDL_image.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "client/scenes/world_scene.h"
 #include "client/client.h"
@@ -12,8 +13,10 @@ void WorldRenderer::loadTextureAtlas() {
 	FileLoader::getFilePaths("assets/textures/world", texturePaths);
 
 	SDL_Surface *surface = textureAtlas.loadSurface(texturePaths);
-
 	texture.loadSurface(surface);
+
+    IMG_SavePNG(surface, "atlas.png");
+
 	SDL_FreeSurface(surface);
 }
 

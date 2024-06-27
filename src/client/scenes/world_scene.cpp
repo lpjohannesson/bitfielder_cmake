@@ -1,6 +1,5 @@
 #include "world_scene.h"
-#include <cstring>
-#include <iostream>
+#include "client/server_connection.h"
 #include "engine/engine.h"
 #include "core/packet_types.h"
 #include "core/game_time.h"
@@ -276,12 +275,6 @@ void WorldScene::readPacket(Packet &packet) {
 	}
 }
 
-void WorldScene::startClient() {
-	// TODO: See if combineable with start
-	// TODO: Wait for state on server before spawning
-	writePlayerState();
-}
-
 void WorldScene::updatePauseMenu() {
 	pauseOptionList.update();
 	ListOption *pressedOption = pauseOptionList.getPressedOption();
@@ -296,7 +289,11 @@ void WorldScene::updatePauseMenu() {
 	}
 
 	if (pressedOption == &pauseTitleOption) {
-		engine->changeScene(new MenuScene());
+		MenuScene *menuScene = new MenuScene();
+		menuScene->changeState(MenuState::HOME);
+
+		engine->changeScene(menuScene);
+
 		return;
 	}
 }
@@ -310,6 +307,11 @@ void WorldScene::updateSize(glm::ivec2 size) {
 void WorldScene::update() {
 	if (client->clientInput.pause.justPressed()) {
 		paused = !paused;
+	}
+
+	// Stop in case server ended
+	if (!server->host(*this)) {
+		return;
 	}
 
 	if (paused) {
@@ -344,8 +346,6 @@ void WorldScene::render() {
 void WorldScene::start() {
 	gameTime.reset();
 
-	BlockRendererFactory::createRenderers(*this);
-
 	camera.start(*this);
 	camera.setZoom(3.0f);
 
@@ -357,10 +357,15 @@ void WorldScene::start() {
 	pauseTitleOption.text = "Return to title";
 
 	pauseOptionList.setOptions({ &pauseContinueOption, &pauseTitleOption });
+	pauseOptionList.updateMesh();
 }
 
 void WorldScene::end() {
 	BlockRendererFactory::destroyRenderers(*this);
+
+	// End server
+	server->end();
+	delete server;
 }
 
 WorldScene::WorldScene() :
@@ -370,4 +375,5 @@ WorldScene::WorldScene() :
 	pauseLogoMesh(client->spriteRenderer) {
 
 	entityRegistry = &world.entities.registry;
+	BlockRendererFactory::createRenderers(*this);
 }

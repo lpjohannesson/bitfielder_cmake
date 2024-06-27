@@ -27,7 +27,7 @@ glm::vec2 Font::getRenderPosition(std::string text, FontProperties &properties) 
     float offsetX;
     
     if (properties.centered) {
-        float lineLength = getTextLength(text, text.length());
+        float lineLength = getTextLength(text, (int)text.length());
         offsetX = lineLength * -0.5f;
     }
     else {

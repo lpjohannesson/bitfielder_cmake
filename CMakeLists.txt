@@ -92,8 +92,6 @@ if (CLIENT)
         
         src/client/scenes/menu_scene.cpp
         src/client/scenes/world_scene.cpp
-        src/client/scenes/local_world_scene.cpp
-        src/client/scenes/remote_world_scene.cpp
 
         src/client/main.cpp)
     
@@ -127,6 +125,8 @@ if (SERVER)
 endif()
 
 if(WIN32)
+    target_compile_definitions(client PUBLIC NOMINMAX)
+
     list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/share)
 
     find_package(SDL2 CONFIG REQUIRED)
@@ -171,6 +171,8 @@ if(WIN32)
     endif()
 
 elseif(NX)
+    target_compile_definitions(client PUBLIC NX)
+
     set_target_properties(client PROPERTIES
         APP_TITLE "bitfielder"
         APP_AUTHOR "crossfrog"

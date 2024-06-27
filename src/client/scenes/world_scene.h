@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/scene.h"
 #include "world/world.h"
-#include "client/server_connection.h"
+#include "core/packet.h"
 #include "client/world/world_renderer.h"
 #include "client/world/client_content.h"
 #include "client/world/camera.h"
@@ -9,6 +9,8 @@
 #include "client/menu/text_list_option.h"
 
 namespace bf {
+	class ServerConnection;
+
 	class WorldScene : public Scene {
 	private:
 		entt::registry *entityRegistry;
@@ -58,8 +60,6 @@ namespace bf {
 
 		void updatePauseMenu();
 
-		void startClient();
-
 		void updateSize(glm::ivec2 size) override;
 
 		void update() override;
@@ -69,7 +69,5 @@ namespace bf {
 		void end() override;
 
 		WorldScene();
-
-		inline virtual ~WorldScene() {}
 	};
 }
