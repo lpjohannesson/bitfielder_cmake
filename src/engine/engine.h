@@ -4,6 +4,7 @@
 #include "gfx/core/renderer.h"
 #include "scene.h"
 #include "input.h"
+#include "sound/sound.h"
 
 namespace bf {
 	class Engine {
@@ -31,6 +32,7 @@ namespace bf {
 		bool quitting = false;
 
 		Renderer renderer;
+		Sound sound;
 		
 		Input input;
 		InputAction fullscreenAction;

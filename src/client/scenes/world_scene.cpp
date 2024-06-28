@@ -3,6 +3,7 @@
 #include "engine/engine.h"
 #include "core/packet_types.h"
 #include "core/game_time.h"
+#include "sound/sound.h"
 #include "menu_scene.h"
 #include "client/world/block/block_renderer_factory.h"
 #include "client/world/entity/components/local_player_component.h"
@@ -50,10 +51,15 @@ void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData *b
 		blockData->backIndex = blockIndex;
 	}
 
+	entt::entity block = world.blocks.getBlock(blockIndex);
+
 	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
 		clientContent.placeEffectProperties);
 
 	updateBlock(position);
+
+	engine->sound.playSound(clientContent.placeSound, false, 1.0f, client->getRandomPitch());
+	BlockSounds::playBlockSound(*this, block);
 }
 
 void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData) {
@@ -68,13 +74,17 @@ void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData 
 		blockData->backIndex = 0;
 	}
 
+	entt::entity block = world.blocks.getBlock(blockIndex);
+
 	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
 		clientContent.destroyEffectProperties);
 
-	entt::entity block = world.blocks.getBlock(blockIndex);
 	spawnBlockParticles(position, block);
 
 	updateBlock(position);
+
+	engine->sound.playSound(clientContent.destroySound, false, 1.0f, client->getRandomPitch());
+	BlockSounds::playBlockSound(*this, block);
 }
 
 void WorldScene::writePlayerState() {

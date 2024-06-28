@@ -3,5 +3,6 @@
         "type": "auto",
         "texture": "stone"
     },
-    "particle": "stone"
+    "particle": "stone",
+    "sound": "stone"
 }

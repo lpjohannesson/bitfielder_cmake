@@ -161,11 +161,15 @@ void BodySystem::moveX(World &world, glm::vec2 &position, VelocityComponent &vel
 
 void BodySystem::moveY(World &world, glm::vec2 &position, VelocityComponent &velocity, BodyComponent &body) {
     body.isOnFloor = false;
+    body.isOnCeiling = false;
 
     MOVE_AXIS(y, x, blockSideStart, blockSideEnd, blockSide, blockForward, getCollisionY)
 
     if (collided) {
-        if (velocity.velocity.y > 0.0f) {
+        if (velocity.velocity.y < 0.0f) {
+            body.isOnCeiling = true;
+        }
+        else {
             body.isOnFloor = true;
         }
 

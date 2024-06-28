@@ -25,12 +25,12 @@ entt::entity ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocit
 void ParticleSystem::spawnParticleExplosion(glm::vec2 position, glm::vec2 size, const SpriteFrames &frames, glm::vec4 color) {
     // Random count
     int explosionCountRange = explosionCountMax - explosionCountMin + 1;
-    int explosionCount = explosionCountMin + randomInt(randomEngine) % explosionCountRange;
+    int explosionCount = explosionCountMin + client->randomInt(client->randomEngine) % explosionCountRange;
 
     for (int i = 0; i < explosionCount; i++) {
         // Random speed
         float explosionSpeedRange = explosionSpeedMax - explosionSpeedMin;
-        float explosionSpeed = explosionSpeedMin + randomFloat(randomEngine) * explosionSpeedRange;
+        float explosionSpeed = explosionSpeedMin + client->randomFloat(client->randomEngine) * explosionSpeedRange;
 
         // Random angle
         float angle = glm::radians((float)(rand() % 360));
@@ -64,7 +64,7 @@ void ParticleSystem::update(World &world) {
     }
 }
 
-ParticleSystem::ParticleSystem() : randomInt(0, INT_MAX), randomFloat(0.0f, 1.0f) {
+ParticleSystem::ParticleSystem() {
     gravity = 20.0f;
     explosionSpeedMin = 4.0f;
     explosionSpeedMax = 7.0f;

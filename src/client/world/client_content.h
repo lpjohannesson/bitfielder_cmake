@@ -2,6 +2,8 @@
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include "world/content.h"
+#include "sound/sound_set.h"
+#include "block/block_sounds.h"
 #include "entity/systems/sprite_animator_system.h"
 #include "entity/systems/local_player_system.h"
 #include "entity/systems/particle_system.h"
@@ -16,6 +18,11 @@ namespace bf {
     
     class ClientContent {
     public:
+        SoundSet soundSet;
+        ALuint placeSound, destroySound, jumpSound, groundSound;
+
+        BlockSounds blockSounds;
+
         SpriteFrames playerForwardFrames, playerUpFrames, playerDownFrames;
         SpriteAnimationSet playerAnimations;
 

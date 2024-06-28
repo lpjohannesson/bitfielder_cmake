@@ -97,7 +97,7 @@ Engine::Engine() : fullscreenAction(input) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
 	//SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 
 	windowSize = { 1280, 720 };
 
@@ -118,8 +118,6 @@ Engine::Engine() : fullscreenAction(input) {
 
 	updateSize();
 
-	input.addKeyboardAction(fullscreenAction, SDLK_F11);
-
 	// Setup joysticks
 	SDL_JoystickEventState(SDL_ENABLE);
 
@@ -128,6 +126,8 @@ Engine::Engine() : fullscreenAction(input) {
 	}
 
 	SDL_JoystickOpen(0);
+
+	input.addKeyboardAction(fullscreenAction, SDLK_F11);
 }
 
 Engine::~Engine() {

@@ -36,3 +36,12 @@ void FileLoader::getFilePaths(const char *basePath, std::vector<std::string> &re
 	}
 }
 
+void FileLoader::getDirectoryNames(const char *basePath, std::vector<std::string> &result) {
+	for (auto &entry : std::filesystem::directory_iterator(basePath)) {
+		if (!entry.is_directory()) {
+			continue;
+		}
+
+		result.push_back(entry.path().filename().string());
+	}
+}

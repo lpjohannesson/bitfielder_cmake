@@ -42,6 +42,9 @@ if (CLIENT)
 
         src/gfx/text/font.cpp
 
+        src/sound/sound.cpp
+        src/sound/sound_set.cpp
+
         src/world/world.cpp
         src/world/content.cpp
 
@@ -76,6 +79,7 @@ if (CLIENT)
 
         src/client/world/block/block_map_renderer.cpp
         src/client/world/block/block_renderer_factory.cpp
+        src/client/world/block/block_sounds.cpp
 
         src/client/world/block/renderers/basic_block_renderer.cpp
         src/client/world/block/renderers/auto_block_renderer.cpp
@@ -139,6 +143,7 @@ if(WIN32)
         find_package(PNG REQUIRED)
         find_package(SDL2_image CONFIG REQUIRED)
         find_package(glad CONFIG REQUIRED)
+        find_package(OpenAL CONFIG REQUIRED)
 
         target_compile_definitions(client PRIVATE GLM_ENABLE_EXPERIMENTAL)
 
@@ -151,6 +156,7 @@ if(WIN32)
         target_link_libraries(client PRIVATE PNG::PNG)
         target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
         target_link_libraries(client PRIVATE glad::glad)
+        target_link_libraries(client PRIVATE OpenAL::OpenAL)
 
         if(WIN32)
             target_link_libraries(client PRIVATE ws2_32)

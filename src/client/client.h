@@ -1,4 +1,5 @@
 #pragma once
+#include <random>
 #include "engine/engine.h"
 #include "gfx/sprite/sprite_renderer.h"
 #include "gfx/sprite/sprite_batch.h"
@@ -9,6 +10,10 @@
 namespace bf {
 	class Client {
 	public:
+		std::default_random_engine randomEngine;
+        std::uniform_int_distribution<int> randomInt;
+        std::uniform_real_distribution<float> randomFloat;
+
 		ClientInput clientInput;
 
         SpriteRenderer spriteRenderer;
@@ -19,6 +24,10 @@ namespace bf {
 		SpriteBatch fontSpriteBatch;
 
 		Font font;
+
+		float maxRandomPitch;
+
+		float getRandomPitch();
 
 		static glm::mat4 getMenuTransform();
 		static void renderLogo(TextureSection texture, SpriteMesh &mesh);

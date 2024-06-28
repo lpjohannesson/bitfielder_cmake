@@ -4,5 +4,6 @@
         "type": "basic",
         "texture": "mushroom"
     },
-    "particle": "wool"
+    "particle": "wool",
+    "sound": "cloth"
 }

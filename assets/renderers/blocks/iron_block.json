@@ -3,5 +3,6 @@
         "type": "auto",
         "texture": "iron_block"
     },
-    "particle": "iron_block"
+    "particle": "iron_block",
+    "sound": "metal"
 }

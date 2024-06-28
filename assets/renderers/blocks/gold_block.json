@@ -3,5 +3,6 @@
         "type": "auto",
         "texture": "gold_block"
     },
-    "particle": "gold_block"
+    "particle": "gold_block",
+    "sound": "metal"
 }

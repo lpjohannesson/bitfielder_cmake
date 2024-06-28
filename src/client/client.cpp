@@ -8,6 +8,10 @@ using namespace bf;
 
 Client *bf::client;
 
+float Client::getRandomPitch() {
+    return 1.0f - maxRandomPitch + randomFloat(randomEngine) * maxRandomPitch * 2;
+}
+
 glm::mat4 Client::getMenuTransform() {
     return glm::scale(engine->getWindowTransform(), glm::vec3(3.0f));
 }
@@ -27,7 +31,10 @@ void Client::renderLogo(TextureSection texture, SpriteMesh &mesh) {
     spriteBatch.uploadMesh(mesh);
 }
 
-Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl") {
+Client::Client(Engine &engine) :
+    randomInt(0, INT_MAX),
+    randomFloat(0.0f, 1.0f),
+    spriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl") {
     client = this;
 
     // Load fonts
@@ -44,4 +51,6 @@ Client::Client(Engine &engine) : spriteProgram("assets/shaders/vertex.glsl", "as
     menuScene->changeState(MenuState::HOME);
 
     engine.changeScene(menuScene);
+
+    maxRandomPitch = 0.15f;
 }

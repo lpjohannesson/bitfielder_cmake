@@ -1,17 +1,19 @@
 #include "local_player_system.h"
+#include <iostream>
 #include <glm/gtx/easing.hpp>
 #include "client_entity_system_impl.h"
 #include "client/scenes/world_scene.h"
 #include "core/game_time.h"
 #include "core/direction.h"
 #include "sprite_aim_system.h"
-#include <iostream>
+#include "sound/sound.h"
 
 using namespace bf;
 
 void LocalPlayerSystem::move(LocalPlayerData &playerData) {
     float deltaTime = gameTime.getDeltaTime();
 
+    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
     glm::vec2 &movement = playerData.movement;
     VelocityComponent &velocity = *playerData.velocity;
     BodyComponent &body = *playerData.body;
@@ -23,6 +25,14 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
 
     // Fall
     velocity.velocity.y += gravity * deltaTime;
+
+    bool onSurface = body.isOnFloor || body.isOnCeiling;
+
+    if (onSurface && !localPlayer.lastOnSurface) {
+        engine->sound.playSound(scene->clientContent.groundSound, false);
+    }
+
+    localPlayer.lastOnSurface = onSurface;
 }
 
 void LocalPlayerSystem::jump(LocalPlayerData &playerData) {
@@ -50,6 +60,8 @@ void LocalPlayerSystem::jump(LocalPlayerData &playerData) {
             localPlayer.jumpStopped = false;
             localPlayer.floorTime = 0.0f;
             localPlayer.jumpTime = 0.0f;
+
+            engine->sound.playSound(scene->clientContent.jumpSound, false);
         }
     }
     else {
@@ -357,8 +369,8 @@ void LocalPlayerSystem::update(World &world) {
 
         if (localPlayer.blockTime == 0.0f) {
             if (!tryModifyBlock(playerData)) {
-                move(playerData);
                 jump(playerData);
+                move(playerData);
             }
         }
         else {

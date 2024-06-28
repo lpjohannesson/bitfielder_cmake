@@ -4,5 +4,6 @@
         "type": "auto",
         "texture": "leaves"
     },
-    "particle": "leaves"
+    "particle": "leaves",
+    "sound": "grass"
 }

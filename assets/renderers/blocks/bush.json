@@ -4,5 +4,6 @@
         "type": "basic",
         "texture": "bush"
     },
-    "particle": "leaves"
+    "particle": "leaves",
+    "sound": "grass"
 }

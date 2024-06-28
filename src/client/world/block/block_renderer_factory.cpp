@@ -2,13 +2,14 @@
 #include <iostream>
 #include "client/scenes/world_scene.h"
 #include "core/file_loader.h"
+#include "core/color.h"
 #include "renderers/basic_block_renderer.h"
 #include "renderers/auto_block_renderer.h"
 #include "components/block_renderer_component.h"
 #include "components/block_particle_component.h"
 #include "components/partial_block_component.h"
 #include "world/block/components/block_name_component.h"
-#include "core/color.h"
+#include "client/world/block/components/block_sound_component.h"
 
 using namespace bf;
 
@@ -145,6 +146,13 @@ void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity b
     }
 
     blockRegistry.emplace<BlockRendererComponent>(block, BlockRendererComponent { blockRenderer });
+
+    // Attach sounds
+    if (document.HasMember("sound")) {
+        SoundSet *soundSet = scene.clientContent.blockSounds.getSoundSet(document["sound"].GetString());
+
+        blockRegistry.emplace<BlockSoundComponent>(block, BlockSoundComponent { soundSet });
+    }
 }
 
 void BlockRendererFactory::createRenderers(WorldScene &scene) {

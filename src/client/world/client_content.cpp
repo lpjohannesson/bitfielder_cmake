@@ -88,4 +88,12 @@ ClientContent::ClientContent(WorldScene &scene) {
         { 3, 1 },
 		{ 0, 1, 2 },
 		0.3f);
+	
+	// Load sounds
+	placeSound = soundSet.loadSound("assets/sounds/place.wav");
+	destroySound = soundSet.loadSound("assets/sounds/destroy.wav");
+	jumpSound = soundSet.loadSound("assets/sounds/jump.wav");
+	groundSound = soundSet.loadSound("assets/sounds/ground.wav");
+
+	blockSounds.loadSounds();
 }

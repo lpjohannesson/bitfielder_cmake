@@ -10,6 +10,7 @@
     "libpng",
     "sdl2-image",
     "glad",
+    "openal-soft",
     
     {
       "name": "winsock2",

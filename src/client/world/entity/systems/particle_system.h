@@ -1,5 +1,4 @@
 #pragma once
-#include <random>
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include "client_entity_system.h"
@@ -7,11 +6,6 @@
 
 namespace bf {
     class ParticleSystem : public ClientEntitySystem {
-    private:
-        std::default_random_engine randomEngine;
-        std::uniform_int_distribution<int> randomInt;
-        std::uniform_real_distribution<float> randomFloat;
-
     public:
         float gravity, explosionSpeedMin, explosionSpeedMax;
         int explosionCountMin, explosionCountMax;

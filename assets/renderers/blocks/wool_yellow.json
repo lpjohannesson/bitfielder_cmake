@@ -4,5 +4,6 @@
         "texture": "wool_dark",
         "color": "ffff33"
     },
-    "particle": "wool"
+    "particle": "wool",
+    "sound": "cloth"
 }

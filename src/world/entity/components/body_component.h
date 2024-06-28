@@ -5,6 +5,6 @@ namespace bf {
 	struct BodyComponent {
 		glm::vec2 size{};
 
-		bool isOnFloor = false;
+		bool isOnFloor = false, isOnCeiling = false;
 	};
 }

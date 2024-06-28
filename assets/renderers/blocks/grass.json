@@ -3,5 +3,6 @@
         "type": "auto",
         "texture": "grass"
     },
-    "particle": "dirt"
+    "particle": "dirt",
+    "sound": "gravel"
 }
