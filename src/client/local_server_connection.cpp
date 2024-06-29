@@ -3,10 +3,10 @@
 using namespace bf;
 
 void LocalServerConnection::startScene(WorldScene &scene) {
-    // Attach scene to client
-    clientConnection.scene = &scene;
-    
+    // Connect client and server
     scene.server = this;
+    clientConnection.scene = &scene;
+
     server.addClient(&clientConnection);
 }
 

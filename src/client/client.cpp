@@ -35,6 +35,7 @@ Client::Client(Engine &engine) :
     randomInt(0, INT_MAX),
     randomFloat(0.0f, 1.0f),
     spriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl") {
+        
     client = this;
 
     // Load fonts

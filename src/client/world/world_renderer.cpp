@@ -42,18 +42,26 @@ void WorldRenderer::render(const WorldScene &scene) {
 
     entities.render(scene);
 
-    // Get visible chunks, including shadows
-    Box2 screenBox = scene.worldRenderer.getScreenBox();
+    // Bind textures
+    glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
 
-    int blockStartX = (int)glm::floor(screenBox.start.x - SHADOW_OFFSET);
-    int blockEndX = (int)glm::floor(screenBox.start.x + screenBox.size.x);
-
-    BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStartX, blockEndX);
-
-    // Render shadow to framebuffer
     glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, shadowBuffer.texture.getGLTexture());
 
+    // Get visible chunks, including shadows
+    Box2 screenBox = scene.worldRenderer.getScreenBox();
+
+    glm::ivec2 blockStart = glm::floor(screenBox.start - SHADOW_OFFSET);
+    glm::ivec2 blockEnd = glm::floor(screenBox.getEnd());
+
+    BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStart.x, blockEnd.x);
+
+    // Get visible sections
+    int sectionStart = glm::max(0, BlockMesh::getSectionIndex(blockStart.y));
+    int sectionEnd = glm::min(BlockMesh::SECTION_COUNT - 1, BlockMesh::getSectionIndex(blockEnd.y));
+
+    // Render shadow to framebuffer
     client->spriteProgram.setTransform(viewTransform);
     backSpriteProgram.setTransform(viewTransform);
     shadowSpriteProgram.setTransform(shadowViewTransform);
@@ -71,10 +79,14 @@ void WorldRenderer::render(const WorldScene &scene) {
             continue;
         }
 
-        client->spriteRenderer.renderMesh(blockMesh->frontMesh, shadowSpriteProgram, texture);
+        for (int sectionIndex = sectionStart; sectionIndex <= sectionEnd; sectionIndex++) {
+            const BlockMeshSection &section = blockMesh->sections[sectionIndex];
+
+            client->spriteRenderer.renderMesh(section.frontMesh, shadowSpriteProgram);
+        }
     }
 
-    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, shadowSpriteProgram, texture);
+    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, shadowSpriteProgram);
 
     // Render main scene
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -87,11 +99,15 @@ void WorldRenderer::render(const WorldScene &scene) {
             continue;
         }
 
-        client->spriteRenderer.renderMesh(blockMesh->backMesh, backSpriteProgram, texture);
-        client->spriteRenderer.renderMesh(blockMesh->frontMesh, client->spriteProgram, texture);
+        for (int sectionIndex = sectionStart; sectionIndex <= sectionEnd; sectionIndex++) {
+            const BlockMeshSection &section = blockMesh->sections[sectionIndex];
+
+            client->spriteRenderer.renderMesh(section.backMesh, backSpriteProgram);
+            client->spriteRenderer.renderMesh(section.frontMesh, client->spriteProgram);
+        }
     }
 
-    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, client->spriteProgram, texture);
+    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, client->spriteProgram);
 }
 
 WorldRenderer::WorldRenderer(WorldScene &scene) :

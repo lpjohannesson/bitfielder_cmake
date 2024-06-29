@@ -20,7 +20,7 @@ void BlockMapRenderer::renderBlock(const BlockRenderData &renderData) {
     blockRenderer->render(renderData);
 }
 
-void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk) {
+void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk, int sectionStart, int sectionEnd) {
     int mapIndex = chunk.getMapIndex();
     int blockStartX = mapIndex * BlockChunk::SIZE.x;
 
@@ -33,37 +33,48 @@ void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk) {
     renderData.renderer = this;
     renderData.blockSample = &blockSample;
 
-    for (int y = 0; y < BlockChunk::SIZE.y; y++) {
-		for (int x = 0; x < BlockChunk::SIZE.x; x++) {
-            renderData.position = { blockStartX + x, y };
-            
-            // Get block data
-			BlockData *blockData = chunk.getBlock({ x, y });
-
-            // Render front
-            renderData.blockIndex = blockData->frontIndex;
-            renderData.spriteBatch = &frontSpriteBatch;
-            renderData.onFrontLayer = true;
-
-			renderBlock(renderData);
-
-            // Render back
-            renderData.blockIndex = blockData->backIndex;
-            renderData.spriteBatch = &backSpriteBatch;
-            renderData.onFrontLayer = false;
-
-			renderBlock(renderData);
-		}
-	}
-
     // Get or create mesh
-    BlockMesh *blockMesh = map.getChunk(mapIndex);
+    BlockMesh *mesh = map.getChunk(mapIndex);
 
-    if (blockMesh == nullptr) {
-        blockMesh = &map.createChunk(mapIndex);
+    if (mesh == nullptr) {
+        mesh = &map.createChunk(mapIndex);
     }
 
-    // Upload layers
-    frontSpriteBatch.uploadMesh(blockMesh->frontMesh);
-    backSpriteBatch.uploadMesh(blockMesh->backMesh);
+    for (int sectionIndex = sectionStart; sectionIndex <= sectionEnd; sectionIndex++) {
+        // Draw vertical sections
+        int sectionY = sectionIndex * BlockMesh::SECTION_SIZE.y;
+
+        for (int y = 0; y < BlockMesh::SECTION_SIZE.y; y++) {
+            for (int x = 0; x < BlockMesh::SECTION_SIZE.x; x++) {
+                // Get positions
+                int blockY = sectionY + y;
+
+                glm::ivec2 chunkPosition = { x, blockY };
+                renderData.position = { blockStartX + x, blockY };
+                
+                // Get block data
+                BlockData *blockData = chunk.getBlock(chunkPosition);
+
+                // Render front
+                renderData.blockIndex = blockData->frontIndex;
+                renderData.spriteBatch = &frontSpriteBatch;
+                renderData.onFrontLayer = true;
+
+                renderBlock(renderData);
+
+                // Render back
+                renderData.blockIndex = blockData->backIndex;
+                renderData.spriteBatch = &backSpriteBatch;
+                renderData.onFrontLayer = false;
+
+                renderBlock(renderData);
+            }
+        }
+
+        // Upload layers
+        BlockMeshSection &section = mesh->sections[sectionIndex];
+
+        frontSpriteBatch.uploadMesh(section.frontMesh);
+        backSpriteBatch.uploadMesh(section.backMesh);
+    }
 }

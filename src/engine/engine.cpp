@@ -10,6 +10,7 @@ Engine *bf::engine;
 void Engine::endCurrentScene() {
 	if (currentScene != nullptr) {
 		currentScene->end();
+		delete currentScene;
 	}
 }
 
@@ -20,6 +21,8 @@ void Engine::changeScene(Scene *scene) {
 	currentScene = scene;
 	currentScene->start();
 	currentScene->updateSize(windowSize);
+
+	changingScene = true;
 }
 
 void Engine::updateSize() {
@@ -66,6 +69,8 @@ bool Engine::update() {
 	}
 
 	if (quitting) {
+		sound.reset();
+
 		return false;
 	}
 
@@ -80,6 +85,16 @@ bool Engine::update() {
 
 	// Update input for previous state
 	input.update();
+
+	// Check end
+	if (quitting) {
+		return false;
+	}
+
+	if (changingScene) {
+		changingScene = false;
+		return true;
+	}
 
 	// Render
 	currentScene->render();

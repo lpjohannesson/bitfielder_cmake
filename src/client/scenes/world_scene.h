@@ -58,7 +58,7 @@ namespace bf {
 
 		void readPacket(Packet &packet);
 
-		void updatePauseMenu();
+		bool updatePauseMenu();
 
 		void updateSize(glm::ivec2 size) override;
 

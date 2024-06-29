@@ -18,6 +18,12 @@ void Sound::playSound(ALuint sound, bool loops, float volume, float pitch) {
     alSourcePlay(channel);
 }
 
+void Sound::reset() {
+    for (int i = 0; i < CHANNEL_COUNT; i++) {
+        alSourcei(channels[i], AL_BUFFER, NULL);
+    }
+}
+
 Sound::Sound() {
     device = alcOpenDevice(NULL);
     context = alcCreateContext(device, NULL);

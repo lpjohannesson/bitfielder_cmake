@@ -17,8 +17,6 @@
 using namespace bf;
 
 void WorldScene::updateBlock(glm::ivec2 position) {
-	// TODO: Block particles
-
 	// Get sample including neighbours
 	BlockSample<BlockChunk> blockSample(world.map, position.x - 1, position.x + 1);
 
@@ -28,7 +26,11 @@ void WorldScene::updateBlock(glm::ivec2 position) {
 			continue;
 		}
 
-		worldRenderer.map.createMesh(*this, *chunk);
+		// Generate section with neigbours
+		int sectionStart = glm::max(0, BlockMesh::getSectionIndex(position.y - 1));
+		int sectionEnd = glm::min(BlockMesh::SECTION_COUNT - 1, BlockMesh::getSectionIndex(position.y + 1));
+
+		worldRenderer.map.createMesh(*this, *chunk, sectionStart, sectionEnd);
 	}
 }
 
@@ -285,17 +287,17 @@ void WorldScene::readPacket(Packet &packet) {
 	}
 }
 
-void WorldScene::updatePauseMenu() {
+bool WorldScene::updatePauseMenu() {
 	pauseOptionList.update();
 	ListOption *pressedOption = pauseOptionList.getPressedOption();
 
 	if (pressedOption == nullptr) {
-		return;
+		return true;
 	}
 
 	if (pressedOption == &pauseContinueOption) {
 		paused = false;
-		return;
+		return true;
 	}
 
 	if (pressedOption == &pauseTitleOption) {
@@ -303,9 +305,10 @@ void WorldScene::updatePauseMenu() {
 		menuScene->changeState(MenuState::HOME);
 
 		engine->changeScene(menuScene);
-
-		return;
+		return false;
 	}
+
+	return true;
 }
 
 void WorldScene::updateSize(glm::ivec2 size) {
@@ -325,7 +328,10 @@ void WorldScene::update() {
 	}
 
 	if (paused) {
-		updatePauseMenu();
+		// End if pause menu ended
+		if (!updatePauseMenu()) {
+			return;
+		}
 	}
 	else {
 		float zoomDirection = 

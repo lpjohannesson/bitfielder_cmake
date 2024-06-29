@@ -15,7 +15,7 @@ namespace bf {
 
 	class BlockChunk : public BlockMapElement {
 	public:
-		static constexpr glm::ivec2 SIZE{ 16, 16 };
+		static constexpr glm::ivec2 SIZE{ 16, 256 };
 
 		BlockData data[SIZE.y][SIZE.x];
 

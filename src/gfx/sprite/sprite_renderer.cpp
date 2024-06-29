@@ -26,14 +26,18 @@ void SpriteRenderer::createIndexBuffer() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
-void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program, const Texture &texture) const {
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
-
+void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program) const {
 	glUseProgram(program.getGLProgram());
 
 	glBindVertexArray(mesh.getGLVertexArray());
 	glDrawElements(GL_TRIANGLES, mesh.elementCount, GL_UNSIGNED_INT, nullptr);
+}
+
+void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program, const Texture &texture) const {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
+
+	renderMesh(mesh, program);
 }
 
 SpriteRenderer::SpriteRenderer() {

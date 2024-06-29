@@ -23,5 +23,6 @@ namespace bf {
     class BlockRenderer {
     public:
         inline virtual void render(const BlockRenderData &renderData) {}
+        inline virtual ~BlockRenderer() {}
     };
 }

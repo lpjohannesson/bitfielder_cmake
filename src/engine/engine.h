@@ -18,6 +18,7 @@ namespace bf {
 		SDL_GameController *gameController = nullptr;
 
 		Scene *currentScene = nullptr;
+		bool changingScene = false;
 
 		bool fullscreen = false;
 

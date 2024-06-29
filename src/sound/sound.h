@@ -16,6 +16,7 @@ namespace bf {
 
     public:
         void playSound(ALuint sound, bool loops, float volume = 1.0f, float pitch = 1.0f);
+        void reset();
 
         Sound();
         ~Sound();

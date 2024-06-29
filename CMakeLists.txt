@@ -77,6 +77,7 @@ if (CLIENT)
         src/client/world/camera.cpp
         src/client/world/shadow_buffer.cpp
 
+        src/client/world/block/block_mesh.cpp
         src/client/world/block/block_map_renderer.cpp
         src/client/world/block/block_renderer_factory.cpp
         src/client/world/block/block_sounds.cpp
