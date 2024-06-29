@@ -1,10 +1,18 @@
 #include "remote_server_connection.h"
 #include "scenes/menu_scene.h"
 
+#ifdef NX
+#include <switch.h>
+#endif
+
 using namespace bf;
 
 bool RemoteServerConnection::startConnection(const char *ip, int port, std::string &error) {
     // Start network
+#ifdef NX
+    socketInitializeDefault();
+#endif
+    
     if (enet_initialize() != 0) {
         error = "Network failed.";
         return false;
@@ -30,6 +38,10 @@ void RemoteServerConnection::endConnection() {
     if (networkPeer != nullptr) {
         enet_peer_reset(networkPeer);
     }
+
+#ifdef NX
+    socketExit();
+#endif
 }
 
 bool RemoteServerConnection::updateConnection() {
