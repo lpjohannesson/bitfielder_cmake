@@ -38,10 +38,6 @@ void RemoteServerConnection::endConnection() {
     if (networkPeer != nullptr) {
         enet_peer_reset(networkPeer);
     }
-
-#ifdef NX
-    socketExit();
-#endif
 }
 
 bool RemoteServerConnection::updateConnection() {
@@ -119,4 +115,8 @@ void RemoteServerConnection::end() {
 
     enet_host_destroy(networkHost);
     enet_deinitialize();
+
+#ifdef NX
+    socketExit();
+#endif
 }
