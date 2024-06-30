@@ -382,6 +382,8 @@ void WorldScene::end() {
 	// End server
 	server->end();
 	delete server;
+
+	engine->sound.reset();
 }
 
 WorldScene::WorldScene() :

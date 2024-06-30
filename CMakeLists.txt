@@ -4,6 +4,7 @@ project(bitfielder LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 if(WIN32)
     set(CLIENT 1)
