@@ -61,11 +61,13 @@ void WorldRenderer::render(const WorldScene &scene) {
     int sectionStart = glm::max(0, BlockMesh::getSectionIndex(blockStart.y));
     int sectionEnd = glm::min(BlockMesh::SECTION_COUNT - 1, BlockMesh::getSectionIndex(blockEnd.y));
 
-    // Render shadow to framebuffer
+    // Set transforms
     client->spriteProgram.setTransform(viewTransform);
     backSpriteProgram.setTransform(viewTransform);
     shadowSpriteProgram.setTransform(shadowViewTransform);
-    
+    lightSpriteProgram.setTransform(viewTransform);
+
+    // Render shadow to framebuffer
     glm::ivec2 windowSize = engine->getWindowSize();
     
     glBindFramebuffer(GL_FRAMEBUFFER, shadowBuffer.getGLFramebuffer());
@@ -108,11 +110,31 @@ void WorldRenderer::render(const WorldScene &scene) {
     }
 
     client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, client->spriteProgram);
+
+    // Render light
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+
+    for (const BlockMesh *blockMesh : blockMeshes.chunks) {
+        if (blockMesh == nullptr) {
+            continue;
+        }
+
+        for (int sectionIndex = sectionStart; sectionIndex <= sectionEnd; sectionIndex++) {
+            const BlockMeshSection &section = blockMesh->sections[sectionIndex];
+
+            client->spriteRenderer.renderMesh(section.lightMesh, lightSpriteProgram);
+        }
+    }
+
+    glDisable(GL_BLEND);
 }
 
 WorldRenderer::WorldRenderer(WorldScene &scene) :
     backSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_back.glsl"),
-    shadowSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_shadow.glsl") {
+    shadowSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_shadow.glsl"),
+    lightSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_light.glsl") {
 
     // Set shadow offset
     shadowTransform = glm::translate(glm::mat4(1.0f), glm::vec3(glm::vec2(SHADOW_OFFSET), 0.0f));

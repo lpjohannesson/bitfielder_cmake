@@ -20,8 +20,11 @@ namespace bf {
             leavesBlock,
             bushBlock,
             mushroomBlock,
-            ironBlockBlock,
-            goldBlockBlock;
+            ironBlock,
+            goldBlock,
+            woolBlock;
+
+        void createSolidBlock(World &world, entt::entity block);
 
         void createPlayer(entt::entity player, World &world);
 

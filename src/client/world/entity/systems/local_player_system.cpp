@@ -279,6 +279,10 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
 
     // Replace block
     if (placing) {
+        if (!scene->world.isBlockPlaceable(*blockPosition, onFrontLayer)) {
+            return false;
+        }
+
         scene->placeBlock(*blockPosition, onFrontLayer, blockData, localPlayer.selectedBlockIndex);
     }
     else {

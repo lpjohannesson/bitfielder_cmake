@@ -20,12 +20,12 @@ void SpriteBatch::uploadMesh(SpriteMesh &mesh) {
 	for (int spriteIndex = 0; spriteIndex < spriteCount; spriteIndex++) {
 		const Sprite &sprite = sprites[spriteIndex];
 
-		// Get corners
+		// Get corners, round UVs to avoid artifacts
 		glm::vec2
 			start = sprite.box.start,
 			end = sprite.box.getEnd(),
 			uvStart = sprite.uvBox.start,
-			uvEnd = sprite.uvBox.getEnd();
+			uvEnd = sprite.uvBox.getEnd() - glm::pow(2.0f, -12.0f);
 
 		// Push vertices
 		int vertexStart = spriteIndex * 4;

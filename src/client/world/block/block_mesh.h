@@ -7,11 +7,12 @@
 namespace bf {
     class BlockMeshSection {
     public:
-        SpriteMesh frontMesh, backMesh;
+        SpriteMesh frontMesh, backMesh, lightMesh;
 
         inline BlockMeshSection() :
             frontMesh(client->spriteRenderer),
-            backMesh(client->spriteRenderer) {}
+            backMesh(client->spriteRenderer),
+            lightMesh(client->spriteRenderer) {}
     };
     
     class BlockMesh : public BlockMapElement {

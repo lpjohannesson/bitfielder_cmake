@@ -63,13 +63,9 @@ void Camera::update(WorldScene &scene) {
     position = glm::lerp(targetPosition, position, glm::pow(smooth, deltaTime));
     offset = glm::lerp(targetOffset, offset, glm::pow(smooth, deltaTime));
 
-    // Round position to avoid visual glitches
     glm::vec2 translation = -(position + offset);
 
-    glm::vec2 windowSize = engine->getWindowSize();
-    glm::vec2 roundedTranslation = glm::floor(translation * windowSize) / windowSize;
-
-    transform = zoomTransform * glm::translate(glm::mat4(1.0f), glm::vec3(roundedTranslation, 0.0f));
+    transform = zoomTransform * glm::translate(glm::mat4(1.0f), glm::vec3(translation, 0.0f));
 }
 
 void Camera::start(WorldScene &scene) {

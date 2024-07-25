@@ -44,13 +44,20 @@ void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk, in
         // Draw vertical sections
         int sectionY = sectionIndex * BlockMesh::SECTION_SIZE.y;
 
+        // Create light sprite
+        Sprite lightSprite;
+        lightSprite.box.size = { 1.0f, 1.0f };
+
         for (int y = 0; y < BlockMesh::SECTION_SIZE.y; y++) {
             for (int x = 0; x < BlockMesh::SECTION_SIZE.x; x++) {
                 // Get positions
                 int blockY = sectionY + y;
 
-                glm::ivec2 chunkPosition = { x, blockY };
-                renderData.position = { blockStartX + x, blockY };
+                glm::ivec2
+                    position = { blockStartX + x, blockY },
+                    chunkPosition = { x, blockY };
+                
+                renderData.position = position;
                 
                 // Get block data
                 BlockData *blockData = chunk.getBlock(chunkPosition);
@@ -68,6 +75,12 @@ void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk, in
                 renderData.onFrontLayer = false;
 
                 renderBlock(renderData);
+
+                // Render light
+                lightSprite.box.start = position;
+                lightSprite.color = glm::vec4(glm::vec3((float)blockData->light / 16.0f), 0.0f);
+                
+                lightSpriteBatch.drawSprite(lightSprite);
             }
         }
 
@@ -76,5 +89,6 @@ void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk, in
 
         frontSpriteBatch.uploadMesh(section.frontMesh);
         backSpriteBatch.uploadMesh(section.backMesh);
+        lightSpriteBatch.uploadMesh(section.lightMesh);
     }
 }

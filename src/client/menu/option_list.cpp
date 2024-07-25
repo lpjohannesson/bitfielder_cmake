@@ -31,7 +31,7 @@ void OptionList::updateMesh() {
     for (int i = 0; i < options.size(); i++) {
         ListOption *option = options[i];
 
-        // Select color
+        // Select colour
         if (i == selectedIndex) {
             renderer->optionFontProperties.color = { 1.0f, 0.5f, 0.0f, 1.0f };
         }

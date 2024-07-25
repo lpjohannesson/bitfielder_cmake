@@ -103,6 +103,13 @@ void BlockMapGenerator::generateChunk(World &world, BlockChunk &chunk) {
             block->backIndex = dirtIndex;
         }
     }
+
+    for (int y = 0; y < 16; y++) {
+        for (int x = 0; x < BlockChunk::SIZE.x; x++) {
+            BlockData *block = chunk.getBlock({ x, y + 128 });
+            block->light = y;
+        }
+    }
 }
 
 BlockMapGenerator::BlockMapGenerator() {

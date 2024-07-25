@@ -5,6 +5,7 @@
 namespace bf {
 	struct BlockData {
 		unsigned int frontIndex, backIndex;
+		unsigned char light;
 	};
 
 	template <typename T>

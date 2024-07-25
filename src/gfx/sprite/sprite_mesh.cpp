@@ -13,7 +13,7 @@ void SpriteMesh::startAttributes() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, uv));
 	glEnableVertexAttribArray(1);
 
-	// Color
+	// Colour
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, color));
 	glEnableVertexAttribArray(2);
 }

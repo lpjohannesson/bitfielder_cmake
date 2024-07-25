@@ -22,7 +22,7 @@ namespace bf {
         TextureAtlas textureAtlas;
         Texture texture;
 
-        SpriteProgram backSpriteProgram, shadowSpriteProgram;
+        SpriteProgram backSpriteProgram, shadowSpriteProgram, lightSpriteProgram;
         ShadowBuffer shadowBuffer;
 
         BlockMapRenderer map;

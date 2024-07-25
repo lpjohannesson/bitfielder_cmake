@@ -3,6 +3,7 @@
 #include "core/game_time.h"
 #include "world/block/block_sample.h"
 #include "../components/position_component.h"
+#include "world/block/components/block_collision_component.h"
 
 using namespace bf;
 
@@ -114,8 +115,8 @@ using namespace bf;
             int blockIndex = blockData->frontIndex;\
             entt::entity block = world.blocks.getBlock(blockIndex);\
             \
-            /* TODO: add collision component to blocks */\
-            if (blockIndex == 0) {\
+            /* Check collision component */\
+            if (!world.blocks.registry.all_of<BlockCollisionComponent>(block)) {\
                 continue;\
             }\
             \

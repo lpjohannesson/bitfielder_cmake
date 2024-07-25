@@ -4,8 +4,15 @@
 #include "entity/components/sprite_animation_component.h"
 #include "entity/components/sprite_flip_component.h"
 #include "entity/components/aim_component.h"
+#include "block/components/block_attachable_component.h"
+#include "block/components/block_collision_component.h"
 
 using namespace bf;
+
+void Content::createSolidBlock(World &world, entt::entity block) {
+    world.blocks.registry.emplace<BlockAttachableComponent>(block, BlockAttachableComponent {});
+    world.blocks.registry.emplace<BlockCollisionComponent>(block, BlockCollisionComponent {});
+}
 
 void Content::createPlayer(entt::entity player, World &world) {
     entt::registry &entityRegistry = world.entities.registry;
@@ -22,23 +29,34 @@ Content::Content(World &world) {
 
     // Create blocks
     airBlock = world.blocks.createBlock("air");
+
     dirtBlock = world.blocks.createBlock("dirt");
+    createSolidBlock(world, dirtBlock);
+
     grassBlock = world.blocks.createBlock("grass");
+    createSolidBlock(world, grassBlock);
+    
     stoneBlock = world.blocks.createBlock("stone");
+    createSolidBlock(world, stoneBlock);
+
     woodLogBlock = world.blocks.createBlock("wood_log");
+    createSolidBlock(world, woodLogBlock);
+
     woodPlanksBlock = world.blocks.createBlock("wood_planks");
+    createSolidBlock(world, woodPlanksBlock);
+
     leavesBlock = world.blocks.createBlock("leaves");
+    createSolidBlock(world, leavesBlock);
+
     bushBlock = world.blocks.createBlock("bush");
     mushroomBlock = world.blocks.createBlock("mushroom");
-    ironBlockBlock = world.blocks.createBlock("iron_block");
-    goldBlockBlock = world.blocks.createBlock("gold_block");
 
-    world.blocks.createBlock("wool_white");
-    world.blocks.createBlock("wool_black");
-    world.blocks.createBlock("wool_red");
-    world.blocks.createBlock("wool_green");
-    world.blocks.createBlock("wool_blue");
-    world.blocks.createBlock("wool_cyan");
-    world.blocks.createBlock("wool_magenta");
-    world.blocks.createBlock("wool_yellow");
+    ironBlock = world.blocks.createBlock("iron_block");
+    createSolidBlock(world, ironBlock);
+
+    goldBlock = world.blocks.createBlock("gold_block");
+    createSolidBlock(world, goldBlock);
+
+    woolBlock = world.blocks.createBlock("wool_white");
+    createSolidBlock(world, woolBlock);
 }

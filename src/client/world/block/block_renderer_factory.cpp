@@ -62,7 +62,7 @@ void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entit
 
     blockParticle.size = glm::vec2(texture.box.size.x / frameCount, texture.box.size.y) / 16.0f;
 
-    // Load same color as block
+    // Load same colour as block
     if (blockValue.HasMember("color")) {
         blockParticle.color = Color::parseHex(blockValue["color"].GetString());
     }

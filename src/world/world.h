@@ -7,6 +7,9 @@
 
 namespace bf {
 	class World {
+    private:
+        bool isBlockAttachable(int index);
+
     public:
         BlockMap<BlockChunk> map;
         BlockTypes blocks;
@@ -14,6 +17,8 @@ namespace bf {
         Entities entities;
 
         Content content;
+        
+        bool isBlockPlaceable(glm::ivec2 position, bool onFrontLayer);
 
         void update();
 
