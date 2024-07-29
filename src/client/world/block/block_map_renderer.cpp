@@ -25,7 +25,8 @@ void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk, in
     int blockStartX = mapIndex * BlockChunk::SIZE.x;
 
     // Create block sample, including left and right chunks
-    BlockSample<BlockChunk> blockSample(scene.world.map, blockStartX - BlockChunk::SIZE.x, blockStartX + BlockChunk::SIZE.x);
+    BlockSample<BlockChunk> blockSample;
+    blockSample.sampleChunks(scene.world.map, mapIndex - 1, mapIndex + 1);
 
     // Create render data
     BlockRenderData renderData;

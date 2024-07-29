@@ -18,7 +18,8 @@ using namespace bf;
 
 void WorldScene::updateBlock(glm::ivec2 position) {
 	// Get sample including neighbours
-	BlockSample<BlockChunk> blockSample(world.map, position.x - 1, position.x + 1);
+	BlockSample<BlockChunk> blockSample;
+	blockSample.sampleBlocks(world.map, position.x - 1, position.x + 1);
 
 	// Update meshes
 	for (BlockChunk *chunk : blockSample.chunks) {

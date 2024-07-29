@@ -52,6 +52,7 @@ BlockChunk::BlockChunk(int mapIndex) : BlockMapElement(mapIndex) {
 			
 			blockData->frontIndex = 0;
 			blockData->backIndex = 0;
+			blockData->light = 0;
 		}
 	}
 }

@@ -97,7 +97,8 @@ using namespace bf;
     int blockSampleStart = glm::min(BLOCK_SAMPLE_START, BLOCK_SAMPLE_END);\
     int blockSampleEnd = glm::max(BLOCK_SAMPLE_START, BLOCK_SAMPLE_END);\
     \
-    BlockSample blockSample(world.map, blockSampleStart, blockSampleEnd);\
+    BlockSample<BlockChunk> blockSample;\
+    blockSample.sampleBlocks(world.map, blockSampleStart, blockSampleEnd);\
     \
     /* Move forward until end */\
     int blockForward = blockForwardStart;\

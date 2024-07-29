@@ -1,5 +1,6 @@
 #include "block_map_generator.h"
 #include <glm/gtx/easing.hpp>
+#include "world/block/block_light_generator.h"
 
 using namespace bf;
 
@@ -23,7 +24,7 @@ float BlockMapGenerator::getGroundSample(glm::ivec2 position, float blendProgres
     return blendSample(sample, blendProgress);
 }
 
-void BlockMapGenerator::generateChunk(World &world, BlockChunk &chunk) {
+void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
     const int
         groundStart = 128,
         groundEnd = groundStart + 16,
@@ -104,12 +105,7 @@ void BlockMapGenerator::generateChunk(World &world, BlockChunk &chunk) {
         }
     }
 
-    for (int y = 0; y < 16; y++) {
-        for (int x = 0; x < BlockChunk::SIZE.x; x++) {
-            BlockData *block = chunk.getBlock({ x, y + 128 });
-            block->light = y;
-        }
-    }
+    BlockLightGenerator::generateChunk(chunk, world.map);
 }
 
 BlockMapGenerator::BlockMapGenerator() {

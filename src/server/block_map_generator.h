@@ -12,7 +12,7 @@ namespace bf {
 
         float getGroundSample(glm::ivec2 position, float blendProgress);
 
-        void generateChunk(World &world, BlockChunk &chunk);
+        void generateChunk(BlockChunk &chunk, World &world);
 
         BlockMapGenerator();
     };

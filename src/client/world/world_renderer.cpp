@@ -55,7 +55,8 @@ void WorldRenderer::render(const WorldScene &scene) {
     glm::ivec2 blockStart = glm::floor(screenBox.start - SHADOW_OFFSET);
     glm::ivec2 blockEnd = glm::floor(screenBox.getEnd());
 
-    BlockSample<BlockMesh> blockMeshes(scene.worldRenderer.map.map, blockStart.x, blockEnd.x);
+    BlockSample<BlockMesh> blockMeshes;
+    blockMeshes.sampleBlocks(scene.worldRenderer.map.map, blockStart.x, blockEnd.x);
 
     // Get visible sections
     int sectionStart = glm::max(0, BlockMesh::getSectionIndex(blockStart.y));

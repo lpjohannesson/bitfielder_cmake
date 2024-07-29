@@ -184,6 +184,6 @@ Server::Server() {
 
     for (int i = 0; i < 10; i++) {
         BlockChunk &chunk = world.map.createChunk(i);
-        mapGenerator.generateChunk(world, chunk);
+        mapGenerator.generateChunk(chunk, world);
     }
 }

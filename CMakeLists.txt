@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(bitfielder LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -52,6 +52,7 @@ if (CLIENT)
         src/world/block/block_map_element.cpp
         src/world/block/block_chunk.cpp
         src/world/block/block_types.cpp
+        src/world/block/block_light_generator.cpp
 
         src/world/entity/entities.cpp
 
@@ -117,6 +118,7 @@ if (SERVER)
         src/world/block/block_map_element.cpp
         src/world/block/block_chunk.cpp
         src/world/block/block_types.cpp
+        src/world/block/block_light_generator.cpp
 
         src/world/entity/entities.cpp
 
@@ -201,6 +203,6 @@ elseif(NX)
     add_nro_target(client)
 endif()
 
-add_custom_target(copy-runtime-files ALL
+add_custom_target(copy-assets ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
     DEPENDS client)
