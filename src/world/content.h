@@ -20,6 +20,7 @@ namespace bf {
             leavesBlock,
             bushBlock,
             mushroomBlock,
+            wheatBlock,
             ironBlock,
             goldBlock,
             woolBlock;

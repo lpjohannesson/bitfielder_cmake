@@ -1,0 +1,9 @@
+{
+    "block": {
+        "partial": true,
+        "type": "basic",
+        "texture": "wheat"
+    },
+    "particle": "leaves",
+    "sound": "grass"
+}

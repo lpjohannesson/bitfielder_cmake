@@ -50,6 +50,7 @@ Content::Content(World &world) {
 
     bushBlock = world.blocks.createBlock("bush");
     mushroomBlock = world.blocks.createBlock("mushroom");
+    wheatBlock = world.blocks.createBlock("wheat");
 
     ironBlock = world.blocks.createBlock("iron_block");
     createSolidBlock(world, ironBlock);

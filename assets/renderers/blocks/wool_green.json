@@ -1,9 +1,0 @@
-{
-    "block": {
-        "type": "auto",
-        "texture": "wool_dark",
-        "color": "33ff33"
-    },
-    "particle": "wool",
-    "sound": "cloth"
-}
