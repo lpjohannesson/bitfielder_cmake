@@ -1,5 +1,6 @@
 #include "world.h"
 #include "block/components/block_attachable_component.h"
+#include "block/block_light_generator.h"
 
 using namespace bf;
 
@@ -43,6 +44,10 @@ bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
     }
 
     return false;
+}
+
+void World::updateBlock(glm::ivec2 position) {
+    BlockLightGenerator::removeLight(position, map);
 }
 
 void World::update() {

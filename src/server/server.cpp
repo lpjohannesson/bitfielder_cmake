@@ -157,6 +157,8 @@ void Server::readReplaceBlock(ClientConnection *client, Packet &packet) {
         blockData->backIndex = blockIndex;
     }
 
+    world.updateBlock(position);
+
     Packet castPacket;
     writeReplaceBlock(castPacket, position, onFrontLayer, blockIndex);
 

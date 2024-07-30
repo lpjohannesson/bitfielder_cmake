@@ -79,7 +79,7 @@ void BlockMapRenderer::createMesh(WorldScene &scene, const BlockChunk &chunk, in
 
                 // Render light
                 lightSprite.box.start = position;
-                lightSprite.color = glm::vec4(glm::vec3((float)blockData->light / 16.0f), 0.0f);
+                lightSprite.color = glm::vec4(glm::vec3((float)blockData->light / 15.0f), 0.0f);
                 
                 lightSpriteBatch.drawSprite(lightSprite);
             }

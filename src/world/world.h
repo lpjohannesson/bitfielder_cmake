@@ -20,6 +20,8 @@ namespace bf {
         
         bool isBlockPlaceable(glm::ivec2 position, bool onFrontLayer);
 
+        void updateBlock(glm::ivec2 position);
+
         void update();
 
         inline World() : content(*this) {}
