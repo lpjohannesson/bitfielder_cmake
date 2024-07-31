@@ -47,7 +47,7 @@ bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
 }
 
 void World::updateBlock(glm::ivec2 position) {
-    BlockLightGenerator::removeLight(position, map);
+    BlockLightGenerator::removeLight(position, *this);
 }
 
 void World::update() {

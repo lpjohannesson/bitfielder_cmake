@@ -1,14 +1,13 @@
 #pragma once
 #include <queue>
 #include <glm/glm.hpp>
+#include "world/world.h"
 #include "block_chunk.h"
-#include "block_map.h"
 
 namespace bf {
     struct BlockLightCell {
         glm::ivec2 position;
         int light;
-        BlockData *blockData;
     };
 
     class BlockLightGenerator {
@@ -27,14 +26,16 @@ namespace bf {
                 { 1, 0 },
             };
 
+        static bool isBlockOpaque(BlockData *blockData, World &world);
+
         static void queueNeighboringChunk(BlockChunk *chunk, int x, std::queue<BlockLightCell> &cellQueue);
 
     public:
         static constexpr int MAX_LIGHT = 15;
 
-        static void removeLight(glm::ivec2 position, BlockMap<BlockChunk> &map);
+        static void removeLight(glm::ivec2 position, World &world);
 
-        static void spreadLight(BlockMap<BlockChunk> &map, std::queue<BlockLightCell> &cellQueue);
-        static void generateChunk(BlockChunk &chunk, BlockMap<BlockChunk> &map);
+        static void spreadLight(std::queue<BlockLightCell> &cellQueue, World &world);
+        static void generateChunk(BlockChunk &chunk, World &world);
     };
 }

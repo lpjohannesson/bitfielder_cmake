@@ -105,10 +105,11 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
         }
     }
 
-    BlockLightGenerator::generateChunk(chunk, world.map);
+    BlockLightGenerator::generateChunk(chunk, world);
 }
 
 BlockMapGenerator::BlockMapGenerator() {
+    // TODO: Improve seed gen
     srand((int)time(NULL));
     int seed = rand();
 
