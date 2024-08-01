@@ -23,19 +23,19 @@ glm::ivec2 BlockChunk::worldToChunk(glm::ivec2 position, int chunkIndex) {
 	return { position.x - chunkIndex * SIZE.x, position.y };  
 }
 
-BlockData *BlockChunk::getWorldBlock(const BlockMap<BlockChunk> &map, glm::ivec2 position) {
+BlockData *BlockChunk::getWorldBlock(BlockMap<BlockChunk> &map, glm::ivec2 position) {
 	GET_BLOCK(map);
 }
 
-BlockData *BlockChunk::getSampleBlock(const BlockSample<BlockChunk> &sample, glm::ivec2 position) {
+BlockData *BlockChunk::getSampleBlock(BlockSample<BlockChunk> &sample, glm::ivec2 position) {
 	GET_BLOCK(sample);
 }
 
-BlockData *BlockChunk::getBlock(glm::ivec2 position) const {
-	return (BlockData*)&data[position.y][position.x];
+BlockData *BlockChunk::getBlock(glm::ivec2 position) {
+	return &data[position.y][position.x];
 }
 
-BlockData *BlockChunk::getBlockChecked(glm::ivec2 position) const {
+BlockData *BlockChunk::getBlockChecked(glm::ivec2 position) {
 	// Check vertical
 	if (position.y < 0 || position.y >= SIZE.y) {
 		return nullptr;

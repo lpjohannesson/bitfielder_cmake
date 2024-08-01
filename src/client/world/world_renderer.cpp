@@ -37,7 +37,7 @@ void WorldRenderer::updateSize(glm::ivec2 size, const WorldScene &scene) {
     updateTransforms(scene);
 }
 
-void WorldRenderer::render(const WorldScene &scene) {
+void WorldRenderer::render(WorldScene &scene) {
     updateTransforms(scene);
 
     entities.render(scene);

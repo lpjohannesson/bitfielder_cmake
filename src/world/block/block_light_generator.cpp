@@ -24,9 +24,7 @@ void BlockLightGenerator::queueNeighboringChunk(BlockChunk *chunk, int x, std::q
     }
 }
 
-void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
-    // TODO: Chunk optimizations
-
+void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &resultBox) {
     BlockData *blockData = BlockChunk::getWorldBlock(world.map, position);
 
     // Skip if not full light
@@ -89,6 +87,7 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
             }
 
             nextBlockData->light = 0;
+            resultBox.expandPoint(cell.position);
         }
     }
     else {
@@ -117,12 +116,10 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
         }
     }
 
-    spreadLight(cellQueue, world);
+    spreadLight(cellQueue, world, resultBox);
 }
 
-void BlockLightGenerator::spreadLight(std::queue<BlockLightCell> &cellQueue, World &world) {
-    // TODO: Chunk optimizations
-
+void BlockLightGenerator::spreadLight(std::queue<BlockLightCell> &cellQueue, World &world, Box2i &resultBox) {
     while (!cellQueue.empty()) {
         BlockLightCell cell = cellQueue.front();
         cellQueue.pop();
@@ -139,6 +136,7 @@ void BlockLightGenerator::spreadLight(std::queue<BlockLightCell> &cellQueue, Wor
         }
 
         blockData->light = cell.light;
+        resultBox.expandPoint(cell.position);
         
         int nextLight = cell.light - LIGHT_STEP;
 
@@ -174,5 +172,6 @@ void BlockLightGenerator::generateChunk(BlockChunk &chunk, World &world) {
         }
     }
 
-    spreadLight(cellQueue, world);
+    Box2i box;
+    spreadLight(cellQueue, world, box);
 }

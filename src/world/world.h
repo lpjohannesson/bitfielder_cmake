@@ -20,7 +20,7 @@ namespace bf {
         
         bool isBlockPlaceable(glm::ivec2 position, bool onFrontLayer);
 
-        void updateBlock(glm::ivec2 position);
+        void updateBlock(glm::ivec2 position, Box2i &resultBox);
 
         void update();
 

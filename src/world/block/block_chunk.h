@@ -23,11 +23,11 @@ namespace bf {
 		static int getChunkIndex(int blockX);
 		static glm::ivec2 worldToChunk(glm::ivec2 position, int chunkIndex);
 
-		static BlockData *getWorldBlock(const BlockMap<BlockChunk> &map, glm::ivec2 position);
-		static BlockData *getSampleBlock(const BlockSample<BlockChunk> &sample, glm::ivec2 position);
+		static BlockData *getWorldBlock(BlockMap<BlockChunk> &map, glm::ivec2 position);
+		static BlockData *getSampleBlock(BlockSample<BlockChunk> &sample, glm::ivec2 position);
 
-		BlockData *getBlock(glm::ivec2 position) const;
-		BlockData *getBlockChecked(glm::ivec2 position) const;
+		BlockData *getBlock(glm::ivec2 position);
+		BlockData *getBlockChecked(glm::ivec2 position);
 
 		BlockChunk(int mapIndex);
 	};

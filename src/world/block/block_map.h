@@ -5,18 +5,34 @@
 namespace bf {
 	template <typename T>
 	class BlockMap {
+	private:
+		T *lastChunk;
+		int lastChunkIndex;
+		bool lastChunkValid = false;
+
 	public:
 		std::unordered_map<int, T> chunks;
 
-		inline T *getChunk(int index) const {
+		inline T *getChunk(int index) {
+			// Return if same as previous
+			if (lastChunkValid && index == lastChunkIndex) {
+				return lastChunk;
+			}
+
 			// Find chunk by index
 			auto foundChunk = chunks.find(index);
 
 			if (foundChunk == chunks.end()) {
-				return nullptr;
+				lastChunk = nullptr;
+			}
+			else {
+				lastChunk = &foundChunk->second;
 			}
 
-			return (T*)&foundChunk->second;
+			lastChunkIndex = index;
+			lastChunkValid = true;
+
+			return lastChunk;
 		}
 
 		inline T &createChunk(int index) {

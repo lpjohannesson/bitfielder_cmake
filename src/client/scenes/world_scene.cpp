@@ -17,21 +17,23 @@
 using namespace bf;
 
 void WorldScene::updateBlock(glm::ivec2 position) {
-	world.updateBlock(position);
+	Box2i box{ position - 1, { 2, 2 } };
+
+	world.updateBlock(position, box);
 
 	// Get sample including neighbours
 	BlockSample<BlockChunk> blockSample;
-	blockSample.sampleBlocks(world.map, position.x - 1, position.x + 1);
+	blockSample.sampleBlocks(world.map, box.start.x, box.start.x + box.size.x);
 
-	// Update meshes
+	// Generate section with neighbours
+	int sectionStart = glm::max(0, BlockMesh::getSectionIndex(box.start.y));
+	int sectionEnd = glm::min(BlockMesh::SECTION_COUNT - 1, BlockMesh::getSectionIndex(box.start.y + box.size.y));
+
+	// Update meshesx
 	for (BlockChunk *chunk : blockSample.chunks) {
 		if (chunk == nullptr) {
 			continue;
 		}
-
-		// Generate section with neigbours
-		int sectionStart = glm::max(0, BlockMesh::getSectionIndex(position.y - 1));
-		int sectionEnd = glm::min(BlockMesh::SECTION_COUNT - 1, BlockMesh::getSectionIndex(position.y + 1));
 
 		worldRenderer.map.createMesh(*this, *chunk, sectionStart, sectionEnd);
 	}

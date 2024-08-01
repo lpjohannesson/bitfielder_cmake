@@ -33,9 +33,9 @@ namespace bf {
     public:
         static constexpr int MAX_LIGHT = 15;
 
-        static void updateLight(glm::ivec2 position, World &world);
+        static void updateLight(glm::ivec2 position, World &world, Box2i &resultBox);
 
-        static void spreadLight(std::queue<BlockLightCell> &cellQueue, World &world);
+        static void spreadLight(std::queue<BlockLightCell> &cellQueue, World &world, Box2i &resultBox);
         static void generateChunk(BlockChunk &chunk, World &world);
     };
 }

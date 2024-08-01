@@ -35,7 +35,7 @@ namespace bf {
         void updateTransforms(const WorldScene &scene);
         void updateSize(glm::ivec2 size, const WorldScene &scene);
 
-        void render(const WorldScene &scene);
+        void render(WorldScene &scene);
 
         WorldRenderer(WorldScene &scene);
 	};

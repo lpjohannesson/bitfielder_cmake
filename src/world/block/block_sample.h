@@ -16,7 +16,7 @@ namespace bf {
 			return chunks[chunkIndex - chunkStart];
 		}
 
-		inline void sampleChunks(const BlockMap<T>& map, int start, int end) {
+		inline void sampleChunks(BlockMap<T>& map, int start, int end) {
 			chunkStart = start;
 			int chunkCount = end - start + 1;
 
@@ -27,7 +27,7 @@ namespace bf {
 			}
 		}
 
-        inline void sampleBlocks(const BlockMap<T>& map, int startX, int endX) {
+        inline void sampleBlocks(BlockMap<T>& map, int startX, int endX) {
 			// Get chunk extents
 			chunkStart = BlockChunk::getChunkIndex(startX);
 			int chunkEnd = BlockChunk::getChunkIndex(endX);
