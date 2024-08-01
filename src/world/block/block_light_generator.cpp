@@ -51,13 +51,13 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
                 break;
             }
 
-            // Queue above max to avoid brightness check
-            removalQueue.push({ belowPosition, MAX_LIGHT + 1 });
-
             // Stop on non-max light
             if (belowBlockData->light < MAX_LIGHT) {
                 break;
             }
+
+            // Queue above max to avoid brightness check
+            removalQueue.push({ belowPosition, MAX_LIGHT + 1 });
         }
 
         // Apply removal queue
