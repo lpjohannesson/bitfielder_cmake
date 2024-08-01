@@ -12,7 +12,7 @@ namespace bf {
 
     class BlockLightGenerator {
     private:
-        static constexpr int LIGHT_STEP = 2;
+        static constexpr int LIGHT_STEP = 1;
 
         static constexpr glm::ivec2
             offsets[] = {

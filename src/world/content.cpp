@@ -6,12 +6,14 @@
 #include "entity/components/aim_component.h"
 #include "block/components/block_attachable_component.h"
 #include "block/components/block_collision_component.h"
+#include "block/components/block_opaque_component.h"
 
 using namespace bf;
 
 void Content::createSolidBlock(World &world, entt::entity block) {
     world.blocks.registry.emplace<BlockAttachableComponent>(block, BlockAttachableComponent {});
     world.blocks.registry.emplace<BlockCollisionComponent>(block, BlockCollisionComponent {});
+    world.blocks.registry.emplace<BlockOpaqueComponent>(block, BlockOpaqueComponent {});
 }
 
 void Content::createPlayer(entt::entity player, World &world) {

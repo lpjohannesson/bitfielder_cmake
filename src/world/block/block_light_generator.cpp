@@ -1,9 +1,12 @@
 #include "block_light_generator.h"
+#include "components/block_opaque_component.h"
 
 using namespace bf;
 
 bool BlockLightGenerator::isBlockOpaque(BlockData *blockData, World &world) {
-    return blockData->frontIndex != 0;
+    entt::entity block = world.blocks.getBlock(blockData->frontIndex);
+
+    return world.blocks.registry.all_of<BlockOpaqueComponent>(block);
 }
 
 void BlockLightGenerator::queueNeighboringChunk(BlockChunk *chunk, int x, std::queue<BlockLightCell> &cellQueue) {
@@ -31,11 +34,13 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
         return;
     }
 
-    std::queue<BlockLightCell> removalQueue, cellQueue;
+    std::queue<BlockLightCell> cellQueue;
 
     glm::ivec2 belowPosition = position;
 
     if (isBlockOpaque(blockData, world)) {
+        std::queue<BlockLightCell> removalQueue;
+
         // Remove light below
         while (true) {
             belowPosition.y++;
@@ -53,6 +58,37 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
             if (belowBlockData->light < MAX_LIGHT) {
                 break;
             }
+        }
+
+        // Apply removal queue
+        while (!removalQueue.empty()) {
+            BlockLightCell cell = removalQueue.front();
+            removalQueue.pop();
+
+            BlockData *nextBlockData = BlockChunk::getWorldBlock(world.map, cell.position);
+
+            if (nextBlockData == nullptr) {
+                continue;
+            }
+
+            int nextLight = nextBlockData->light;
+            
+            // Skip if already removed
+            if (nextLight == 0) {
+                continue;
+            }
+
+            // Requeue if brighter or spread
+            if (cell.light <= nextLight) {
+                cellQueue.push({ cell.position, nextLight });
+            }
+            else {
+                for (glm::ivec2 offset : offsets) {
+                    removalQueue.push({ cell.position + offset, nextLight });
+                }
+            }
+
+            nextBlockData->light = 0;
         }
     }
     else {
@@ -74,36 +110,6 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
                 break;
             }
         }
-    }
-
-    while (!removalQueue.empty()) {
-        BlockLightCell cell = removalQueue.front();
-        removalQueue.pop();
-
-        BlockData *nextBlockData = BlockChunk::getWorldBlock(world.map, cell.position);
-
-        if (nextBlockData == nullptr) {
-            continue;
-        }
-
-        int nextLight = nextBlockData->light;
-        
-        // Skip if already removed
-        if (nextLight == 0) {
-            continue;
-        }
-
-        // Requeue if brighter or spread
-        if (cell.light <= nextLight) {
-            cellQueue.push({ cell.position, nextLight });
-        }
-        else {
-            for (glm::ivec2 offset : offsets) {
-                removalQueue.push({ cell.position + offset, nextLight });
-            }
-        }
-
-        nextBlockData->light = 0;
     }
 
     spreadLight(cellQueue, world);
