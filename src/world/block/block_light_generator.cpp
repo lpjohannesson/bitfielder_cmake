@@ -21,7 +21,7 @@ void BlockLightGenerator::queueNeighboringChunk(BlockChunk *chunk, int x, std::q
     }
 }
 
-void BlockLightGenerator::removeLight(glm::ivec2 position, World &world) {
+void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
     // TODO: Chunk optimizations
 
     BlockData *blockData = BlockChunk::getWorldBlock(world.map, position);
@@ -46,9 +46,11 @@ void BlockLightGenerator::removeLight(glm::ivec2 position, World &world) {
                 break;
             }
 
+            // Queue above max to avoid brightness check
             removalQueue.push({ belowPosition, MAX_LIGHT + 1 });
 
-            if (blockData->light < MAX_LIGHT) {
+            // Stop on non-max light
+            if (belowBlockData->light < MAX_LIGHT) {
                 break;
             }
         }
@@ -67,7 +69,8 @@ void BlockLightGenerator::removeLight(glm::ivec2 position, World &world) {
             cellQueue.push({ belowPosition, MAX_LIGHT });
             belowBlockData->light = 0;
 
-            if (isBlockOpaque(blockData, world)) {
+            // Stop on opaque blocks
+            if (isBlockOpaque(belowBlockData, world)) {
                 break;
             }
         }
@@ -90,7 +93,7 @@ void BlockLightGenerator::removeLight(glm::ivec2 position, World &world) {
             continue;
         }
 
-        // Requeue if brighter
+        // Requeue if brighter or spread
         if (cell.light <= nextLight) {
             cellQueue.push({ cell.position, nextLight });
         }
