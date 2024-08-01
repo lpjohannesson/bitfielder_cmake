@@ -102,6 +102,11 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world) {
                 break;
             }
 
+            // Skip if already lit
+            if (belowBlockData->light == MAX_LIGHT) {
+                break;
+            }
+
             cellQueue.push({ belowPosition, MAX_LIGHT });
             belowBlockData->light = 0;
 
