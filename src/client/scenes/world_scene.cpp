@@ -29,7 +29,7 @@ void WorldScene::updateBlock(glm::ivec2 position) {
 	int sectionStart = glm::max(0, BlockMesh::getSectionIndex(box.start.y));
 	int sectionEnd = glm::min(BlockMesh::SECTION_COUNT - 1, BlockMesh::getSectionIndex(box.start.y + box.size.y));
 
-	// Update meshesx
+	// Update meshes
 	for (BlockChunk *chunk : blockSample.chunks) {
 		if (chunk == nullptr) {
 			continue;
