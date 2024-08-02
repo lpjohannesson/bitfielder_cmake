@@ -1,0 +1,9 @@
+{
+    "block": {
+        "partial": true,
+        "type": "auto",
+        "texture": "stick"
+    },
+    "particle": "wood",
+    "sound": "wood"
+}

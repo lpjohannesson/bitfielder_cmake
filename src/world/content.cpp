@@ -7,6 +7,7 @@
 #include "block/components/block_attachable_component.h"
 #include "block/components/block_collision_component.h"
 #include "block/components/block_opaque_component.h"
+#include "block/components/one_way_block_component.h"
 
 using namespace bf;
 
@@ -46,6 +47,11 @@ Content::Content(World &world) {
 
     woodPlanksBlock = world.blocks.createBlock("wood_planks");
     createSolidBlock(world, woodPlanksBlock);
+
+    stickBlock = world.blocks.createBlock("stick");
+    world.blocks.registry.emplace<BlockAttachableComponent>(stickBlock, BlockAttachableComponent {});
+    world.blocks.registry.emplace<BlockCollisionComponent>(stickBlock, BlockCollisionComponent {});
+    world.blocks.registry.emplace<OneWayBlockComponent>(stickBlock, OneWayBlockComponent {});
 
     leavesBlock = world.blocks.createBlock("leaves");
     createSolidBlock(world, leavesBlock);

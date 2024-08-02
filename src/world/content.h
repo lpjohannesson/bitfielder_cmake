@@ -17,6 +17,7 @@ namespace bf {
             stoneBlock,
             woodLogBlock,
             woodPlanksBlock,
+            stickBlock,
             leavesBlock,
             bushBlock,
             mushroomBlock,

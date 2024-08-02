@@ -4,6 +4,7 @@
 #include "world/block/block_sample.h"
 #include "../components/position_component.h"
 #include "world/block/components/block_collision_component.h"
+#include "world/block/components/one_way_block_component.h"
 
 using namespace bf;
 
@@ -56,7 +57,7 @@ using namespace bf;
     \
     return true;
 
-#define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_X, BLOCK_Y, GET_COLLISION_FUNCTION)\
+#define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_X, BLOCK_Y, GET_COLLISION_FUNCTION, AXIS_BLOCK_CHECK)\
     if (velocity.velocity.AXIS == 0.0f) {\
         /* Not moving */\
         return;\
@@ -121,6 +122,8 @@ using namespace bf;
                 continue;\
             }\
             \
+            AXIS_BLOCK_CHECK\
+            \
             collider = { blockPosition, { 1.0f, 1.0f } };\
             \
             collided |= GET_COLLISION_FUNCTION(movement, endPosition);\
@@ -154,7 +157,16 @@ bool BodySystem::getCollisionY(const BodyMovement &movement, float &endPosition)
 }
 
 void BodySystem::moveX(World &world, glm::vec2 &position, VelocityComponent &velocity, BodyComponent &body) {
-    MOVE_AXIS(x, y, blockForwardStart, blockForwardEnd, blockForward, blockSide, getCollisionX)
+    MOVE_AXIS(
+        x, y,
+        blockForwardStart,
+        blockForwardEnd,
+        blockForward,
+        blockSide,
+        getCollisionX, 
+        if (world.blocks.registry.all_of<OneWayBlockComponent>(block)) {\
+            continue;\
+        })
 
     if (collided) {
         velocity.velocity.x = velocity.oldVelocity.x = 0.0f;
@@ -165,7 +177,19 @@ void BodySystem::moveY(World &world, glm::vec2 &position, VelocityComponent &vel
     body.isOnFloor = false;
     body.isOnCeiling = false;
 
-    MOVE_AXIS(y, x, blockSideStart, blockSideEnd, blockSide, blockForward, getCollisionY)
+    MOVE_AXIS(
+        y, x,
+        blockSideStart,
+        blockSideEnd,
+        blockSide,
+        blockForward,
+        getCollisionY,
+        /* Check one-way collision */\
+        if (world.blocks.registry.all_of<OneWayBlockComponent>(block)) {\
+            if (velocity.velocity.y <= 0.0f || blockPosition.y < position.y + body.size.y) {\
+                continue;\
+            }\
+        })
 
     if (collided) {
         if (velocity.velocity.y < 0.0f) {
