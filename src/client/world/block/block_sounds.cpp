@@ -5,7 +5,7 @@
 
 using namespace bf;
 
-void BlockSounds::playBlockSound(WorldScene &scene, entt::entity block) {
+void BlockSounds::playBlockSound(WorldScene &scene, entt::entity block, float volume) {
     entt::registry &blockRegistry = scene.world.blocks.registry;
 
     if (!blockRegistry.all_of<BlockSoundComponent>(block)) {
@@ -20,7 +20,7 @@ void BlockSounds::playBlockSound(WorldScene &scene, entt::entity block) {
 
     // Play random sound
     int randomIndex = client->randomInt(client->randomEngine) % (int)soundComponent.soundSet->sounds.size();
-    engine->sound.playSound(soundComponent.soundSet->sounds[randomIndex], false, 0.75f, client->getRandomPitch());
+    engine->sound.playSound(soundComponent.soundSet->sounds[randomIndex], false, volume, client->getRandomPitch());
 }
 
 SoundSet *BlockSounds::getSoundSet(std::string name) {

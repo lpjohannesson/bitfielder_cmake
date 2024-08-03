@@ -89,6 +89,13 @@ ClientContent::ClientContent(WorldScene &scene) {
 		{ 0, 1, 2 },
 		0.3f);
 	
+	groundEffectProperties.createProperties(
+        { 1.0f, 1.0f },
+        textureAtlas.getSection("assets/textures/world/effects/ground.png").uvBox,
+        { 3, 1 },
+		{ 0, 1, 2 },
+		0.3f);
+	
 	// Load sounds
 	placeSound = soundSet.loadSound("assets/sounds/place.wav");
 	destroySound = soundSet.loadSound("assets/sounds/destroy.wav");

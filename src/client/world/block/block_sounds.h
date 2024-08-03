@@ -12,7 +12,7 @@ namespace bf {
         std::unordered_map<std::string, SoundSet> soundSets; 
 
     public:
-        static void playBlockSound(WorldScene &scene, entt::entity block);
+        static void playBlockSound(WorldScene &scene, entt::entity block, float volume = 0.75f);
 
         SoundSet *getSoundSet(std::string name);
         void loadSounds();

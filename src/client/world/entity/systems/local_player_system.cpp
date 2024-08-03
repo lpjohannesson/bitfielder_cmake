@@ -15,6 +15,7 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
 
     LocalPlayerComponent &localPlayer = *playerData.localPlayer;
     glm::vec2 &movement = playerData.movement;
+    PositionComponent &position = *playerData.position;
     VelocityComponent &velocity = *playerData.velocity;
     BodyComponent &body = *playerData.body;
 
@@ -26,10 +27,30 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
     // Fall
     velocity.velocity.y += gravity * deltaTime;
 
+    // Hit ground
     bool onSurface = body.isOnFloor || body.isOnCeiling;
 
     if (onSurface && !localPlayer.lastOnSurface) {
         engine->sound.playSound(scene->clientContent.groundSound, false);
+
+        if (!body.blockCollisions.empty()) {
+            for (BlockCollision &blockCollision : body.blockCollisions) {
+                if (blockCollision.normal.y == 0.0f) {
+                    continue;
+                }
+
+                entt::entity surfaceBlock = scene->world.blocks.getBlock(body.blockCollisions[0].blockData->frontIndex);
+                BlockSounds::playBlockSound(*scene, surfaceBlock, 0.25f);
+
+                glm::vec2 effectPosition = position.position + body.size * 0.5f;
+                effectPosition.y -= blockCollision.normal.y * body.size.y * 0.5f;
+
+                EffectSpriteSystem::spawnEffect(scene->world, effectPosition,
+		            scene->clientContent.groundEffectProperties);
+
+                break;
+            }
+        }
     }
 
     localPlayer.lastOnSurface = onSurface;
@@ -61,7 +82,7 @@ void LocalPlayerSystem::jump(LocalPlayerData &playerData) {
             localPlayer.floorTime = 0.0f;
             localPlayer.jumpTime = 0.0f;
 
-            engine->sound.playSound(scene->clientContent.jumpSound, false);
+            engine->sound.playSound(scene->clientContent.jumpSound, false, 0.75f, client->getRandomPitch());
         }
     }
     else {

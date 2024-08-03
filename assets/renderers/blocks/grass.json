@@ -4,5 +4,5 @@
         "texture": "grass"
     },
     "particle": "dirt",
-    "sound": "gravel"
+    "sound": "dirt"
 }

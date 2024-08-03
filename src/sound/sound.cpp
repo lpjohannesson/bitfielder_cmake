@@ -7,6 +7,8 @@ void Sound::playSound(ALuint sound, bool loops, float volume, float pitch) {
     ALuint channel = channels[nextChannel];
     nextChannel = (nextChannel + 1) % CHANNEL_COUNT;
 
+    alSourceStop(channel);
+
     alSourcei(channel, AL_BUFFER, sound);
 
     alSourcef(channel, AL_PITCH, pitch);

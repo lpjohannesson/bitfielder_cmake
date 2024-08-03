@@ -26,7 +26,7 @@ namespace bf {
         SpriteFrames playerForwardFrames, playerUpFrames, playerDownFrames;
         SpriteAnimationSet playerAnimations;
 
-        EffectSpriteProperties placeEffectProperties, destroyEffectProperties;
+        EffectSpriteProperties placeEffectProperties, destroyEffectProperties, groundEffectProperties;
 
         SpriteAnimatorSystem spriteAnimatorSystem;
         LocalPlayerSystem localPlayerSystem;

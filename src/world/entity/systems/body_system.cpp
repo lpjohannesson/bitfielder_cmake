@@ -57,7 +57,7 @@ using namespace bf;
     \
     return true;
 
-#define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_X, BLOCK_Y, GET_COLLISION_FUNCTION, AXIS_BLOCK_CHECK)\
+#define MOVE_AXIS(AXIS, OTHER_AXIS, BLOCK_SAMPLE_START, BLOCK_SAMPLE_END, BLOCK_X, BLOCK_Y, GET_COLLISION_FUNCTION, AXIS_BLOCK_CHECK, NORMAL)\
     if (velocity.velocity.AXIS == 0.0f) {\
         /* Not moving */\
         return;\
@@ -129,7 +129,12 @@ using namespace bf;
             collided |= GET_COLLISION_FUNCTION(movement, endPosition);\
             \
             if (collided) {\
-                break;\
+                body.blockCollisions.emplace_back();\
+                BlockCollision &blockCollision = body.blockCollisions.back();\
+                \
+                blockCollision.blockData = blockData;\
+                blockCollision.blockPosition = blockPosition;\
+                blockCollision.normal = NORMAL;\
             }\
         }\
         \
@@ -166,7 +171,8 @@ void BodySystem::moveX(World &world, glm::vec2 &position, VelocityComponent &vel
         getCollisionX, 
         if (world.blocks.registry.all_of<OneWayBlockComponent>(block)) {\
             continue;\
-        })
+        },
+        glm::vec2(-blockForwardSign, 0.0f))
 
     if (collided) {
         velocity.velocity.x = velocity.oldVelocity.x = 0.0f;
@@ -186,10 +192,15 @@ void BodySystem::moveY(World &world, glm::vec2 &position, VelocityComponent &vel
         getCollisionY,
         /* Check one-way collision */\
         if (world.blocks.registry.all_of<OneWayBlockComponent>(block)) {\
-            if (velocity.velocity.y <= 0.0f || blockPosition.y < position.y + body.size.y) {\
+            if (velocity.velocity.y <= 0.0f) {\
                 continue;\
             }\
-        })
+            \
+            if (blockPosition.y < position.y + body.size.y) {\
+                continue;\
+            }
+        },
+        glm::vec2(0.0f, -blockForwardSign))
 
     if (collided) {
         if (velocity.velocity.y < 0.0f) {
@@ -207,6 +218,8 @@ void BodySystem::update(World &world) {
     auto view = world.entities.registry.view<PositionComponent, VelocityComponent, BodyComponent>();
 
     for (auto [entity, position, velocity, body] : view.each()) {
+        body.blockCollisions.clear();
+
         moveY(world, position.position, velocity, body);
         moveX(world, position.position, velocity, body);
 
