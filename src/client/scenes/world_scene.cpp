@@ -5,6 +5,8 @@
 #include "core/game_time.h"
 #include "sound/sound.h"
 #include "menu_scene.h"
+#include "world/world_file.h"
+#include "world/block/block_serializer.h"
 #include "client/world/block/block_renderer_factory.h"
 #include "client/world/entity/components/local_player_component.h"
 #include "client/world/entity/components/sprite_aim_component.h"
@@ -50,12 +52,12 @@ void WorldScene::spawnBlockParticles(glm::vec2 position, entt::entity block) {
 	clientContent.particleSystem.spawnParticleExplosion(position + glm::vec2(0.5f), blockParticle.size, blockParticle.frames, blockParticle.color);
 }
 
-void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData, int blockIndex) {
+void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData &blockData, int blockIndex) {
 	if (onFrontLayer) {
-		blockData->frontIndex = blockIndex;
+		blockData.setFrontIndex(blockIndex);
 	}
 	else {
-		blockData->backIndex = blockIndex;
+		blockData.setBackIndex(blockIndex);
 	}
 
 	entt::entity block = world.blocks.getBlock(blockIndex);
@@ -69,16 +71,16 @@ void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData *b
 	BlockSounds::playBlockSound(*this, block);
 }
 
-void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData) {
+void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData &blockData) {
 	int blockIndex;
 
 	if (onFrontLayer) {
-		blockIndex = blockData->frontIndex;
-		blockData->frontIndex = 0;
+		blockIndex = blockData.getFrontIndex();
+		blockData.setFrontIndex(0);
 	}
 	else {
-		blockIndex = blockData->backIndex;
-		blockData->backIndex = 0;
+		blockIndex = blockData.getBackIndex();
+		blockData.setBackIndex(0);
 	}
 
 	entt::entity block = world.blocks.getBlock(blockIndex);
@@ -106,16 +108,16 @@ void WorldScene::writePlayerState() {
 	server->writePacket(packet);
 }
 
-void WorldScene::writeReplaceBlock(glm::ivec2 position, bool onFrontLayer, BlockData *blockData) {
+void WorldScene::writeReplaceBlock(glm::ivec2 position, bool onFrontLayer, BlockData &blockData) {
 	Packet packet;
 
 	packet << (int)ClientPacket::REPLACE_BLOCK << position << onFrontLayer;
 
 	if (onFrontLayer) {
-		packet << (int)blockData->frontIndex;
+		packet << (int)blockData.getFrontIndex();
 	}
 	else {
-		packet << (int)blockData->backIndex;
+		packet << (int)blockData.getBackIndex();
 	}
 
 	server->writePacket(packet);
@@ -137,10 +139,8 @@ void WorldScene::readBlockChunk(Packet &packet) {
 	packet >> chunkIndex;
 
 	// Chunk data
-	char* chunkData = packet.read(sizeof(BlockChunk::data));
-
 	BlockChunk &chunk = world.map.createChunk(chunkIndex);
-	std::memcpy(chunk.data, chunkData, sizeof(BlockChunk::data));
+	BlockSerializer::readChunk(packet, chunk, world);
 
 	// Create mesh
 	worldRenderer.map.createMesh(*this, chunk);
@@ -173,10 +173,10 @@ void WorldScene::readReplaceBlock(Packet &packet) {
 	}
 
 	if (blockIndex == 0) {
-		destroyBlock(position, onFrontLayer, blockData);
+		destroyBlock(position, onFrontLayer, *blockData);
 	}
 	else {
-		placeBlock(position, onFrontLayer, blockData, blockIndex);
+		placeBlock(position, onFrontLayer, *blockData, blockIndex);
 	}
 }
 
@@ -382,6 +382,8 @@ void WorldScene::start() {
 }
 
 void WorldScene::end() {
+	WorldFile::saveWorld(world, "world");
+
 	BlockRendererFactory::destroyRenderers(*this);
 
 	// End server

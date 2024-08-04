@@ -72,7 +72,7 @@ bool RemoteServerConnection::host(WorldScene &scene) {
     
         case ENET_EVENT_TYPE_RECEIVE: {
             Packet packet;
-            packet.write((char*)event.packet->data, (int)event.packet->dataLength);
+            packet.write((uint8_t*)event.packet->data, (size_t)event.packet->dataLength);
             scene.readPacket(packet);
 
             enet_packet_destroy(event.packet);

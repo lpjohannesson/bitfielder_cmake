@@ -22,7 +22,7 @@ void Sound::playSound(ALuint sound, bool loops, float volume, float pitch) {
 
 void Sound::reset() {
     for (int i = 0; i < CHANNEL_COUNT; i++) {
-        alSourcei(channels[i], AL_BUFFER, NULL);
+        alSourcei(channels[i], AL_BUFFER, 0);
     }
 }
 

@@ -114,7 +114,7 @@ using namespace bf;
                 continue;\
             }\
             \
-            int blockIndex = blockData->frontIndex;\
+            int blockIndex = blockData->getFrontIndex();\
             entt::entity block = world.blocks.getBlock(blockIndex);\
             \
             /* Check collision component */\

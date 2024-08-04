@@ -20,7 +20,7 @@ namespace bf {
                 void removeClient(ClientConnection *client);
                 
                 void writePlayerState(Packet &packet, entt::entity player);
-                void writeBlockChunk(Packet &packet, BlockChunk *chunk);
+                void writeBlockChunk(Packet &packet, BlockChunk &chunk);
                 void writeReplaceBlock(Packet &packet, glm::ivec2 position, bool onFrontLayer, int blockIndex);
                 void writeDespawnEntity(Packet &packet, int playerID);
                 void writeEntityPosition(Packet &packet, entt::entity entity);

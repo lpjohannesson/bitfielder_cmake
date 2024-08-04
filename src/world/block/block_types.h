@@ -6,11 +6,16 @@
 
 namespace bf {
 	class BlockTypes {
+	private:
+		std::unordered_map<std::string, int> blockNames;
+
 	public:
 		std::vector<entt::entity> blocks;
 		entt::registry registry;
 
 		entt::entity getBlock(int index) const;
-		entt::entity createBlock(std::string name);
+		int getBlockByName(const std::string name) const;
+
+		entt::entity createBlock(const std::string name);
 	};
 }

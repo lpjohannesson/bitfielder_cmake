@@ -1,6 +1,7 @@
 #include "server.h"
 #include <iostream>
 #include "core/packet_types.h"
+#include "world/block/block_serializer.h"
 #include "world/entity/components/id_component.h"
 #include "world/entity/components/position_component.h"
 #include "world/entity/components/sprite_animation_component.h"
@@ -32,7 +33,7 @@ void Server::addClient(ClientConnection *client) {
     }
 
     for (int i = 0; i < 10; i++) {
-        writeBlockChunk(packet, world.map.getChunk(i));
+        writeBlockChunk(packet, *world.map.getChunk(i));
     }
 
     clients.push_back(client);
@@ -66,13 +67,10 @@ void Server::writePlayerState(Packet &packet, entt::entity player) {
     writeEntitySpriteAim(packet, player);
 }
 
-void Server::writeBlockChunk(Packet &packet, BlockChunk *chunk) {
-    packet << (int)ServerPacket::BLOCK_CHUNK << chunk->getMapIndex();
+void Server::writeBlockChunk(Packet &packet, BlockChunk &chunk) {
+    packet << (int)ServerPacket::BLOCK_CHUNK << chunk.getMapIndex();
 
-    // TODO: Chunk compression, host to network data, private chunk data
-
-    // Chunk data
-    packet.write((char*)&chunk->data, sizeof(BlockChunk::data));
+    BlockSerializer::writeChunk(chunk, world, packet);
 }
 
 void Server::writeReplaceBlock(Packet &packet, glm::ivec2 position, bool onFrontLayer, int blockIndex) {
@@ -151,10 +149,10 @@ void Server::readReplaceBlock(ClientConnection *client, Packet &packet) {
     }
 
     if (onFrontLayer) {
-        blockData->frontIndex = blockIndex;
+        blockData->setFrontIndex(blockIndex);
     }
     else {
-        blockData->backIndex = blockIndex;
+        blockData->setBackIndex(blockIndex);
     }
 
     Box2i box;

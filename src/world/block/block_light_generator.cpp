@@ -3,8 +3,8 @@
 
 using namespace bf;
 
-bool BlockLightGenerator::isBlockOpaque(BlockData *blockData, World &world) {
-    entt::entity block = world.blocks.getBlock(blockData->frontIndex);
+bool BlockLightGenerator::isBlockOpaque(BlockData &blockData, World &world) {
+    entt::entity block = world.blocks.getBlock(blockData.getFrontIndex());
 
     return world.blocks.registry.all_of<BlockOpaqueComponent>(block);
 }
@@ -17,10 +17,10 @@ void BlockLightGenerator::queueNeighboringChunk(BlockChunk *chunk, int x, std::q
     int blockStartX = chunk->getMapIndex() * BlockChunk::SIZE.x;
 
     for (int y = 0; y < BlockChunk::SIZE.y; y++) {
-        BlockData *blockData = chunk->getBlock({ x, y });
+        BlockData &blockData = chunk->getBlock({ x, y });
 
-        cellQueue.push({ { blockStartX + x, y }, blockData->light });
-        blockData->light = 0;
+        cellQueue.push({ { blockStartX + x, y }, blockData.getSunlight() });
+        blockData.setSunlight(0);
     }
 }
 
@@ -28,7 +28,7 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
     BlockData *blockData = BlockChunk::getWorldBlock(world.map, position);
 
     // Skip if not full light
-    if (blockData->light < MAX_LIGHT) {
+    if (blockData->getSunlight() < MAX_LIGHT) {
         return;
     }
 
@@ -36,7 +36,7 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
 
     glm::ivec2 belowPosition = position;
 
-    if (isBlockOpaque(blockData, world)) {
+    if (isBlockOpaque(*blockData, world)) {
         std::queue<BlockLightCell> removalQueue;
 
         // Remove light below
@@ -50,7 +50,7 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
             }
 
             // Stop on non-max light
-            if (belowBlockData->light < MAX_LIGHT) {
+            if (belowBlockData->getSunlight() < MAX_LIGHT) {
                 break;
             }
 
@@ -69,7 +69,7 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
                 continue;
             }
 
-            int nextLight = nextBlockData->light;
+            int nextLight = nextBlockData->getSunlight();
             
             // Skip if already removed
             if (nextLight == 0) {
@@ -86,7 +86,7 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
                 }
             }
 
-            nextBlockData->light = 0;
+            nextBlockData->setSunlight(0);
             resultBox.expandPoint(cell.position);
         }
     }
@@ -102,15 +102,15 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
             }
 
             // Skip if already lit
-            if (belowBlockData->light == MAX_LIGHT) {
+            if (belowBlockData->getSunlight() == MAX_LIGHT) {
                 break;
             }
 
             cellQueue.push({ belowPosition, MAX_LIGHT });
-            belowBlockData->light = 0;
+            belowBlockData->setSunlight(0);
 
             // Stop on opaque blocks
-            if (isBlockOpaque(belowBlockData, world)) {
+            if (isBlockOpaque(*belowBlockData, world)) {
                 break;
             }
         }
@@ -131,11 +131,11 @@ void BlockLightGenerator::spreadLight(std::queue<BlockLightCell> &cellQueue, Wor
         }
 
         // Skip if already bright enough
-        if (cell.light <= blockData->light) {
+        if (cell.light <= blockData->getSunlight()) {
             continue;
         }
 
-        blockData->light = cell.light;
+        blockData->setSunlight(cell.light);
         resultBox.expandPoint(cell.position);
         
         int nextLight = cell.light - LIGHT_STEP;

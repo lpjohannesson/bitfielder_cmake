@@ -47,12 +47,14 @@ if (CLIENT)
         src/sound/sound_set.cpp
 
         src/world/world.cpp
+        src/world/world_file.cpp
         src/world/content.cpp
 
         src/world/block/block_map_element.cpp
         src/world/block/block_chunk.cpp
         src/world/block/block_types.cpp
         src/world/block/block_light_generator.cpp
+        src/world/block/block_serializer.cpp
 
         src/world/entity/entities.cpp
 
@@ -112,13 +114,15 @@ if (SERVER)
         src/core/packet.cpp
         src/core/game_time.cpp
 
-        src/world/content.cpp
         src/world/world.cpp
+        src/world/world_file.cpp
+        src/world/content.cpp
 
         src/world/block/block_map_element.cpp
         src/world/block/block_chunk.cpp
         src/world/block/block_types.cpp
         src/world/block/block_light_generator.cpp
+        src/world/block/block_serializer.cpp
 
         src/world/entity/entities.cpp
 
@@ -141,9 +145,9 @@ if(WIN32)
     find_package(EnTT CONFIG REQUIRED)
     find_package(unofficial-enet CONFIG REQUIRED)
     find_package(RapidJSON CONFIG REQUIRED)
+    find_package(ZLIB REQUIRED)
 
     if (CLIENT)
-        find_package(ZLIB REQUIRED)
         find_package(PNG REQUIRED)
         find_package(SDL2_image CONFIG REQUIRED)
         find_package(glad CONFIG REQUIRED)
@@ -155,8 +159,8 @@ if(WIN32)
         target_link_libraries(client PRIVATE EnTT::EnTT)
         target_link_libraries(client PRIVATE unofficial::enet::enet)
         target_link_libraries(client PRIVATE rapidjson)
-
         target_link_libraries(client PRIVATE ZLIB::ZLIB)
+
         target_link_libraries(client PRIVATE PNG::PNG)
         target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
         target_link_libraries(client PRIVATE glad::glad)
@@ -174,6 +178,7 @@ if(WIN32)
         target_link_libraries(server PRIVATE EnTT::EnTT)
         target_link_libraries(server PRIVATE unofficial::enet::enet)
         target_link_libraries(server PRIVATE rapidjson)
+        target_link_libraries(server PRIVATE ZLIB::ZLIB)
 
         if(WIN32)
             target_link_libraries(server PRIVATE ws2_32)

@@ -61,26 +61,28 @@ void BlockMapRenderer::createMesh(WorldScene &scene, BlockChunk &chunk, int sect
                 renderData.position = position;
                 
                 // Get block data
-                BlockData *blockData = chunk.getBlock(chunkPosition);
+                BlockData &blockData = chunk.getBlock(chunkPosition);
 
                 // Render front
-                renderData.blockIndex = blockData->frontIndex;
+                renderData.blockIndex = blockData.getFrontIndex();
                 renderData.spriteBatch = &frontSpriteBatch;
                 renderData.onFrontLayer = true;
 
                 renderBlock(renderData);
 
                 // Render back
-                renderData.blockIndex = blockData->backIndex;
+                renderData.blockIndex = blockData.getBackIndex();
                 renderData.spriteBatch = &backSpriteBatch;
                 renderData.onFrontLayer = false;
 
                 renderBlock(renderData);
 
                 // Render light
-                if (blockData->light < 15) {
+                int light = blockData.getSunlight();
+                
+                if (light < 15) {
                     lightSprite.box.start = position;
-                    lightSprite.color = glm::vec4(glm::vec3((float)blockData->light / 15.0f), 0.0f);
+                    lightSprite.color = glm::vec4(glm::vec3((float)light / 15.0f), 0.0f);
                     
                     lightSpriteBatch.drawSprite(lightSprite);
                 }

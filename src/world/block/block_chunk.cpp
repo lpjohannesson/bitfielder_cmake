@@ -31,8 +31,8 @@ BlockData *BlockChunk::getSampleBlock(BlockSample<BlockChunk> &sample, glm::ivec
 	GET_BLOCK(sample);
 }
 
-BlockData *BlockChunk::getBlock(glm::ivec2 position) {
-	return &data[position.y][position.x];
+BlockData &BlockChunk::getBlock(glm::ivec2 position) {
+	return data[position.y][position.x];
 }
 
 BlockData *BlockChunk::getBlockChecked(glm::ivec2 position) {
@@ -41,18 +41,18 @@ BlockData *BlockChunk::getBlockChecked(glm::ivec2 position) {
 		return nullptr;
 	}
 
-	return getBlock(position);
+	return &getBlock(position);
 }
 
 BlockChunk::BlockChunk(int mapIndex) : BlockMapElement(mapIndex) {
 	// Clear chunk
 	for (int y = 0; y < SIZE.y; y++) {
 		for (int x = 0; x < SIZE.x; x++) {
-			BlockData *blockData = getBlock({ x, y });
+			BlockData &blockData = getBlock({ x, y });
 			
-			blockData->frontIndex = 0;
-			blockData->backIndex = 0;
-			blockData->light = 0;
+			blockData.setFrontIndex(0);
+			blockData.setBackIndex(0);
+			blockData.setSunlight(0);
 		}
 	}
 }

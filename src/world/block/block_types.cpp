@@ -12,12 +12,25 @@ entt::entity BlockTypes::getBlock(int index) const {
     return blocks.at(index);
 }
 
-entt::entity BlockTypes::createBlock(std::string name) {
+int BlockTypes::getBlockByName(const std::string name) const {
+    auto foundBlock = blockNames.find(name);
+
+    if (foundBlock == blockNames.end()) {
+        return 0;
+    }
+
+    return foundBlock->second;
+}
+
+entt::entity BlockTypes::createBlock(const std::string name) {
     entt::entity block = registry.create();
 
     registry.emplace<BlockNameComponent>(block, BlockNameComponent { name });
 
+    int blockIndex = (int)blocks.size();
     blocks.push_back(block);
+
+    blockNames.emplace(name, blockIndex);
 
     return block;
 }

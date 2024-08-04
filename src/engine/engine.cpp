@@ -114,7 +114,11 @@ Engine::Engine() : fullscreenAction(input) {
 	//SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 
+#ifdef NX
+	windowSize = { 1920, 1080 };
+#else
 	windowSize = { 640, 480 };
+#endif
 
 	// Create window
 	window = SDL_CreateWindow(

@@ -26,7 +26,7 @@ namespace bf {
                 { 1, 0 },
             };
 
-        static bool isBlockOpaque(BlockData *blockData, World &world);
+        static bool isBlockOpaque(BlockData &blockData, World &world);
 
         static void queueNeighboringChunk(BlockChunk *chunk, int x, std::queue<BlockLightCell> &cellQueue);
 

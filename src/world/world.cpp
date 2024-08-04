@@ -15,7 +15,7 @@ bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
     BlockData *blockData = BlockChunk::getWorldBlock(map, position);
 
     if (blockData != nullptr) {
-        if (isBlockAttachable(blockData->backIndex)) {
+        if (isBlockAttachable(blockData->getBackIndex())) {
             return true;
         }
     }
@@ -32,12 +32,12 @@ bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
             continue;
         }
 
-        if (isBlockAttachable(neighborBlockData->frontIndex)) {
+        if (isBlockAttachable(neighborBlockData->getFrontIndex())) {
             return true;
         }
 
         if (!onFrontLayer) {
-            if (isBlockAttachable(neighborBlockData->backIndex)) {
+            if (isBlockAttachable(neighborBlockData->getBackIndex())) {
                 return true;
             }
         }

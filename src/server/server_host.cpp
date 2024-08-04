@@ -108,7 +108,7 @@ ServerHost::ServerHost(int port) {
 
                 // Read packet
                 Packet packet;
-                packet.write((char*)event.packet->data, (int)event.packet->dataLength);
+                packet.write((uint8_t*)event.packet->data, (size_t)event.packet->dataLength);
 
                 server.readPacket(client, packet);
 

@@ -38,8 +38,8 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
         airIndex = 0,
         dirtIndex = 1,
         grassIndex = 2,
-        bushIndex = 7,
-        mushroomIndex = 8;
+        bushIndex = 8,
+        mushroomIndex = 9;
     
     int blockX = chunk.getMapIndex() * BlockChunk::SIZE.x;
 
@@ -51,36 +51,36 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
             float sample = getGroundSample({ blockX + x, y }, blendProgress);
             
             if (sample > 0.35f) {
-                BlockData *block = chunk.getBlock({ x, y });
-                block->frontIndex = dirtIndex;
+                BlockData &block = chunk.getBlock({ x, y });
+                block.setFrontIndex(dirtIndex);
             }
         }
     }
 
     for (int y = groundEnd; y < BlockChunk::SIZE.y; y++) {
         for (int x = 0; x < BlockChunk::SIZE.x; x++) {
-            BlockData *block = chunk.getBlock({ x, y });
-            block->frontIndex = dirtIndex;
+            BlockData &block = chunk.getBlock({ x, y });
+            block.setFrontIndex(dirtIndex);
         }
     }
 
     // Add grass and plants
     for (int y = groundStart; y < groundEnd; y++) {
         for (int x = 0; x < BlockChunk::SIZE.x; x++) {
-            BlockData *block = chunk.getBlock({ x, y });
-            BlockData *aboveBlock = chunk.getBlock({ x, y - 1 });
+            BlockData &block = chunk.getBlock({ x, y });
+            BlockData &aboveBlock = chunk.getBlock({ x, y - 1 });
 
-            if (block->frontIndex == dirtIndex && aboveBlock->frontIndex == airIndex) {
-                block->frontIndex = grassIndex;
+            if (block.getFrontIndex() == dirtIndex && aboveBlock.getFrontIndex() == airIndex) {
+                block.setFrontIndex(grassIndex);
 
                 float plantSample = plantNoise.GetNoise((float)(blockX + x), (float)y);
 
                 if (plantSample > 0.75f) {
                     if (plantSample > 0.85f) {
-                        aboveBlock->frontIndex = bushIndex;
+                        aboveBlock.setFrontIndex(bushIndex);
                     }
                     else {
-                        aboveBlock->frontIndex = mushroomIndex;
+                        aboveBlock.setFrontIndex(mushroomIndex);
                     }
                 }
             }
@@ -93,15 +93,15 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
         int start = (int)glm::round(groundBackStart + (groundBackEnd - groundBackStart) * height);
 
         for (int y = start; y < groundBackEnd; y++) {
-            BlockData *block = chunk.getBlock({ x, y });
-            block->backIndex = dirtIndex;
+            BlockData &block = chunk.getBlock({ x, y });
+            block.setBackIndex(dirtIndex);
         }
     }
 
     for (int y = groundBackEnd; y < BlockChunk::SIZE.y; y++) {
         for (int x = 0; x < BlockChunk::SIZE.x; x++) {
-            BlockData *block = chunk.getBlock({ x, y });
-            block->backIndex = dirtIndex;
+            BlockData &block = chunk.getBlock({ x, y });
+            block.setBackIndex(dirtIndex);
         }
     }
 

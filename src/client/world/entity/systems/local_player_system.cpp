@@ -39,7 +39,7 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
                     continue;
                 }
 
-                entt::entity surfaceBlock = scene->world.blocks.getBlock(body.blockCollisions[0].blockData->frontIndex);
+                entt::entity surfaceBlock = scene->world.blocks.getBlock(body.blockCollisions[0].blockData->getFrontIndex());
                 BlockSounds::playBlockSound(*scene, surfaceBlock, 0.25f);
 
                 glm::vec2 effectPosition = position.position + body.size * 0.5f;
@@ -259,14 +259,14 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
                 return false;
             }
 
-            if (forwardBlockData->frontIndex == 0) {
+            if (forwardBlockData->getFrontIndex() == 0) {
                 return false;
             }
 
             placing = false;
         }
         else {
-            placing = forwardBlockData->frontIndex == 0;
+            placing = forwardBlockData->getFrontIndex() == 0;
         }
 
         if (placing) {
@@ -287,12 +287,12 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
 
         // Check for block in front
         if (forwardBlockData != nullptr) {
-            if (forwardBlockData->frontIndex != 0) {
+            if (forwardBlockData->getFrontIndex() != 0) {
                 return false;
             }
         }
 
-        placing = centerBlockData->backIndex == 0;
+        placing = centerBlockData->getBackIndex() == 0;
 
         blockPosition = &centerBlockPosition;
         blockData = centerBlockData;
@@ -304,17 +304,17 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
             return false;
         }
 
-        scene->placeBlock(*blockPosition, onFrontLayer, blockData, localPlayer.selectedBlockIndex);
+        scene->placeBlock(*blockPosition, onFrontLayer, *blockData, localPlayer.selectedBlockIndex);
     }
     else {
-        scene->destroyBlock(*blockPosition, onFrontLayer, blockData);
+        scene->destroyBlock(*blockPosition, onFrontLayer, *blockData);
     }
 
     // Play animation
     SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)PlayerAnimation::PUNCH);
 
     // Send to server
-    scene->writeReplaceBlock(*blockPosition, onFrontLayer, blockData);
+    scene->writeReplaceBlock(*blockPosition, onFrontLayer, *blockData);
     
     // TODO: Disable body
     velocity.velocity = { 0.0f, 0.0f };
