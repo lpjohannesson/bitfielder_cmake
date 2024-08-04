@@ -1,8 +1,13 @@
 #include "block_map_generator.h"
 #include <glm/gtx/easing.hpp>
 #include "world/block/block_light_generator.h"
+#include "world/block/components/block_index_component.h"
 
 using namespace bf;
+
+int BlockMapGenerator::getBlockIndex(entt::entity block, World &world) {
+    return world.blocks.registry.get<BlockIndexComponent>(block).index;
+}
 
 float BlockMapGenerator::getBlendProgress(int y, int startY, int endY) {
     float progress = (float)(y - startY) / (endY - startY);
@@ -35,11 +40,11 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
 
     // TODO: Add system for block type IDs
     int
-        airIndex = 0,
-        dirtIndex = 1,
-        grassIndex = 2,
-        bushIndex = 8,
-        mushroomIndex = 9;
+        airIndex = getBlockIndex(world.content.airBlock, world),
+        dirtIndex = getBlockIndex(world.content.dirtBlock, world),
+        grassIndex = getBlockIndex(world.content.grassBlock, world),
+        bushIndex = getBlockIndex(world.content.bushBlock, world),
+        mushroomIndex = getBlockIndex(world.content.mushroomBlock, world);
     
     int blockX = chunk.getMapIndex() * BlockChunk::SIZE.x;
 

@@ -35,5 +35,6 @@ namespace bf {
                 void readPacket(ClientConnection *client, Packet &packet);
 
                 Server();
+                ~Server();
 	};
 }

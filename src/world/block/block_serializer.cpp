@@ -97,10 +97,9 @@ void BlockSerializer::readChunk(Packet &input, BlockChunk &chunk, World &world) 
     document.Parse(metadataText.c_str());
 
     // Read block palette
-    auto &paletteListValue = document["palette"].GetArray();
     std::vector<int> paletteList;
 
-    for (auto &paletteEntry : paletteListValue) {
+    for (auto &paletteEntry : document["palette"].GetArray()) {
         int blockIndex = world.blocks.getBlockByName(paletteEntry.GetString());
         paletteList.push_back(blockIndex);
     }

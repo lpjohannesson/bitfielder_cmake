@@ -7,6 +7,8 @@ namespace bf {
     public:
         FastNoiseLite groundNoise, groundBackNoise, plantNoise;
 
+        static int getBlockIndex(entt::entity block, World &world);
+
         static float getBlendProgress(int y, int startY, int endY);
         static float blendSample(float sample, float blendProgress);
 

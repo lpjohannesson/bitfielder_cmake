@@ -1,4 +1,5 @@
 #include "block_types.h"
+#include "components/block_index_component.h"
 #include "components/block_name_component.h"
 
 using namespace bf;
@@ -25,12 +26,13 @@ int BlockTypes::getBlockByName(const std::string name) const {
 entt::entity BlockTypes::createBlock(const std::string name) {
     entt::entity block = registry.create();
 
-    registry.emplace<BlockNameComponent>(block, BlockNameComponent { name });
-
-    int blockIndex = (int)blocks.size();
+    int index = (int)blocks.size();
     blocks.push_back(block);
 
-    blockNames.emplace(name, blockIndex);
+    registry.emplace<BlockIndexComponent>(block, BlockIndexComponent { index });
+    registry.emplace<BlockNameComponent>(block, BlockNameComponent { name });
+
+    blockNames.emplace(name, index);
 
     return block;
 }

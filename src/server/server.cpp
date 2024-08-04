@@ -1,6 +1,7 @@
 #include "server.h"
 #include <iostream>
 #include "core/packet_types.h"
+#include "world/world_file.h"
 #include "world/block/block_serializer.h"
 #include "world/entity/components/id_component.h"
 #include "world/entity/components/position_component.h"
@@ -183,8 +184,15 @@ void Server::readPacket(ClientConnection *client, Packet &packet) {
 Server::Server() {
     entityRegistry = &world.entities.registry;
 
-    for (int i = 0; i < 10; i++) {
-        BlockChunk &chunk = world.map.createChunk(i);
-        mapGenerator.generateChunk(chunk, world);
+    if (!WorldFile::loadWorld(world, "world")) {
+        // Generate world
+        for (int i = 0; i < 10; i++) {
+            BlockChunk &chunk = world.map.createChunk(i);
+            mapGenerator.generateChunk(chunk, world);
+        }
     }
+}
+
+Server::~Server() {
+    WorldFile::saveWorld(world, "world");
 }

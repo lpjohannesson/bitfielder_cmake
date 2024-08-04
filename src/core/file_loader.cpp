@@ -1,11 +1,10 @@
 #include "core/file_loader.h"
-#include <filesystem>
 #include <fstream>
 #include <sstream>
 
 using namespace bf;
 
-bool FileLoader::loadText(const char *path, std::string &result) {
+bool FileLoader::loadText(const std::string path, std::string &result) {
 	std::fstream file;
 	file.open(path);
 
@@ -26,17 +25,26 @@ bool FileLoader::loadText(const char *path, std::string &result) {
 	return true;
 }
 
-void FileLoader::getFilePaths(const char *basePath, std::vector<std::string> &result) {
+void FileLoader::getFilePathObjects(const std::string basePath, std::vector<std::filesystem::path> &result) {
 	for (auto &entry : std::filesystem::recursive_directory_iterator(basePath)) {
 		if (entry.is_directory()) {
 			continue;
 		}
 
-		result.push_back(entry.path().string());
+		result.push_back(entry.path());
 	}
 }
 
-void FileLoader::getDirectoryNames(const char *basePath, std::vector<std::string> &result) {
+void FileLoader::getFilePaths(const std::string basePath, std::vector<std::string> &result) {
+	std::vector<std::filesystem::path> filePaths;
+	getFilePathObjects(basePath, filePaths);
+	
+	for (const auto &filePath : filePaths) {
+		result.push_back(filePath.string());
+	}
+}
+
+void FileLoader::getDirectoryNames(const std::string basePath, std::vector<std::string> &result) {
 	for (auto &entry : std::filesystem::directory_iterator(basePath)) {
 		if (!entry.is_directory()) {
 			continue;

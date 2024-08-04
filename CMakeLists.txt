@@ -113,6 +113,7 @@ if (SERVER)
     add_executable(server
         src/core/packet.cpp
         src/core/game_time.cpp
+        src/core/file_loader.cpp
 
         src/world/world.cpp
         src/world/world_file.cpp

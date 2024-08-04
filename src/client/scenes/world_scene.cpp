@@ -382,8 +382,6 @@ void WorldScene::start() {
 }
 
 void WorldScene::end() {
-	WorldFile::saveWorld(world, "world");
-
 	BlockRendererFactory::destroyRenderers(*this);
 
 	// End server
