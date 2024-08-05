@@ -1,0 +1,11 @@
+{
+    "block": {
+        "type": "auto",
+        "texture": "block_gold"
+    },
+    "item": {
+        "icon": "block_gold"
+    },
+    "particle": "block_gold",
+    "sound": "metal"
+}

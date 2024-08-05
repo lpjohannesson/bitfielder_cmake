@@ -87,7 +87,7 @@ void BlockSerializer::writeChunk(BlockChunk &chunk, World &world, Packet &result
 
 void BlockSerializer::readChunk(Packet &input, BlockChunk &chunk, World &world) {
     Packet packet;
-    input.decompressPacket(32 * 1024, packet);
+    input.decompressPacket(64 * 1024, packet);
 
     // Read metadata
     std::string metadataText;

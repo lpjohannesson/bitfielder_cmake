@@ -37,8 +37,7 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
         groundBackEnd = groundEnd - 4,
         stoneStart = groundEnd + 8,
         stoneEnd = stoneStart + 16;
-
-    // TODO: Add system for block type IDs
+        
     int
         airIndex = getBlockIndex(world.content.airBlock, world),
         dirtIndex = getBlockIndex(world.content.dirtBlock, world),

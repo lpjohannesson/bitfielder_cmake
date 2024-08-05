@@ -138,6 +138,7 @@ Packet& Packet::operator<<(std::string value) {
 }
 
 Packet& Packet::operator>>(std::string &value) {
+    // TODO: Size limit
     uint32_t size;
     operator>>(size);
 
@@ -184,6 +185,7 @@ bool Packet::decompressPacket(size_t maxSize, Packet &result) {
 
     // Write result directly
     result.data.resize(result.data.size() + decompressedSize);
+
 
     uLongf destLen = decompressedSize;
     int compressResult = uncompress(result.getNextData(), &destLen, nextData, compressedSize);
