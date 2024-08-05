@@ -30,36 +30,36 @@ Content::Content(World &world) {
     world.entities.addSystem(bodySystem);
 
     // Create blocks
-    airBlock = world.blocks.createBlock("air");
+    airBlock = world.blocks.createEntity("air");
 
-    dirtBlock = world.blocks.createBlock("dirt");
+    dirtBlock = world.blocks.createEntity("dirt");
     createSolidBlock(world, dirtBlock);
 
-    grassBlock = world.blocks.createBlock("grass");
+    grassBlock = world.blocks.createEntity("grass");
     createSolidBlock(world, grassBlock);
     
-    stoneBlock = world.blocks.createBlock("stone");
+    stoneBlock = world.blocks.createEntity("stone");
     createSolidBlock(world, stoneBlock);
 
-    woodLogBlock = world.blocks.createBlock("wood_log");
+    woodLogBlock = world.blocks.createEntity("wood_log");
     createSolidBlock(world, woodLogBlock);
 
-    woodPlanksBlock = world.blocks.createBlock("wood_planks");
+    woodPlanksBlock = world.blocks.createEntity("wood_planks");
     createSolidBlock(world, woodPlanksBlock);
 
-    leavesBlock = world.blocks.createBlock("leaves");
+    leavesBlock = world.blocks.createEntity("leaves");
     createSolidBlock(world, leavesBlock);
 
-    bushBlock = world.blocks.createBlock("bush");
-    mushroomBlock = world.blocks.createBlock("mushroom");
-    wheatBlock = world.blocks.createBlock("wheat");
+    bushBlock = world.blocks.createEntity("bush");
+    mushroomBlock = world.blocks.createEntity("mushroom");
+    wheatBlock = world.blocks.createEntity("wheat");
 
-    ironBlock = world.blocks.createBlock("block_iron");
+    ironBlock = world.blocks.createEntity("block_iron");
     createSolidBlock(world, ironBlock);
 
-    goldBlock = world.blocks.createBlock("block_gold");
+    goldBlock = world.blocks.createEntity("block_gold");
     createSolidBlock(world, goldBlock);
 
-    woolBlock = world.blocks.createBlock("wool_white");
+    woolBlock = world.blocks.createEntity("wool_white");
     createSolidBlock(world, woolBlock);
 }

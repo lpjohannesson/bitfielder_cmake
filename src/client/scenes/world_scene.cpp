@@ -60,7 +60,7 @@ void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData &b
 		blockData.setBackIndex(blockIndex);
 	}
 
-	entt::entity block = world.blocks.getBlock(blockIndex);
+	entt::entity block = world.blocks.getEntity(blockIndex);
 
 	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
 		clientContent.placeEffectProperties);
@@ -83,7 +83,7 @@ void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData 
 		blockData.setBackIndex(0);
 	}
 
-	entt::entity block = world.blocks.getBlock(blockIndex);
+	entt::entity block = world.blocks.getEntity(blockIndex);
 
 	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
 		clientContent.destroyEffectProperties);

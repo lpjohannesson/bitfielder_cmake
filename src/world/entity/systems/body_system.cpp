@@ -115,7 +115,7 @@ using namespace bf;
             }\
             \
             int blockIndex = blockData->getFrontIndex();\
-            entt::entity block = world.blocks.getBlock(blockIndex);\
+            entt::entity block = world.blocks.getEntity(blockIndex);\
             \
             /* Check collision component */\
             if (!world.blocks.registry.all_of<BlockCollisionComponent>(block)) {\

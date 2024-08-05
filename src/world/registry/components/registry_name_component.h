@@ -2,7 +2,7 @@
 #include <string>
 
 namespace bf {
-	struct BlockNameComponent {
+	struct RegistryNameComponent {
         std::string name;
 	};
 }

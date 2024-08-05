@@ -3,9 +3,6 @@
         "type": "auto",
         "texture": "dirt"
     },
-    "item": {
-        "icon": "dirt"
-    },
     "particle": "dirt",
     "sound": "dirt"
 }

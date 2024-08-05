@@ -8,7 +8,7 @@
 #include "components/block_renderer_component.h"
 #include "components/block_particle_component.h"
 #include "components/partial_block_component.h"
-#include "world/block/components/block_name_component.h"
+#include "world/registry/components/registry_name_component.h"
 #include "client/world/block/components/block_sound_component.h"
 
 using namespace bf;
@@ -97,7 +97,7 @@ void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity b
     entt::registry &blockRegistry = scene.world.blocks.registry;
 
     // Get block name
-    std::string blockName = blockRegistry.get<BlockNameComponent>(block).name;
+    std::string blockName = blockRegistry.get<RegistryNameComponent>(block).name;
 
     // Load json
     std::string jsonPath = "assets/renderers/blocks/" + blockName + ".json";
@@ -156,7 +156,7 @@ void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity b
 }
 
 void BlockRendererFactory::createRenderers(WorldScene &scene) {
-    for (entt::entity block : scene.world.blocks.blocks) {
+    for (entt::entity block : scene.world.blocks.entities) {
         createBlockRenderer(scene, block);
     }
 }
@@ -164,7 +164,7 @@ void BlockRendererFactory::createRenderers(WorldScene &scene) {
 void BlockRendererFactory::destroyRenderers(WorldScene &scene) {
     entt::registry &blockRegistry = scene.world.blocks.registry;
 
-    for (entt::entity block : scene.world.blocks.blocks) {
+    for (entt::entity block : scene.world.blocks.entities) {
         // Check block has renderer
         if (!blockRegistry.all_of<BlockRendererComponent>(block)) {
             continue;

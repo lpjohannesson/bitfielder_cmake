@@ -5,7 +5,7 @@
 using namespace bf;
 
 bool World::isBlockAttachable(int index) {
-    entt::entity block = blocks.getBlock(index);
+    entt::entity block = blocks.getEntity(index);
 
     return blocks.registry.all_of<BlockAttachableComponent>(block);
 }

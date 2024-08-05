@@ -50,9 +50,10 @@ if (CLIENT)
         src/world/world_file.cpp
         src/world/content.cpp
 
+        src/world/registry/entity_registry.cpp
+
         src/world/block/block_map_element.cpp
         src/world/block/block_chunk.cpp
-        src/world/block/block_types.cpp
         src/world/block/block_light_generator.cpp
         src/world/block/block_serializer.cpp
 
@@ -119,9 +120,10 @@ if (SERVER)
         src/world/world_file.cpp
         src/world/content.cpp
 
+        src/world/registry/entity_registry.cpp
+
         src/world/block/block_map_element.cpp
         src/world/block/block_chunk.cpp
-        src/world/block/block_types.cpp
         src/world/block/block_light_generator.cpp
         src/world/block/block_serializer.cpp
 

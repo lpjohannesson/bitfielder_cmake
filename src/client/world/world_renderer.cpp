@@ -50,13 +50,13 @@ void WorldRenderer::render(WorldScene &scene) {
 	glBindTexture(GL_TEXTURE_2D, shadowBuffer.texture.getGLTexture());
 
     // Get visible chunks, including shadows
-    Box2 screenBox = scene.worldRenderer.getScreenBox();
+    Box2 screenBox = getScreenBox();
 
     glm::ivec2 blockStart = glm::floor(screenBox.start - SHADOW_OFFSET);
     glm::ivec2 blockEnd = glm::floor(screenBox.getEnd());
 
     BlockSample<BlockMesh> blockMeshes;
-    blockMeshes.sampleBlocks(scene.worldRenderer.map.map, blockStart.x, blockEnd.x);
+    blockMeshes.sampleBlocks(map.map, blockStart.x, blockEnd.x);
 
     // Get visible sections
     int sectionStart = glm::max(0, BlockMesh::getSectionIndex(blockStart.y));

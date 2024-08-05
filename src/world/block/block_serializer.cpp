@@ -4,7 +4,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
-#include "components/block_name_component.h"
+#include "world/registry/components/registry_name_component.h"
 
 using namespace bf;
 
@@ -21,8 +21,8 @@ void BlockSerializer::createPaletteIndex(int blockIndex, World &world, std::vect
     paletteMap.emplace(blockIndex, paletteIndex);
 
     // Add block name
-    entt::entity block = world.blocks.getBlock(blockIndex);
-    std::string blockName = world.blocks.registry.get<BlockNameComponent>(block).name;
+    entt::entity block = world.blocks.getEntity(blockIndex);
+    std::string blockName = world.blocks.registry.get<RegistryNameComponent>(block).name;
 
     paletteList.push_back(blockName);
 }
@@ -100,7 +100,7 @@ void BlockSerializer::readChunk(Packet &input, BlockChunk &chunk, World &world) 
     std::vector<int> paletteList;
 
     for (auto &paletteEntry : document["palette"].GetArray()) {
-        int blockIndex = world.blocks.getBlockByName(paletteEntry.GetString());
+        int blockIndex = world.blocks.getEntityByName(paletteEntry.GetString());
         paletteList.push_back(blockIndex);
     }
 

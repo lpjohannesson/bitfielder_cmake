@@ -3,9 +3,6 @@
         "type": "auto",
         "texture": "block_iron"
     },
-    "item": {
-        "icon": "block_iron"
-    },
     "particle": "block_iron",
     "sound": "metal"
 }

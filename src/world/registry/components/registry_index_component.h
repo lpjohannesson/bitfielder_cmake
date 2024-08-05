@@ -1,7 +1,7 @@
 #pragma once
 
 namespace bf {
-	struct BlockIndexComponent {
+	struct RegistryIndexComponent {
         int index;
 	};
 }

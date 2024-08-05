@@ -1,12 +1,12 @@
 #include "block_map_generator.h"
 #include <glm/gtx/easing.hpp>
 #include "world/block/block_light_generator.h"
-#include "world/block/components/block_index_component.h"
+#include "world/registry/components/registry_index_component.h"
 
 using namespace bf;
 
 int BlockMapGenerator::getBlockIndex(entt::entity block, World &world) {
-    return world.blocks.registry.get<BlockIndexComponent>(block).index;
+    return world.blocks.registry.get<RegistryIndexComponent>(block).index;
 }
 
 float BlockMapGenerator::getBlendProgress(int y, int startY, int endY) {
@@ -37,7 +37,7 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
         groundBackEnd = groundEnd - 4,
         stoneStart = groundEnd + 8,
         stoneEnd = stoneStart + 16;
-        
+
     int
         airIndex = getBlockIndex(world.content.airBlock, world),
         dirtIndex = getBlockIndex(world.content.dirtBlock, world),

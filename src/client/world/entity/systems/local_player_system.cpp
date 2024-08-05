@@ -39,7 +39,7 @@ void LocalPlayerSystem::move(LocalPlayerData &playerData) {
                     continue;
                 }
 
-                entt::entity surfaceBlock = scene->world.blocks.getBlock(body.blockCollisions[0].blockData->getFrontIndex());
+                entt::entity surfaceBlock = scene->world.blocks.getEntity(body.blockCollisions[0].blockData->getFrontIndex());
                 BlockSounds::playBlockSound(*scene, surfaceBlock, 0.25f);
 
                 glm::vec2 effectPosition = position.position + body.size * 0.5f;
@@ -116,7 +116,7 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
 
     // Select item with wrap-around
     int nextBlockIndex = localPlayer.selectedBlockIndex + selectDirection;
-    localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, (int)scene->world.blocks.blocks.size());
+    localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, (int)scene->world.blocks.entities.size());
 }
 
 void LocalPlayerSystem::applyAim(LocalPlayerData &playerData) {

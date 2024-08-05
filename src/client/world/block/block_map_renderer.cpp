@@ -9,7 +9,7 @@ void BlockMapRenderer::renderBlock(const BlockRenderData &renderData) {
     const World &world = renderData.scene->world;
     const entt::registry &blocksRegistry = world.blocks.registry;
 
-    entt::entity block = world.blocks.getBlock(renderData.blockIndex);
+    entt::entity block = world.blocks.getEntity(renderData.blockIndex);
 
     // Get renderer or skip
     if (!blocksRegistry.all_of<BlockRendererComponent>(block)) {
@@ -79,7 +79,7 @@ void BlockMapRenderer::createMesh(WorldScene &scene, BlockChunk &chunk, int sect
 
                 // Render light
                 int light = blockData.getSunlight();
-                
+
                 if (light < 15) {
                     lightSprite.box.start = position;
                     lightSprite.color = glm::vec4(glm::vec3((float)light / 15.0f), 0.0f);

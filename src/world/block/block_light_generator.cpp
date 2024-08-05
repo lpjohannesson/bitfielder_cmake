@@ -4,7 +4,7 @@
 using namespace bf;
 
 bool BlockLightGenerator::isBlockOpaque(BlockData &blockData, World &world) {
-    entt::entity block = world.blocks.getBlock(blockData.getFrontIndex());
+    entt::entity block = world.blocks.getEntity(blockData.getFrontIndex());
 
     return world.blocks.registry.all_of<BlockOpaqueComponent>(block);
 }

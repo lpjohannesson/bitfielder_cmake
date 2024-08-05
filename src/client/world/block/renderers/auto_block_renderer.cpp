@@ -29,7 +29,7 @@ int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ive
     }
 
     // Yes if front is not partial
-    entt::entity neighborFrontBlock = world.blocks.getBlock(neighborBlockData->getFrontIndex());
+    entt::entity neighborFrontBlock = world.blocks.getEntity(neighborBlockData->getFrontIndex());
 
     if (!blocksRegistry.all_of<PartialBlockComponent>(neighborFrontBlock)) {
         return 1;
@@ -37,7 +37,7 @@ int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ive
 
     // Yes if on back and back is not partial
     if (!renderData.onFrontLayer) {
-        entt::entity neighborBackBlock = world.blocks.getBlock(neighborBlockData->getBackIndex());
+        entt::entity neighborBackBlock = world.blocks.getEntity(neighborBlockData->getBackIndex());
 
         if (!blocksRegistry.all_of<PartialBlockComponent>(neighborBackBlock)) {
             return 1;
