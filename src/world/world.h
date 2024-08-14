@@ -11,8 +11,8 @@ namespace bf {
         bool isBlockAttachable(int index);
 
     public:
+        EntityRegistry blocks, items;
         BlockMap<BlockChunk> map;
-        EntityRegistry blocks;
 
         Entities entities;
 

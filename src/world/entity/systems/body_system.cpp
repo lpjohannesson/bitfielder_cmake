@@ -4,7 +4,7 @@
 #include "world/block/block_sample.h"
 #include "../components/position_component.h"
 #include "world/block/components/block_collision_component.h"
-#include "world/block/components/one_way_block_component.h"
+#include "world/block/components/block_one_way_component.h"
 
 using namespace bf;
 
@@ -169,7 +169,7 @@ void BodySystem::moveX(World &world, glm::vec2 &position, VelocityComponent &vel
         blockForward,
         blockSide,
         getCollisionX, 
-        if (world.blocks.registry.all_of<OneWayBlockComponent>(block)) {\
+        if (world.blocks.registry.all_of<BlockOneWayComponent>(block)) {\
             continue;\
         },
         glm::vec2(-blockForwardSign, 0.0f))
@@ -191,7 +191,7 @@ void BodySystem::moveY(World &world, glm::vec2 &position, VelocityComponent &vel
         blockForward,
         getCollisionY,
         /* Check one-way collision */\
-        if (world.blocks.registry.all_of<OneWayBlockComponent>(block)) {\
+        if (world.blocks.registry.all_of<BlockOneWayComponent>(block)) {\
             if (velocity.velocity.y <= 0.0f) {\
                 continue;\
             }\

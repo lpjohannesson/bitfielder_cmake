@@ -25,16 +25,17 @@ void WorldRenderer::updateTransforms(const WorldScene &scene) {
     shadowViewTransform = viewTransform * shadowTransform;
 
     // Update screen box
-    glm::mat4 viewTransformInverse = glm::inverse(viewTransform);
+    glm::mat4 viewInverseTransform = glm::inverse(viewTransform);
 
-    screenBox.start = glm::vec2(viewTransformInverse * glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f));
-    screenBox.size = glm::vec2(viewTransformInverse * glm::vec4(1.0f, -1.0f, 0.0f, 1.0f)) - screenBox.start; 
+    screenBox.start = glm::vec2(viewInverseTransform * glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f));
+    screenBox.size = glm::vec2(viewInverseTransform * glm::vec4(1.0f, -1.0f, 0.0f, 1.0f)) - screenBox.start; 
 }
 
-void WorldRenderer::updateSize(glm::ivec2 size, const WorldScene &scene) {
+void WorldRenderer::updateSize(glm::ivec2 size, WorldScene &scene) {
     shadowBuffer.updateSize(size);
-
     updateTransforms(scene);
+
+    hud.updateMesh(scene);
 }
 
 void WorldRenderer::render(WorldScene &scene) {
@@ -130,12 +131,16 @@ void WorldRenderer::render(WorldScene &scene) {
     }
 
     glDisable(GL_BLEND);
+
+    hud.render(scene);
 }
 
 WorldRenderer::WorldRenderer(WorldScene &scene) :
     backSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_back.glsl"),
     shadowSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_shadow.glsl"),
     lightSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_light.glsl") {
+
+    backgroundColor = Color::parseHex("56f9d3");
 
     // Set shadow offset
     shadowTransform = glm::translate(glm::mat4(1.0f), glm::vec3(glm::vec2(SHADOW_OFFSET), 0.0f));
@@ -150,6 +155,4 @@ WorldRenderer::WorldRenderer(WorldScene &scene) :
     glUniform1i(backShadowTextureLocation, 1);
 
     loadTextureAtlas();
-
-    backgroundColor = Color::parseHex("56f9d3");
 }

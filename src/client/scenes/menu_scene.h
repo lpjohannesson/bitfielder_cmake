@@ -40,8 +40,6 @@ namespace bf {
 
         MenuState menuState;
 
-        glm::mat4 menuTransform;
-
         RemoteServerConnection *remoteServerConnection = nullptr;
         float remoteTime = 0.0f, maxRemoteTime;
 

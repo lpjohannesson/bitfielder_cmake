@@ -24,7 +24,7 @@ void Server::broadcastPacket(Packet &packet, ClientConnection *client) {
 void Server::addClient(ClientConnection *client) {
     // Create new player object
     client->player = world.entities.spawnEntity();
-    world.content.createPlayer(client->player, world);
+    world.content.entities.createPlayer(client->player, world);
 
     // Send world to new player
     Packet packet;

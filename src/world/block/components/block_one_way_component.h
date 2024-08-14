@@ -1,6 +1,6 @@
 #pragma once
 
 namespace bf {
-	struct OneWayBlockComponent {
+	struct BlockOneWayComponent {
 	};
 }

@@ -58,7 +58,7 @@ void MenuScene::changeState(MenuState menuState) {
 }
 
 void MenuScene::updateSize(glm::ivec2 size) {
-    menuTransform = Client::getMenuTransform();
+    client->updateSize(size);
 }
 
 void MenuScene::update() {
@@ -177,7 +177,7 @@ void MenuScene::update() {
 void MenuScene::render() {
     engine->renderer.clearScreen({ 0.0f, 0.5f, 0.5f, 1.0f });
 
-    client->spriteProgram.setTransform(menuTransform);
+    client->spriteProgram.setTransform(client->getMenuTransform());
 
     // Render logo
     client->spriteRenderer.renderMesh(logoMesh, client->spriteProgram, texture);

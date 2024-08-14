@@ -1,34 +1,16 @@
 #pragma once
-#include <entt/entt.hpp>
-#include <glm/glm.hpp>
-#include "entity/systems/body_system.h"
+#include "block/block_content.h"
+#include "item/item_content.h"
+#include "entity/entity_content.h"
 
 namespace bf {
     class World;
 
     class Content {
     public:
-        BodySystem bodySystem;
-
-        entt::entity
-            airBlock,
-            dirtBlock,
-            grassBlock,
-            stoneBlock,
-            woodLogBlock,
-            woodPlanksBlock,
-            stickBlock,
-            leavesBlock,
-            bushBlock,
-            mushroomBlock,
-            wheatBlock,
-            ironBlock,
-            goldBlock,
-            woolBlock;
-
-        void createSolidBlock(World &world, entt::entity block);
-
-        void createPlayer(entt::entity player, World &world);
+        BlockContent blocks;
+        ItemContent items;
+        EntityContent entities;
 
         Content(World &world);
     };

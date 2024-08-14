@@ -9,6 +9,9 @@
 
 namespace bf {
 	class Client {
+	private:
+		glm::mat4 menuTransform, menuInverseTransform;
+
 	public:
 		std::default_random_engine randomEngine;
         std::uniform_int_distribution<int> randomInt;
@@ -27,10 +30,14 @@ namespace bf {
 
 		float maxRandomPitch;
 
+		static void renderLogo(TextureSection texture, SpriteMesh &mesh);
+
+		glm::mat4 getMenuTransform() const { return menuTransform; }
+		glm::mat4 getMenuInverseTransform() const { return menuInverseTransform; }
+
 		float getRandomPitch();
 
-		static glm::mat4 getMenuTransform();
-		static void renderLogo(TextureSection texture, SpriteMesh &mesh);
+		void updateSize(glm::ivec2 size);
 
         Client(Engine &engine);
 	};

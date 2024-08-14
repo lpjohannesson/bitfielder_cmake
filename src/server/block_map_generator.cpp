@@ -39,11 +39,11 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
         stoneEnd = stoneStart + 16;
 
     int
-        airIndex = getBlockIndex(world.content.airBlock, world),
-        dirtIndex = getBlockIndex(world.content.dirtBlock, world),
-        grassIndex = getBlockIndex(world.content.grassBlock, world),
-        bushIndex = getBlockIndex(world.content.bushBlock, world),
-        mushroomIndex = getBlockIndex(world.content.mushroomBlock, world);
+        airIndex = getBlockIndex(world.content.blocks.air, world),
+        dirtIndex = getBlockIndex(world.content.blocks.dirt, world),
+        grassIndex = getBlockIndex(world.content.blocks.grass, world),
+        bushIndex = getBlockIndex(world.content.blocks.bush, world),
+        mushroomIndex = getBlockIndex(world.content.blocks.mushroom, world);
     
     int blockX = chunk.getMapIndex() * BlockChunk::SIZE.x;
 

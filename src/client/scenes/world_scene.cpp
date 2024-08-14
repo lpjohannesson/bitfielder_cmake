@@ -317,9 +317,8 @@ bool WorldScene::updatePauseMenu() {
 }
 
 void WorldScene::updateSize(glm::ivec2 size) {
+	client->updateSize(size);
 	worldRenderer.updateSize(size, *this);
-
-	menuTransform = Client::getMenuTransform();
 }
 
 void WorldScene::update() {
@@ -357,7 +356,7 @@ void WorldScene::render() {
 
 	if (paused) {
 		// Render pause screen
-		client->spriteProgram.setTransform(menuTransform);
+		client->spriteProgram.setTransform(client->getMenuTransform());
 		client->spriteRenderer.renderMesh(pauseLogoMesh, client->spriteProgram, worldRenderer.texture);
 
 		pauseOptionList.render();
@@ -379,6 +378,8 @@ void WorldScene::start() {
 
 	pauseOptionList.setOptions({ &pauseContinueOption, &pauseTitleOption });
 	pauseOptionList.updateMesh();
+
+	worldRenderer.hud.start(*this);
 }
 
 void WorldScene::end() {

@@ -5,6 +5,7 @@
 #include "block/block_map_renderer.h"
 #include "entity/entity_renderer.h"
 #include "shadow_buffer.h"
+#include "hud.h"
 
 namespace bf {
     class WorldScene;
@@ -19,6 +20,8 @@ namespace bf {
     public:
         static constexpr float SHADOW_OFFSET = 2.0f / 16.0f;
 
+        glm::vec4 backgroundColor;
+
         TextureAtlas textureAtlas;
         Texture texture;
 
@@ -28,12 +31,12 @@ namespace bf {
         BlockMapRenderer map;
         EntityRenderer entities;
 
-        glm::vec4 backgroundColor;
+        HUD hud;
 
         inline Box2 getScreenBox() const { return screenBox; }
 
         void updateTransforms(const WorldScene &scene);
-        void updateSize(glm::ivec2 size, const WorldScene &scene);
+        void updateSize(glm::ivec2 size, WorldScene &scene);
 
         void render(WorldScene &scene);
 

@@ -8,14 +8,6 @@ using namespace bf;
 
 Client *bf::client;
 
-float Client::getRandomPitch() {
-    return 1.0f - maxRandomPitch + randomFloat(randomEngine) * maxRandomPitch * 2;
-}
-
-glm::mat4 Client::getMenuTransform() {
-    return glm::scale(engine->getWindowTransform(), glm::vec3(3.0f));
-}
-
 void Client::renderLogo(TextureSection texture, SpriteMesh &mesh) {
     SpriteBatch spriteBatch;
     Sprite logoSprite;
@@ -29,6 +21,15 @@ void Client::renderLogo(TextureSection texture, SpriteMesh &mesh) {
 
     spriteBatch.drawSprite(logoSprite);
     spriteBatch.uploadMesh(mesh);
+}
+
+float Client::getRandomPitch() {
+    return 1.0f - maxRandomPitch + randomFloat(randomEngine) * maxRandomPitch * 2;
+}
+
+void Client::updateSize(glm::ivec2 size) {
+    menuTransform = glm::scale(engine->getWindowTransform(), glm::vec3(3.0f));
+    menuInverseTransform = glm::inverse(menuTransform);
 }
 
 Client::Client(Engine &engine) :

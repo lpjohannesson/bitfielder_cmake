@@ -20,6 +20,7 @@ namespace bf {
 
 		World world;
 		WorldRenderer worldRenderer;
+		
 		Camera camera;
 
 		OptionList pauseOptionList;
@@ -30,8 +31,6 @@ namespace bf {
 		SpriteMesh pauseLogoMesh;
 
 		ClientContent clientContent;
-
-		glm::mat4 menuTransform;
 
 		bool paused = false;
 

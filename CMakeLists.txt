@@ -56,8 +56,12 @@ if (CLIENT)
         src/world/block/block_chunk.cpp
         src/world/block/block_light_generator.cpp
         src/world/block/block_serializer.cpp
+        src/world/block/block_content.cpp
+
+        src/world/item/item_content.cpp
 
         src/world/entity/entities.cpp
+        src/world/entity/entity_content.cpp
 
         src/world/entity/systems/body_system.cpp
 
@@ -81,6 +85,7 @@ if (CLIENT)
         src/client/world/world_renderer.cpp
         src/client/world/camera.cpp
         src/client/world/shadow_buffer.cpp
+        src/client/world/hud.cpp
 
         src/client/world/block/block_mesh.cpp
         src/client/world/block/block_map_renderer.cpp
@@ -126,8 +131,12 @@ if (SERVER)
         src/world/block/block_chunk.cpp
         src/world/block/block_light_generator.cpp
         src/world/block/block_serializer.cpp
+        src/world/block/block_content.cpp
+
+        src/world/item/item_content.cpp
 
         src/world/entity/entities.cpp
+        src/world/entity/entity_content.cpp
 
         src/world/entity/systems/body_system.cpp
 

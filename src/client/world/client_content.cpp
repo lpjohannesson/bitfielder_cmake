@@ -12,7 +12,7 @@ void ClientContent::createPlayer(entt::entity player, WorldScene &scene) {
 	WorldRenderer &worldRenderer = scene.worldRenderer;
 	entt::registry &entityRegistry = world.entities.registry;
 
-	world.content.createPlayer(player, world);
+	world.content.entities.createPlayer(player, world);
 	
 	// Load sprite
 	entityRegistry.emplace<SpriteComponent>(
