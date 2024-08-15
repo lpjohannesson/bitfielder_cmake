@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "sprite_animation.h"
-#include "sprite_frames.h"
+#include "../sprite_frames.h"
 
 namespace bf {
     class SpriteAnimationSet {

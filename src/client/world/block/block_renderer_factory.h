@@ -2,28 +2,24 @@
 #include <string>
 #include <rapidjson/document.h>
 #include <entt/entt.hpp>
+#include "core/box2.h"
 #include "gfx/core/texture_atlas.h"
 #include "renderers/block_renderer.h"
-#include "core/box2.h"
+#include "components/block_particle_component.h"
 
 namespace bf {
     class WorldScene;
 
     class BlockRendererFactory {
-    private:
-        static TextureSection getRendererTexture(const WorldScene &scene, const rapidjson::Value &value, std::string basePath);
-        
-        static TextureSection getBlockTexture(const WorldScene &scene, const rapidjson::Value &value);
-        static TextureSection getParticleTexture(const WorldScene &scene, const rapidjson::Value &value);
-
-        static void createParticleRenderer(WorldScene &scene, entt::entity block, const rapidjson::Value &blockValue, std::string particleName);
-
-        static BlockRenderer *createBasicBlockRenderer(const WorldScene &scene, const rapidjson::Value &value);
-        static BlockRenderer *createAutoBlockRenderer(const WorldScene &scene, const rapidjson::Value &value);
-
-        static void createBlockRenderer(WorldScene &scene, entt::entity block);
-
     public:
+        static TextureSection getTexture(std::string basePath, const rapidjson::Value &value, const WorldScene &scene);
+        
+        static TextureSection getBlockTexture(const rapidjson::Value &value, const WorldScene &scene);
+        static TextureSection getParticleTexture(const rapidjson::Value &value, const WorldScene &scene);
+
+        static BlockParticleComponent *createParticleRenderer(const std::string name, entt::entity block, WorldScene &scene);
+        static void createBlockRenderer(entt::entity block, WorldScene &scene);
+    
         static void createRenderers(WorldScene &scene);
         static void destroyRenderers(WorldScene &scene);
     };

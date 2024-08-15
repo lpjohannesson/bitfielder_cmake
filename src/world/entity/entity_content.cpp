@@ -19,5 +19,5 @@ void EntityContent::createPlayer(entt::entity player, World &world) {
 }
 
 EntityContent::EntityContent(World &world) {
-    world.entities.addSystem(bodySystem);
+    world.entitySystems.push_back(&bodySystem);
 }

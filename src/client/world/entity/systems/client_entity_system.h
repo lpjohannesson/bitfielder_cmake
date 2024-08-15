@@ -1,14 +1,10 @@
 #pragma once
-#include "world/entity/systems/entity_system.h"
 
 namespace bf {
     class WorldScene;
-
-    class ClientEntitySystem : public EntitySystem {
-    protected:
-        WorldScene *scene;
-
+    
+	class ClientEntitySystem {
     public:
-        void loadScene(WorldScene &scene);
+        inline virtual void update(WorldScene &scene) {}
     };
 }

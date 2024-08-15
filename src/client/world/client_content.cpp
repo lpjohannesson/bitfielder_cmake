@@ -45,14 +45,10 @@ ClientContent::ClientContent(WorldScene &scene) {
 	TextureAtlas &textureAtlas = worldRenderer.textureAtlas;
 
 	// Add entity systems in order
-	world.entities.addSystem(localPlayerSystem);
-	localPlayerSystem.loadScene(scene);
-
-	world.entities.addSystem(particleSystem);
-	particleSystem.loadScene(scene);
-
-	world.entities.addSystem(spriteAnimatorSystem);
-	world.entities.addSystem(effectSpriteSystem);
+	scene.entitySystems.push_back(&localPlayerSystem);
+	scene.entitySystems.push_back(&particleSystem);
+	scene.entitySystems.push_back(&spriteAnimatorSystem);
+	scene.entitySystems.push_back(&effectSpriteSystem);
 
 	// Create player animations
     TextureSection playerForwardTexture = textureAtlas.getSection("assets/textures/world/player/forward.png");

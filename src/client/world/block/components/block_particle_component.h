@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "gfx/sprite/animation/sprite_frames.h"
+#include "gfx/sprite/sprite_frames.h"
 
 namespace bf {
     struct BlockParticleComponent {

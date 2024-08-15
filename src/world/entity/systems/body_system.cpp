@@ -1,5 +1,5 @@
 #include "body_system.h"
-#include "entity_system_impl.h"
+#include "world/world.h"
 #include "core/game_time.h"
 #include "world/block/block_sample.h"
 #include "../components/position_component.h"

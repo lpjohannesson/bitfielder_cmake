@@ -1,5 +1,5 @@
 #include "effect_sprite_system.h"
-#include "world/entity/systems/entity_system_impl.h"
+#include "client/scenes/world_scene.h"
 #include "../components/effect_sprite_component.h"
 #include "../components/sprite_component.h"
 #include "../components/sprite_animator_component.h"
@@ -15,8 +15,8 @@ void EffectSpriteProperties::createProperties(glm::vec2 size, Box2 uvBox, glm::i
     animationSet.addAnimation(frames, duration, false);
 }
 
-entt::entity EffectSpriteSystem::spawnEffect(World &world, glm::vec2 position, EffectSpriteProperties &properties) {
-    entt::registry &entityRegistry = world.entities.registry;
+entt::entity EffectSpriteSystem::spawnEffect(glm::vec2 position, EffectSpriteProperties &properties, WorldScene &scene) {
+    entt::registry &entityRegistry = scene.world.entities.registry;
 
     entt::entity effect = entityRegistry.create();
 
@@ -29,15 +29,15 @@ entt::entity EffectSpriteSystem::spawnEffect(World &world, glm::vec2 position, E
     return effect;
 }
 
-void EffectSpriteSystem::update(World &world) {
-    auto view = world.entities.registry.view<EffectSpriteComponent, SpriteAnimationComponent, SpriteAnimatorComponent>();
+void EffectSpriteSystem::update(WorldScene &scene) {
+    auto view = scene.world.entities.registry.view<EffectSpriteComponent, SpriteAnimationComponent, SpriteAnimatorComponent>();
     
     for (auto [entity, spriteAnimation, spriteAnimator] : view.each()) {
         // Delete if animation finished
         const SpriteAnimation *animation = spriteAnimator.animationSet->getAnimation(spriteAnimation.animationIndex);
 
         if (spriteAnimator.time >= animation->duration) {
-            world.entities.registry.destroy(entity);
+            scene.world.entities.registry.destroy(entity);
         }
     }
 }

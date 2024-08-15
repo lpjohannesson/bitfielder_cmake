@@ -1,5 +1,5 @@
 #include "particle_system.h"
-#include "client_entity_system_impl.h"
+#include "client/scenes/world_scene.h"
 #include "../components/particle_component.h"
 #include "../components/sprite_component.h"
 #include "world/entity/components/position_component.h"
@@ -8,21 +8,21 @@
 
 using namespace bf;
 
-entt::entity ParticleSystem::spawnParticle(glm::vec2 position, glm::vec2 velocity, glm::vec2 size, Box2 frame, glm::vec4 color) {
-    entt::registry &entityRegistry = scene->world.entities.registry;
+entt::entity ParticleSystem::spawnParticle(const ParticleSpawnProperties &properties, WorldScene &scene) {
+    entt::registry &entityRegistry = scene.world.entities.registry;
 
     // Create entity directly, without ID
     entt::entity particle = entityRegistry.create();
 
     entityRegistry.emplace<ParticleComponent>(particle, ParticleComponent {});
-    entityRegistry.emplace<PositionComponent>(particle, PositionComponent { position });
-    entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { velocity, velocity });
-    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { size, -size * 0.5f, frame, color });
+    entityRegistry.emplace<PositionComponent>(particle, PositionComponent { properties.position });
+    entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { properties.velocity, properties.velocity });
+    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { properties.size, -properties.size * 0.5f, properties.frame, properties.color });
 
     return particle;
 }
 
-void ParticleSystem::spawnParticleExplosion(glm::vec2 position, glm::vec2 size, const SpriteFrames &frames, glm::vec4 color) {
+void ParticleSystem::spawnParticleExplosion(const ParticleExplosionProperties &properties, WorldScene &scene) {
     // Random count
     int explosionCountRange = explosionCountMax - explosionCountMin + 1;
     int explosionCount = explosionCountMin + client->randomInt(client->randomEngine) % explosionCountRange;
@@ -37,17 +37,17 @@ void ParticleSystem::spawnParticleExplosion(glm::vec2 position, glm::vec2 size, 
         glm::vec2 velocity = { glm::cos(angle), glm::sin(angle) };
 
         // Random frame
-        Box2 frame = frames.frames.at(rand() % frames.frames.size());
+        Box2 frame = properties.frames.frames.at(rand() % properties.frames.frames.size());
 
-        spawnParticle(position, velocity * explosionSpeed, size, frame, color);
+        spawnParticle({ properties.position, velocity * explosionSpeed, properties.size, frame, properties.color }, scene);
     }
 }
 
-void ParticleSystem::update(World &world) {
+void ParticleSystem::update(WorldScene &scene) {
     float deltaTime = gameTime.getDeltaTime();
-    Box2 screenBox = scene->worldRenderer.getScreenBox();
+    Box2 screenBox = scene.worldRenderer.getScreenBox();
 
-    auto view = world.entities.registry.view<ParticleComponent, PositionComponent, VelocityComponent, SpriteComponent>();
+    auto view = scene.world.entities.registry.view<ParticleComponent, PositionComponent, VelocityComponent, SpriteComponent>();
 
     for (auto [entity, position, velocity, sprite] : view.each()) {
         velocity.velocity.y += gravity * deltaTime;
@@ -59,7 +59,7 @@ void ParticleSystem::update(World &world) {
         Box2 box = { position.position + sprite.offset, sprite.size };
 
         if (!Box2::overlaps(box, screenBox)) {
-            world.entities.registry.destroy(entity);
+            scene.world.entities.registry.destroy(entity);
         }
     }
 }

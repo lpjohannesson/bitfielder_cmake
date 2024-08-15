@@ -1,5 +1,5 @@
 #include "sprite_system.h"
-#include "render_system_impl.h"
+#include "client/scenes/world_scene.h"
 #include "../components/sprite_component.h"
 #include "world/entity/components/position_component.h"
 #include "world/entity/components/sprite_flip_component.h"

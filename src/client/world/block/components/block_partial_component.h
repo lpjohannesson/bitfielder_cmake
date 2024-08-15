@@ -1,7 +1,7 @@
 #pragma once
 
 namespace bf {
-    struct PartialBlockComponent {
+    struct BlockPartialComponent {
         
     };
 }

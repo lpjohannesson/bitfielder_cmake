@@ -36,8 +36,8 @@ if (CLIENT)
         src/gfx/sprite/sprite_program.cpp
         src/gfx/sprite/sprite_renderer.cpp
         src/gfx/sprite/sprite_batch.cpp
+        src/gfx/sprite/sprite_frames.cpp
 
-        src/gfx/sprite/animation/sprite_frames.cpp
         src/gfx/sprite/animation/sprite_animation.cpp
         src/gfx/sprite/animation/sprite_animation_set.cpp
 
@@ -97,7 +97,6 @@ if (CLIENT)
 
         src/client/world/entity/entity_renderer.cpp
 
-        src/client/world/entity/systems/client_entity_system.cpp
         src/client/world/entity/systems/sprite_system.cpp
         src/client/world/entity/systems/sprite_animator_system.cpp
         src/client/world/entity/systems/sprite_aim_system.cpp

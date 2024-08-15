@@ -1,7 +1,7 @@
 #include "local_player_system.h"
+#include "client/scenes/world_scene.h"
 #include <iostream>
 #include <glm/gtx/easing.hpp>
-#include "client_entity_system_impl.h"
 #include "client/scenes/world_scene.h"
 #include "core/game_time.h"
 #include "core/direction.h"
@@ -10,101 +10,89 @@
 
 using namespace bf;
 
-void LocalPlayerSystem::move(LocalPlayerData &playerData) {
+void LocalPlayerSystem::move(LocalPlayerData &data) {
     float deltaTime = gameTime.getDeltaTime();
 
-    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
-    glm::vec2 &movement = playerData.movement;
-    PositionComponent &position = *playerData.position;
-    VelocityComponent &velocity = *playerData.velocity;
-    BodyComponent &body = *playerData.body;
-
     // Move horizontally, friction only on the ground
-    if (body.isOnFloor || movement.x != 0.0f) {
-        Direction::targetAxis(velocity.velocity.x, movement.x * speed, acceleration * deltaTime);
+    if (data.body.isOnFloor || data.movement.x != 0.0f) {
+        Direction::targetAxis(data.velocity.velocity.x, data.movement.x * speed, acceleration * deltaTime);
     }
 
     // Fall
-    velocity.velocity.y += gravity * deltaTime;
+    data.velocity.velocity.y += gravity * deltaTime;
 
     // Hit ground
-    bool onSurface = body.isOnFloor || body.isOnCeiling;
+    bool onSurface = data.body.isOnFloor || data.body.isOnCeiling;
 
-    if (onSurface && !localPlayer.lastOnSurface) {
-        engine->sound.playSound(scene->clientContent.groundSound, false);
+    if (onSurface && !data.localPlayer.lastOnSurface) {
+        engine->sound.playSound(data.scene.clientContent.groundSound, false);
 
-        if (!body.blockCollisions.empty()) {
-            for (BlockCollision &blockCollision : body.blockCollisions) {
+        if (!data.body.blockCollisions.empty()) {
+            for (BlockCollision &blockCollision : data.body.blockCollisions) {
                 if (blockCollision.normal.y == 0.0f) {
                     continue;
                 }
 
-                entt::entity surfaceBlock = scene->world.blocks.getEntity(body.blockCollisions[0].blockData->getFrontIndex());
-                BlockSounds::playBlockSound(*scene, surfaceBlock, 0.25f);
+                entt::entity surfaceBlock = data.scene.world.blocks.getEntity(data.body.blockCollisions[0].blockData->getFrontIndex());
+                BlockSounds::playBlockSound(data.scene, surfaceBlock, 0.25f);
 
-                glm::vec2 effectPosition = position.position + body.size * 0.5f;
-                effectPosition.y -= blockCollision.normal.y * body.size.y * 0.5f;
+                glm::vec2 effectPosition = data.position.position + data.body.size * 0.5f;
+                effectPosition.y -= blockCollision.normal.y * data.body.size.y * 0.5f;
 
-                EffectSpriteSystem::spawnEffect(scene->world, effectPosition,
-		            scene->clientContent.groundEffectProperties);
+                EffectSpriteSystem::spawnEffect(effectPosition,
+		            data.scene.clientContent.groundEffectProperties, data.scene);
 
                 break;
             }
         }
     }
 
-    localPlayer.lastOnSurface = onSurface;
+    data.localPlayer.lastOnSurface = onSurface;
 }
 
-void LocalPlayerSystem::jump(LocalPlayerData &playerData) {
-    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
-    VelocityComponent &velocity = *playerData.velocity;
-    BodyComponent &body = *playerData.body;
-
+void LocalPlayerSystem::jump(LocalPlayerData &data) {
     // Update jump timer, allowing early jumps
     if (client->clientInput.jump.justPressed()) {
-        localPlayer.jumpTime = maxJumpTime;
+        data.localPlayer.jumpTime = maxJumpTime;
     }
 
     // Update floor timer, allowing late jumps
-    if (body.isOnFloor) {
-        localPlayer.floorTime = maxFloorTime;
+    if (data.body.isOnFloor) {
+        data.localPlayer.floorTime = maxFloorTime;
     }
 
-    bool canJump = !scene->paused && localPlayer.floorTime > 0.0f;
+    bool canJump = !data.scene.paused && data.localPlayer.floorTime > 0.0f;
 
     if (canJump) {
         // Jump
-        if (localPlayer.jumpTime > 0.0f) {
-            velocity.velocity.y = velocity.oldVelocity.y = -jumpImpulse;
+        if (data.localPlayer.jumpTime > 0.0f) {
+            data.velocity.velocity.y = data.velocity.oldVelocity.y = -jumpImpulse;
 
-            localPlayer.jumpStopped = false;
-            localPlayer.floorTime = 0.0f;
-            localPlayer.jumpTime = 0.0f;
+            data.localPlayer.jumpStopped = false;
+            data.localPlayer.floorTime = 0.0f;
+            data.localPlayer.jumpTime = 0.0f;
 
-            engine->sound.playSound(scene->clientContent.jumpSound, false, 0.75f, client->getRandomPitch());
+            engine->sound.playSound(data.scene.clientContent.jumpSound, false, 0.75f, client->getRandomPitch());
         }
     }
     else {
         // Stop jump on release
-        bool jumpReleased = scene->paused || !client->clientInput.jump.pressed;
+        bool jumpReleased = data.scene.paused || !client->clientInput.jump.pressed;
 
-        if (!localPlayer.jumpStopped &&
-            velocity.velocity.y < 0.0f &&
+        if (!data.localPlayer.jumpStopped &&
+            data.velocity.velocity.y < 0.0f &&
             jumpReleased) {
             
-            velocity.velocity.y *= jumpStop;
-            localPlayer.jumpStopped = true;
+            data.velocity.velocity.y *= jumpStop;
+            data.localPlayer.jumpStopped = true;
         }
     }
 }
 
-void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
-    if (scene->paused) {
+void LocalPlayerSystem::selectItems(LocalPlayerData &data) {
+    if (data.scene.paused) {
         return;
     }
-
-    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
 
     int selectDirection = 
         (int)client->clientInput.selectItemRight.justPressed() -
@@ -115,68 +103,56 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &playerData) {
     }
 
     // Select item with wrap-around
-    int nextBlockIndex = localPlayer.selectedBlockIndex + selectDirection;
-    localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, (int)scene->world.blocks.entities.size());
+    int nextBlockIndex = data.localPlayer.selectedBlockIndex + selectDirection;
+    data.localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, (int)data.scene.world.blocks.entities.size());
 }
 
-void LocalPlayerSystem::applyAim(LocalPlayerData &playerData) {
-    if (scene->paused) {
+void LocalPlayerSystem::applyAim(LocalPlayerData &data) {
+    if (data.scene.paused) {
         return;
     }
 
-    glm::vec2 &movement = playerData.movement;
-    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
-    SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
-    SpriteAnimatorComponent &spriteAnimator = *playerData.spriteAnimator;
-    AimComponent &aim = *playerData.aim;
-    SpriteAimComponent &spriteAim = *playerData.spriteAim;
-
-    if (localPlayer.blockTime > 0.0f) {
+    if (data.localPlayer.blockTime > 0.0f) {
         return;
     }
 
     // Flip sprite
-    if (movement.x != 0.0f) {
-        bool nextSpriteFlip = movement.x < 0.0f;
+    if (data.movement.x != 0.0f) {
+        bool nextSpriteFlip = data.movement.x < 0.0f;
 
-        if (nextSpriteFlip != spriteFlip.flipX) {
-            spriteFlip.flipX = nextSpriteFlip;
+        if (nextSpriteFlip != data.spriteFlip.flipX) {
+            data.spriteFlip.flipX = nextSpriteFlip;
             
-            playerData.stateChanged = true;
+            data.stateChanged = true;
         }
     }
 
     // Aim vertically
-    int nextAim = (int)movement.y;
+    int nextAim = (int)data.movement.y;
 
-    if (nextAim != aim.aim) {
-        playerData.stateChanged = true;
+    if (nextAim != data.aim.aim) {
+        data.stateChanged = true;
 
-        aim.aim = nextAim;
-        spriteAnimator.frames = SpriteAimSystem::getAimFrames(spriteAim, aim.aim);
+        data.aim.aim = nextAim;
+        data.spriteAnimator.frames = SpriteAimSystem::getAimFrames(data.spriteAim, data.aim.aim);
         
-        playerData.stateChanged = true;
+        data.stateChanged = true;
     }
 }
 
-void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
-    glm::vec2 &movement = playerData.movement;
-    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
-    VelocityComponent &velocity = *playerData.velocity;
-    BodyComponent &body = *playerData.body;
-    
-    if (localPlayer.blockTime > 0.0f) {
+void LocalPlayerSystem::animate(LocalPlayerData &data) {
+    if (data.localPlayer.blockTime > 0.0f) {
         return;
     }
 
     PlayerAnimation animationIndex;
 
-    if (body.isOnFloor) {
-        if (velocity.velocity.x == 0.0f || movement.x == 0.0f) {
+    if (data.body.isOnFloor) {
+        if (data.velocity.velocity.x == 0.0f || data.movement.x == 0.0f) {
             animationIndex = PlayerAnimation::IDLE;
         }
         else {
-            if (glm::sign(velocity.velocity.x) == movement.x) {
+            if (glm::sign(data.velocity.velocity.x) == data.movement.x) {
                 animationIndex = PlayerAnimation::WALK;
             }
             else {
@@ -185,7 +161,7 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
         }
     }
     else {
-        if (velocity.velocity.y < 0.0f) {
+        if (data.velocity.velocity.y < 0.0f) {
             animationIndex = PlayerAnimation::JUMP;
         }
         else {
@@ -193,12 +169,12 @@ void LocalPlayerSystem::animate(LocalPlayerData &playerData) {
         }
     }
 
-    playerData.stateChanged |= SpriteAnimatorSystem::playAnimation(
-        *playerData.spriteAnimator, *playerData.spriteAnimation, (int)animationIndex);
+    data.stateChanged |= SpriteAnimatorSystem::playAnimation(
+        data.spriteAnimator, data.spriteAnimation, (int)animationIndex);
 }
 
-bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
-    if (scene->paused) {
+bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
+    if (data.scene.paused) {
         return false;
     }
 
@@ -217,29 +193,22 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
 
     float deltaTime = gameTime.getDeltaTime();
 
-    glm::vec2 &movement = playerData.movement;
-    LocalPlayerComponent &localPlayer = *playerData.localPlayer;
-    PositionComponent &position = *playerData.position;
-    VelocityComponent &velocity = *playerData.velocity;
-    BodyComponent &body = *playerData.body;
-    SpriteFlipComponent &spriteFlip = *playerData.spriteFlip;
-
     // Get center and forward blocks
-    glm::vec2 playerCenter = position.position + body.size * 0.5f;
+    glm::vec2 playerCenter = data.position.position + data.body.size * 0.5f;
     glm::ivec2 centerBlockPosition = glm::floor(playerCenter);
 
     glm::ivec2 forwardBlockPosition;
 
-    if (movement.y == 0.0f) {
-        int facingSign = spriteFlip.flipX ? -1 : 1;
+    if (data.movement.y == 0.0f) {
+        int facingSign = data.spriteFlip.flipX ? -1 : 1;
         forwardBlockPosition = { centerBlockPosition.x + facingSign, centerBlockPosition.y };
     }
     else {
-        forwardBlockPosition = { centerBlockPosition.x, centerBlockPosition.y + (int)movement.y };
+        forwardBlockPosition = { centerBlockPosition.x, centerBlockPosition.y + (int)data.movement.y };
     }
 
-    BlockData *centerBlockData = BlockChunk::getWorldBlock(scene->world.map, centerBlockPosition);
-    BlockData *forwardBlockData = BlockChunk::getWorldBlock(scene->world.map, forwardBlockPosition);
+    BlockData *centerBlockData = BlockChunk::getWorldBlock(data.scene.world.map, centerBlockPosition);
+    BlockData *forwardBlockData = BlockChunk::getWorldBlock(data.scene.world.map, forwardBlockPosition);
 
     glm::ivec2 *blockPosition;
     BlockData *blockData;
@@ -300,46 +269,46 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &playerData) {
 
     // Replace block
     if (placing) {
-        if (!scene->world.isBlockPlaceable(*blockPosition, onFrontLayer)) {
+        if (!data.scene.world.isBlockPlaceable(*blockPosition, onFrontLayer)) {
             return false;
         }
 
-        scene->placeBlock(*blockPosition, onFrontLayer, *blockData, localPlayer.selectedBlockIndex);
+        data.scene.placeBlock(*blockPosition, onFrontLayer, *blockData, data.localPlayer.selectedBlockIndex);
     }
     else {
-        scene->destroyBlock(*blockPosition, onFrontLayer, *blockData);
+        data.scene.destroyBlock(*blockPosition, onFrontLayer, *blockData);
     }
 
     // Play animation
-    SpriteAnimatorSystem::playAnimation(*playerData.spriteAnimator, *playerData.spriteAnimation, (int)PlayerAnimation::PUNCH);
+    SpriteAnimatorSystem::playAnimation(data.spriteAnimator, data.spriteAnimation, (int)PlayerAnimation::PUNCH);
 
     // Send to server
-    scene->writeReplaceBlock(*blockPosition, onFrontLayer, *blockData);
+    data.scene.writeReplaceBlock(*blockPosition, onFrontLayer, *blockData);
     
     // TODO: Disable body
-    velocity.velocity = { 0.0f, 0.0f };
+    data.velocity.velocity = { 0.0f, 0.0f };
 
     // Reset timers
-    localPlayer.blockTime = maxBlockTime;
-    localPlayer.blockTweenTime = maxBlockTweenTime;
+    data.localPlayer.blockTime = maxBlockTime;
+    data.localPlayer.blockTweenTime = maxBlockTweenTime;
 
     // Set up movement animation
-    glm::vec2 positionOffset = glm::vec2(0.5f) - body.size * 0.5f;
+    glm::vec2 positionOffset = glm::vec2(0.5f) - data.body.size * 0.5f;
     glm::vec2 endPosition = glm::vec2(forwardBlockPosition) + positionOffset;
 
-    localPlayer.blockTweenStart = position.position;
-    localPlayer.blockTweenEnd = endPosition;
+    data.localPlayer.blockTweenStart = data.position.position;
+    data.localPlayer.blockTweenEnd = endPosition;
 
     return true;
 }
 
-void LocalPlayerSystem::update(World &world) {
+void LocalPlayerSystem::update(WorldScene &scene) {
     float deltaTime = gameTime.getDeltaTime();
 
     // Input direction
     glm::vec2 movement;
 
-    if (scene->paused) {
+    if (scene.paused) {
         movement = { 0.0f, 0.0f };
     }
     else {
@@ -349,7 +318,7 @@ void LocalPlayerSystem::update(World &world) {
     };
     }
 
-    auto view = world.entities.registry.view<
+    auto view = scene.world.entities.registry.view<
         LocalPlayerComponent,
         PositionComponent,
         VelocityComponent,
@@ -374,28 +343,29 @@ void LocalPlayerSystem::update(World &world) {
             aim,
             spriteAim] : view.each()) {
         
-        LocalPlayerData playerData = {
+        LocalPlayerData data = {
+            scene,
             movement,
-            &localPlayer,
-            &position,
-            &velocity,
-            &body,
-            &sprite,
-            &spriteFlip,
-            &spriteAnimation,
-            &spriteAnimator,
-            &aim,
-            &spriteAim };
+            localPlayer,
+            position,
+            velocity,
+            body,
+            sprite,
+            spriteFlip,
+            spriteAnimation,
+            spriteAnimator,
+            aim,
+            spriteAim };
 
-        applyAim(playerData);
-        animate(playerData);
+        applyAim(data);
+        animate(data);
 
-        selectItems(playerData);
+        selectItems(data);
 
         if (localPlayer.blockTime == 0.0f) {
-            if (!tryModifyBlock(playerData)) {
-                jump(playerData);
-                move(playerData);
+            if (!tryModifyBlock(data)) {
+                jump(data);
+                move(data);
             }
         }
         else {
@@ -416,13 +386,13 @@ void LocalPlayerSystem::update(World &world) {
 
         // TODO: Make generic position changed flag
         if (position.position != localPlayer.lastPosition) {
-            playerData.stateChanged = true;
+            data.stateChanged = true;
         }
 
         localPlayer.lastPosition = position.position;
 
-        if (playerData.stateChanged) {
-            scene->writePlayerState();
+        if (data.stateChanged) {
+            scene.writePlayerState();
         }
     }
 }

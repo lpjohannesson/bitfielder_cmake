@@ -1,9 +1,11 @@
 #pragma once
+#include <vector>
 #include "registry/entity_registry.h"
 #include "block/block_map.h"
 #include "block/block_chunk.h"
 #include "entity/entities.h"
 #include "world/content.h"
+#include "entity/systems/entity_system.h"
 
 namespace bf {
 	class World {
@@ -15,6 +17,7 @@ namespace bf {
         BlockMap<BlockChunk> map;
 
         Entities entities;
+        std::vector<EntitySystem*> entitySystems;
 
         Content content;
         

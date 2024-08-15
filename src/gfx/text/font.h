@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <glm/glm.hpp>
-#include "gfx/sprite/animation/sprite_frames.h"
+#include "gfx/sprite/sprite_frames.h"
 #include "gfx/sprite/sprite_batch.h"
 #include "gfx/core/texture_atlas.h"
 

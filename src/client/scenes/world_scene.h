@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "engine/scene.h"
 #include "world/world.h"
 #include "core/packet.h"
@@ -7,6 +8,7 @@
 #include "client/world/camera.h"
 #include "client/menu/option_list.h"
 #include "client/menu/text_list_option.h"
+#include "client/world/entity/systems/client_entity_system.h"
 
 namespace bf {
 	class ServerConnection;
@@ -20,6 +22,7 @@ namespace bf {
 
 		World world;
 		WorldRenderer worldRenderer;
+		std::vector<ClientEntitySystem*> entitySystems;
 		
 		Camera camera;
 

@@ -51,5 +51,7 @@ void World::updateBlock(glm::ivec2 position, Box2i &resultBox) {
 }
 
 void World::update() {
-    entities.update(*this);
+    for (EntitySystem *system : entitySystems) {
+        system->update(*this);
+    }
 }

@@ -43,14 +43,3 @@ void Entities::despawnEntity(int id) {
     registry.destroy(entity);
     entityIDs.erase(id);
 }
-
-void Entities::addSystem(EntitySystem &system) {
-    systems.push_back(&system);
-}
-
-void Entities::update(World &world) {
-    // Update systems
-    for (EntitySystem *system : systems) {
-        system->update(world);
-    }
-}

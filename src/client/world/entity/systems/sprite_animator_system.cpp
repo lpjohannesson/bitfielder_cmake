@@ -1,6 +1,6 @@
 #include "sprite_animator_system.h"
+#include "client/scenes/world_scene.h"
 #include <glm/gtx/common.hpp>
-#include "world/entity/systems/entity_system_impl.h"
 #include "../components/sprite_component.h"
 #include "core/game_time.h"
 
@@ -28,10 +28,10 @@ bool SpriteAnimatorSystem::playAnimation(SpriteAnimatorComponent &spriteAnimator
     return true;
 }
 
-void SpriteAnimatorSystem::update(World &world) {
+void SpriteAnimatorSystem::update(WorldScene &scene) {
     float deltaTime = gameTime.getDeltaTime();
 
-    auto view = world.entities.registry.view<SpriteAnimatorComponent, SpriteComponent, SpriteAnimationComponent>();
+    auto view = scene.world.entities.registry.view<SpriteAnimatorComponent, SpriteComponent, SpriteAnimationComponent>();
 
     for (auto [entity, spriteAnimator, sprite, spriteAnimation] : view.each()) {
         // Get animation or skip

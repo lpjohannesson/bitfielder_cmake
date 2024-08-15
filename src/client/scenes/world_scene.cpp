@@ -49,7 +49,7 @@ void WorldScene::spawnBlockParticles(glm::vec2 position, entt::entity block) {
 	}
 
 	BlockParticleComponent blockParticle = blockRegistry.get<BlockParticleComponent>(block);
-	clientContent.particleSystem.spawnParticleExplosion(position + glm::vec2(0.5f), blockParticle.size, blockParticle.frames, blockParticle.color);
+	clientContent.particleSystem.spawnParticleExplosion({ position + glm::vec2(0.5f), blockParticle.size, blockParticle.frames, blockParticle.color }, *this);
 }
 
 void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData &blockData, int blockIndex) {
@@ -62,8 +62,8 @@ void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData &b
 
 	entt::entity block = world.blocks.getEntity(blockIndex);
 
-	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
-		clientContent.placeEffectProperties);
+	EffectSpriteSystem::spawnEffect(glm::vec2(position) + glm::vec2(0.5f),
+		clientContent.placeEffectProperties, *this);
 
 	updateBlock(position);
 
@@ -85,8 +85,8 @@ void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData 
 
 	entt::entity block = world.blocks.getEntity(blockIndex);
 
-	EffectSpriteSystem::spawnEffect(world, glm::vec2(position) + glm::vec2(0.5f),
-		clientContent.destroyEffectProperties);
+	EffectSpriteSystem::spawnEffect(glm::vec2(position) + glm::vec2(0.5f),
+		clientContent.destroyEffectProperties, *this);
 
 	spawnBlockParticles(position, block);
 
@@ -338,6 +338,10 @@ void WorldScene::update() {
 		}
 	}
 	else {
+		for (ClientEntitySystem *system : entitySystems) {
+			system->update(*this);
+		}
+
 		float zoomDirection = 
         (float)client->clientInput.zoomIn.justPressed() -
         (float)client->clientInput.zoomOut.justPressed();

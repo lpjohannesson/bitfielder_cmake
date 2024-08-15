@@ -6,14 +6,14 @@
 #include "renderers/basic_block_renderer.h"
 #include "renderers/auto_block_renderer.h"
 #include "components/block_renderer_component.h"
-#include "components/block_particle_component.h"
-#include "components/partial_block_component.h"
+#include "components/block_partial_component.h"
+#include "components/block_sprite_component.h"
 #include "world/registry/components/registry_name_component.h"
 #include "client/world/block/components/block_sound_component.h"
 
 using namespace bf;
 
-TextureSection BlockRendererFactory::getRendererTexture(const WorldScene &scene, const rapidjson::Value &value, std::string basePath) {
+TextureSection BlockRendererFactory::getTexture(std::string basePath, const rapidjson::Value &value, const WorldScene &scene) {
     std::string texturePath = value["texture"].GetString();
     std::string textureFullPath = basePath + texturePath + ".png";
 
@@ -22,23 +22,23 @@ TextureSection BlockRendererFactory::getRendererTexture(const WorldScene &scene,
     return textureAtlas.getSection(textureFullPath);
 }
 
-TextureSection BlockRendererFactory::getBlockTexture(const WorldScene &scene, const rapidjson::Value &value) {
-    return getRendererTexture(scene, value, "assets/textures/world/blocks/");
+TextureSection BlockRendererFactory::getBlockTexture(const rapidjson::Value &value, const WorldScene &scene) {
+    return getTexture("assets/textures/world/blocks/", value, scene);
 }
 
-TextureSection BlockRendererFactory::getParticleTexture(const WorldScene &scene, const rapidjson::Value &value) {
-    return getRendererTexture(scene, value, "assets/textures/world/blocks/particles/");
+TextureSection BlockRendererFactory::getParticleTexture(const rapidjson::Value &value, const WorldScene &scene) {
+    return getTexture("assets/textures/world/blocks/particles/", value, scene);
 }
 
-void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entity block, const rapidjson::Value &blockValue, std::string particleName) {
+BlockParticleComponent *BlockRendererFactory::createParticleRenderer(const std::string name, entt::entity block, WorldScene &scene) {
     entt::registry &blockRegistry = scene.world.blocks.registry;
 
     // Load json
-    std::string jsonPath = "assets/renderers/blocks/particles/" + particleName + ".json";
+    std::string jsonPath = "assets/renderers/blocks/particles/" + name + ".json";
     std::string json;
     
     if (!FileLoader::loadText(jsonPath.c_str(), json)) {
-        return;
+        return nullptr;
     }
 
     // Parse json
@@ -46,58 +46,27 @@ void BlockRendererFactory::createParticleRenderer(WorldScene &scene, entt::entit
     
     if (document.Parse(json.c_str()).HasParseError()) {
         std::cout << "Block particle renderer \"" << jsonPath << "\" could not be parsed." << std::endl;
-        return;
+        return nullptr;
     }
     
-    BlockParticleComponent &blockParticle = 
+    BlockParticleComponent &particle = 
         blockRegistry.emplace<BlockParticleComponent>(block, BlockParticleComponent {});
     
     // Load texture
-    TextureSection texture = getParticleTexture(scene, document.GetObject());
+    TextureSection texture = getParticleTexture(document.GetObject(), scene);
 
     // Load frames
     int frameCount = document["frameCount"].GetInt();
 
-    blockParticle.frames.loadFrames(texture.uvBox, { frameCount, 1 });
+    particle.frames.loadFrames(texture.uvBox, { frameCount, 1 });
+    particle.size = glm::vec2(texture.box.size.x / frameCount, texture.box.size.y) / 16.0f;
 
-    blockParticle.size = glm::vec2(texture.box.size.x / frameCount, texture.box.size.y) / 16.0f;
-
-    // Load same colour as block
-    if (blockValue.HasMember("color")) {
-        blockParticle.color = Color::parseHex(blockValue["color"].GetString());
-    }
+    return &particle;
 }
 
-BlockRenderer *BlockRendererFactory::createBasicBlockRenderer(const WorldScene &scene, const rapidjson::Value &value) {
-    BasicBlockRenderer *blockRenderer = new BasicBlockRenderer();
-
-    blockRenderer->sprite.box.size = glm::vec2(1.0f);
-    blockRenderer->sprite.uvBox = getBlockTexture(scene, value).uvBox;
-
-    if (value.HasMember("color")) {
-        blockRenderer->sprite.color = Color::parseHex(value["color"].GetString());
-    }
-
-    return blockRenderer;
-}
-
-BlockRenderer *BlockRendererFactory::createAutoBlockRenderer(const WorldScene &scene, const rapidjson::Value &value) {
-    AutoBlockRenderer *blockRenderer = new AutoBlockRenderer();
-
-    blockRenderer->loadFrames(getBlockTexture(scene, value).uvBox);
-
-    if (value.HasMember("color")) {
-        blockRenderer->sprite.color = Color::parseHex(value["color"].GetString());
-    }
-
-    return blockRenderer;
-}
-
-void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity block) {
-    entt::registry &blockRegistry = scene.world.blocks.registry;
-
-    // Get block name
-    std::string blockName = blockRegistry.get<RegistryNameComponent>(block).name;
+void BlockRendererFactory::createBlockRenderer(entt::entity block, WorldScene &scene) {
+    entt::registry &blocksRegistry = scene.world.blocks.registry;
+    std::string blockName = blocksRegistry.get<RegistryNameComponent>(block).name;
 
     // Load json
     std::string jsonPath = "assets/renderers/blocks/" + blockName + ".json";
@@ -115,49 +84,68 @@ void BlockRendererFactory::createBlockRenderer(WorldScene &scene, entt::entity b
         return;
     }
 
-    rapidjson::Value &blockValue = document["block"];
+    rapidjson::Value &value = document["block"];
 
-    if (blockValue.HasMember("partial")) {
-        blockRegistry.emplace<PartialBlockComponent>(block, PartialBlockComponent {});
-    }
-
-    // Create particles
-    if (document.HasMember("particle")) {
-        createParticleRenderer(scene, block, blockValue, document["particle"].GetString());
+    if (value.HasMember("partial")) {
+        blocksRegistry.emplace<BlockPartialComponent>(block, BlockPartialComponent {});
     }
 
     // Create renderer by type
-    if (!blockValue.HasMember("type")) {
+    if (!value.HasMember("type")) {
         return;
     }
     
     BlockRenderer *blockRenderer;
 
-    std::string blockType = blockValue["type"].GetString();
+    std::string blockType = value["type"].GetString();
 
     if (blockType == "basic") {
-        blockRenderer = createBasicBlockRenderer(scene, blockValue);
+        blockRenderer = new BasicBlockRenderer(value, block, scene);
     }
     else if (blockType == "auto") {
-        blockRenderer = createAutoBlockRenderer(scene, blockValue);
+        blockRenderer = new AutoBlockRenderer(value, block, scene);
     }
     else {
         return;
     }
 
-    blockRegistry.emplace<BlockRendererComponent>(block, BlockRendererComponent { blockRenderer });
+    blocksRegistry.emplace<BlockRendererComponent>(block, BlockRendererComponent { blockRenderer });
+
+    // Set colour
+    glm::vec4 color;
+
+    if (document.HasMember("color")) {
+        color = Color::parseHex(document["color"].GetString());
+    }
+    else {
+        color = glm::vec4(1.0f);
+    }
+
+    if (blocksRegistry.all_of<BlockSpriteComponent>(block)) {
+        Sprite &sprite = blocksRegistry.get<BlockSpriteComponent>(block).sprite;
+        sprite.color = color;
+    }
+
+    // Create particles
+    if (document.HasMember("particle")) {
+        BlockParticleComponent *particle = createParticleRenderer(document["particle"].GetString(), block, scene);
+
+        if (particle != nullptr) {
+            particle->color = color;
+        }
+    }
 
     // Attach sounds
     if (document.HasMember("sound")) {
         SoundSet *soundSet = scene.clientContent.blockSounds.getSoundSet(document["sound"].GetString());
 
-        blockRegistry.emplace<BlockSoundComponent>(block, BlockSoundComponent { soundSet });
+        blocksRegistry.emplace<BlockSoundComponent>(block, BlockSoundComponent { soundSet });
     }
 }
 
 void BlockRendererFactory::createRenderers(WorldScene &scene) {
     for (entt::entity block : scene.world.blocks.entities) {
-        createBlockRenderer(scene, block);
+        createBlockRenderer(block, scene);
     }
 }
 

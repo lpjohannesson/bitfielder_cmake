@@ -1,12 +1,14 @@
 #pragma once
+#include <entt/entt.hpp>
 #include <glm/glm.hpp>
+#include <rapidjson/document.h>
 #include "gfx/sprite/sprite_batch.h"
 #include "world/block/block_sample.h"
 #include "world/block/block_chunk.h"
 
 namespace bf {
-    class BlockMapRenderer;
     class WorldScene;
+    class BlockMapRenderer;
 
     class BlockRenderData {
     public:
@@ -23,6 +25,5 @@ namespace bf {
     class BlockRenderer {
     public:
         inline virtual void render(const BlockRenderData &renderData) {}
-        inline virtual ~BlockRenderer() {}
     };
 }
