@@ -7,17 +7,12 @@ using namespace bf;
 
 void OptionListRenderer::renderText(std::string text, FontProperties &properties) {
     properties.position = optionPosition;
-    client->font.drawText(text, properties);
+    client->font.drawText(text, properties, client->fontSpriteBatch);
 
     optionPosition.y += client->font.lineHeight;
 }
 
 OptionListRenderer::OptionListRenderer() {
-    optionFontProperties.spriteBatch =
-        headerFontProperties.spriteBatch = 
-        cursorFontProperties.spriteBatch = 
-        &client->fontSpriteBatch;
-
     optionFontProperties.centered = true;
     headerFontProperties.centered = true;
     cursorFontProperties.centered = false;

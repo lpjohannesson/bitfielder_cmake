@@ -37,19 +37,19 @@ void WorldScene::updateBlock(glm::ivec2 position) {
 			continue;
 		}
 
-		worldRenderer.map.createMesh(*this, *chunk, sectionStart, sectionEnd);
+		worldRenderer.map.createMesh(*chunk, *this, sectionStart, sectionEnd);
 	}
 }
 
 void WorldScene::spawnBlockParticles(glm::vec2 position, entt::entity block) {
-	entt::registry &blockRegistry = world.blocks.registry;
+	entt::registry &blocksRegistry = world.blocks.registry;
 
-	if (!blockRegistry.all_of<BlockParticleComponent>(block)) {
+	if (!blocksRegistry.all_of<BlockParticleComponent>(block)) {
 		return;
 	}
 
-	BlockParticleComponent blockParticle = blockRegistry.get<BlockParticleComponent>(block);
-	clientContent.particleSystem.spawnParticleExplosion({ position + glm::vec2(0.5f), blockParticle.size, blockParticle.frames, blockParticle.color }, *this);
+	BlockParticleComponent blockParticle = blocksRegistry.get<BlockParticleComponent>(block);
+	clientContent.particleSystem.spawnParticleExplosion({ blockParticle.frames, position + glm::vec2(0.5f), blockParticle.size }, *this);
 }
 
 void WorldScene::placeBlock(glm::ivec2 position, bool onFrontLayer, BlockData &blockData, int blockIndex) {
@@ -143,7 +143,7 @@ void WorldScene::readBlockChunk(Packet &packet) {
 	BlockSerializer::readChunk(packet, chunk, world);
 
 	// Create mesh
-	worldRenderer.map.createMesh(*this, chunk);
+	worldRenderer.map.createMesh(chunk, *this);
 
 	// Update neighbour meshes
 	BlockChunk
@@ -151,11 +151,11 @@ void WorldScene::readBlockChunk(Packet &packet) {
 		*rightChunk = world.map.getChunk(chunkIndex + 1);
 	
 	if (leftChunk != nullptr) {
-		worldRenderer.map.createMesh(*this, *leftChunk);
+		worldRenderer.map.createMesh(*leftChunk,  *this);
 	}
 
 	if (rightChunk != nullptr) {
-		worldRenderer.map.createMesh(*this, *rightChunk);
+		worldRenderer.map.createMesh(*rightChunk,  *this);
 	}
 }
 
@@ -387,7 +387,7 @@ void WorldScene::start() {
 }
 
 void WorldScene::end() {
-	BlockRendererFactory::destroyRenderers(*this);
+	BlockRendererFactory::end(*this);
 
 	// End server
 	server->end();
@@ -403,5 +403,5 @@ WorldScene::WorldScene() :
 	pauseLogoMesh(client->spriteRenderer) {
 
 	entityRegistry = &world.entities.registry;
-	BlockRendererFactory::createRenderers(*this);
+	BlockRendererFactory::start(*this);
 }

@@ -40,26 +40,27 @@ glm::vec2 Font::getRenderPosition(std::string text, FontProperties &properties) 
     return renderPosition;
 }
 
-void Font::drawText(std::string text, FontProperties &properties) {
-    Sprite sprite;
+void Font::drawText(std::string text, FontProperties &properties, SpriteBatch &spriteBatch) {
+    Sprite letterSprite;
 
-    sprite.box.start.y = properties.position.y;
-    sprite.box.size = frameSize;
-    sprite.color = properties.color;
+    letterSprite.box.start.y = properties.position.y;
+    letterSprite.box.size = frameSize;
+    letterSprite.color = properties.color;
 
-    sprite.box.start = getRenderPosition(text, properties);
+    letterSprite.box.start = getRenderPosition(text, properties);
 
     float spacing = 0.0f;
 
     for (int i = 0; i < text.length(); i++) {
         // Draw character
         int characterIndex = getCharacterIndex(text.at(i));
-        sprite.uvBox = frames.frames.at(characterIndex);
+        letterSprite.uvBox = frames.frames.at(characterIndex);
 
-        properties.spriteBatch->drawSprite(sprite);
+        Sprite &sprite = spriteBatch.createSprite();
+        sprite = letterSprite;
 
         // Move forward
-        sprite.box.start.x += spacings[characterIndex];
+        letterSprite.box.start.x += spacings[characterIndex];
     }
 }
 

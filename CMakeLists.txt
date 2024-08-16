@@ -95,6 +95,8 @@ if (CLIENT)
         src/client/world/block/renderers/basic_block_renderer.cpp
         src/client/world/block/renderers/auto_block_renderer.cpp
 
+        src/client/world/item/item_renderer_factory.cpp
+
         src/client/world/entity/entity_renderer.cpp
 
         src/client/world/entity/systems/sprite_system.cpp
@@ -108,10 +110,6 @@ if (CLIENT)
         src/client/scenes/world_scene.cpp
 
         src/client/main.cpp)
-    
-    set_target_properties(client
-        PROPERTIES 
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 if (SERVER)
@@ -219,6 +217,4 @@ elseif(NX)
     add_nro_target(client)
 endif()
 
-add_custom_target(copy-assets ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
-    DEPENDS client)
+add_custom_command(TARGET client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${PROJECT_SOURCE_DIR}/assets" $<TARGET_FILE_DIR:client>/assets)

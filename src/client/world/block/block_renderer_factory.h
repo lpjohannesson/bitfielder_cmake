@@ -12,15 +12,15 @@ namespace bf {
 
     class BlockRendererFactory {
     public:
-        static TextureSection getTexture(std::string basePath, const rapidjson::Value &value, const WorldScene &scene);
+        static TextureSection getTexture(const std::string basePath, const rapidjson::Value &value, const WorldScene &scene);
         
         static TextureSection getBlockTexture(const rapidjson::Value &value, const WorldScene &scene);
         static TextureSection getParticleTexture(const rapidjson::Value &value, const WorldScene &scene);
 
-        static BlockParticleComponent *createParticleRenderer(const std::string name, entt::entity block, WorldScene &scene);
-        static void createBlockRenderer(entt::entity block, WorldScene &scene);
+        static void createParticle(const std::string name, entt::entity block, WorldScene &scene);
+        static void createBlock(entt::entity block, WorldScene &scene);
     
-        static void createRenderers(WorldScene &scene);
-        static void destroyRenderers(WorldScene &scene);
+        static void start(WorldScene &scene);
+        static void end(WorldScene &scene);
     };
 }

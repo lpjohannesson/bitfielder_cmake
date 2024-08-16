@@ -6,7 +6,7 @@
 using namespace bf;
 
 void BlockMapRenderer::renderBlock(const BlockRenderData &renderData) {
-    const World &world = renderData.scene->world;
+    const World &world = renderData.scene.world;
     const entt::registry &blocksRegistry = world.blocks.registry;
 
     entt::entity block = world.blocks.getEntity(renderData.blockIndex);
@@ -20,7 +20,7 @@ void BlockMapRenderer::renderBlock(const BlockRenderData &renderData) {
     blockRenderer->render(renderData);
 }
 
-void BlockMapRenderer::createMesh(WorldScene &scene, BlockChunk &chunk, int sectionStart, int sectionEnd) {
+void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sectionStart, int sectionEnd) {
     int mapIndex = chunk.getMapIndex();
     int blockStartX = mapIndex * BlockChunk::SIZE.x;
 
@@ -29,10 +29,7 @@ void BlockMapRenderer::createMesh(WorldScene &scene, BlockChunk &chunk, int sect
     blockSample.sampleChunks(scene.world.map, mapIndex - 1, mapIndex + 1);
 
     // Create render data
-    BlockRenderData renderData;
-    renderData.scene = &scene;
-    renderData.renderer = this;
-    renderData.blockSample = &blockSample;
+    BlockRenderData renderData{ scene, blockSample };
 
     // Get or create mesh
     BlockMesh *mesh = map.getChunk(mapIndex);
@@ -45,10 +42,7 @@ void BlockMapRenderer::createMesh(WorldScene &scene, BlockChunk &chunk, int sect
         // Draw vertical sections
         int sectionY = sectionIndex * BlockMesh::SECTION_SIZE.y;
 
-        // Create light sprite
-        Sprite lightSprite;
-        lightSprite.box.size = { 1.0f, 1.0f };
-
+        // Create light sprites
         for (int y = 0; y < BlockMesh::SECTION_SIZE.y; y++) {
             for (int x = 0; x < BlockMesh::SECTION_SIZE.x; x++) {
                 // Get positions
@@ -81,10 +75,11 @@ void BlockMapRenderer::createMesh(WorldScene &scene, BlockChunk &chunk, int sect
                 int light = blockData.getSunlight();
 
                 if (light < 15) {
-                    lightSprite.box.start = position;
-                    lightSprite.color = glm::vec4(glm::vec3((float)light / 15.0f), 0.0f);
+                    Sprite &lightSprite = lightSpriteBatch.createSprite();
                     
-                    lightSpriteBatch.drawSprite(lightSprite);
+                    lightSprite.box.start = position;
+                    lightSprite.box.size = glm::vec2(1.0f);
+                    lightSprite.color = glm::vec4(glm::vec3((float)light / 15.0f), 0.0f);
                 }
             }
         }

@@ -6,18 +6,15 @@
 
 namespace bf {
     struct ParticleSpawnProperties {
-        glm::vec2 position;
-        glm::vec2 velocity;
-        glm::vec2 size;
         Box2 frame;
-        glm::vec4 color;
+        glm::vec2 position{}, velocity{}, size{};
+        glm::vec4 color{ 1.0f };
     };
 
     struct ParticleExplosionProperties {
-        glm::vec2 position;
-        glm::vec2 size;
         SpriteFrames &frames;
-        glm::vec4 color;
+        glm::vec2 position{}, size{};
+        glm::vec4 color{ 1.0f };
     };
 
     class ParticleSystem : public ClientEntitySystem {

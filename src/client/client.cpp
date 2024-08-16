@@ -10,7 +10,7 @@ Client *bf::client;
 
 void Client::renderLogo(TextureSection texture, SpriteMesh &mesh) {
     SpriteBatch spriteBatch;
-    Sprite logoSprite;
+    Sprite &logoSprite = spriteBatch.createSprite();
 
     logoSprite.uvBox = texture.uvBox;
     logoSprite.box.size = glm::vec2(texture.box.size) * 2.0f;
@@ -19,7 +19,6 @@ void Client::renderLogo(TextureSection texture, SpriteMesh &mesh) {
     logoSprite.box.start.x = -logoSprite.box.size.x * 0.5f;
     logoSprite.box.start.y = -logoSprite.box.size.y;
 
-    spriteBatch.drawSprite(logoSprite);
     spriteBatch.uploadMesh(mesh);
 }
 

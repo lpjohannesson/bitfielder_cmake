@@ -25,6 +25,20 @@ bool FileLoader::loadText(const std::string path, std::string &result) {
 	return true;
 }
 
+bool FileLoader::loadJson(const std::string path, rapidjson::Document &result) {
+    std::string json;
+    
+    if (!FileLoader::loadText(path.c_str(), json)) {
+        return false;
+    }
+    
+    if (result.Parse(json.c_str()).HasParseError()) {
+        return false;
+    }
+	
+	return true;
+}
+
 void FileLoader::getFilePathObjects(const std::string basePath, std::vector<std::filesystem::path> &result) {
 	for (auto &entry : std::filesystem::recursive_directory_iterator(basePath)) {
 		if (entry.is_directory()) {

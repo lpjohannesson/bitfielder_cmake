@@ -12,13 +12,13 @@ namespace bf {
 
     class BlockRenderData {
     public:
-        WorldScene *scene;
-        BlockMapRenderer *renderer;
-        SpriteBatch *spriteBatch;
-        BlockSample<BlockChunk> *blockSample;
+        WorldScene &scene;
+        BlockSample<BlockChunk> &blockSample;
 
-        int blockIndex;
+        SpriteBatch *spriteBatch;
+        
         glm::ivec2 position;
+        int blockIndex;
         bool onFrontLayer;
     };
 

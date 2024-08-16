@@ -9,7 +9,8 @@ void HUD::updateMesh(WorldScene &scene) {
     glm::vec2 itemBarCorner = client->getMenuInverseTransform() * glm::vec4(1.0f, -1.0f, 0.0f, 1.0f);
     itemBarSprite.box.start = itemBarCorner - itemBarSprite.box.size - 2.0f;
 
-    spriteBatch.drawSprite(itemBarSprite);
+    Sprite &sprite = spriteBatch.createSprite();
+    sprite = itemBarSprite;
 
     // Draw items
     entt::entity player = scene.clientContent.player;

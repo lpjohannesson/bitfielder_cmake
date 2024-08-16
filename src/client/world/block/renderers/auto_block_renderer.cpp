@@ -1,6 +1,5 @@
 #include "auto_block_renderer.h"
 #include "client/scenes/world_scene.h"
-#include "../components/block_sprite_component.h"
 #include "../components/block_frames_component.h"
 #include "../components/block_partial_component.h"
 #include "../block_renderer_factory.h"
@@ -8,10 +7,10 @@
 using namespace bf;
 
 int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ivec2 offset) {
-    const World &world = renderData.scene->world;
+    const World &world = renderData.scene.world;
     const entt::registry &blocksRegistry = world.blocks.registry;
 
-    BlockData *neighborBlockData = BlockChunk::getSampleBlock(*renderData.blockSample, renderData.position + offset);
+    BlockData *neighborBlockData = BlockChunk::getSampleBlock(renderData.blockSample, renderData.position + offset);
 
     if (neighborBlockData == nullptr) {
         return 0;
@@ -50,10 +49,12 @@ int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ive
     return 0;
 }
 
-void AutoBlockRenderer::drawCorner(const BlockRenderData &renderData, int frame, glm::vec2 offset, Sprite &sprite, SpriteFrames &frames) {
-    sprite.uvBox = frames.frames.at(frame);
+void AutoBlockRenderer::drawCorner(const BlockRenderData &renderData, int frame, glm::vec2 offset, SpriteFrames &frames) {
+    Sprite &sprite = renderData.spriteBatch->createSprite();
+    
     sprite.box.start = glm::vec2(renderData.position) + offset;
-    renderData.spriteBatch->drawSprite(sprite);
+    sprite.box.size = glm::vec2(0.5f);
+    sprite.uvBox = frames.frames.at(frame);
 }
 
 void AutoBlockRenderer::render(const BlockRenderData &renderData) {
@@ -76,25 +77,21 @@ void AutoBlockRenderer::render(const BlockRenderData &renderData) {
         bottomRightFrame = frameStartLookup[rightMask | bottomMask | bottomRightMask] + 11;
     
     // Draw corners
-    World &world = renderData.scene->world;
+    World &world = renderData.scene.world;
     entt::entity block = world.blocks.getEntity(renderData.blockIndex);
     entt::registry &blocksRegistry = world.blocks.registry;
-
-    Sprite &sprite = blocksRegistry.get<BlockSpriteComponent>(block).sprite;
+    
     SpriteFrames &frames = blocksRegistry.get<BlockFramesComponent>(block).frames;
 
-    drawCorner(renderData, topLeftFrame, { 0.0f, 0.0f }, sprite, frames);
-    drawCorner(renderData, topRightFrame, { 0.5f, 0.0f }, sprite, frames);
-    drawCorner(renderData, bottomLeftFrame, { 0.0f, 0.5f }, sprite, frames);
-    drawCorner(renderData, bottomRightFrame, { 0.5f, 0.5f }, sprite, frames);
+    drawCorner(renderData, topLeftFrame, { 0.0f, 0.0f }, frames);
+    drawCorner(renderData, topRightFrame, { 0.5f, 0.0f }, frames);
+    drawCorner(renderData, bottomLeftFrame, { 0.0f, 0.5f }, frames);
+    drawCorner(renderData, bottomRightFrame, { 0.5f, 0.5f }, frames);
 }
 
 AutoBlockRenderer::AutoBlockRenderer(const rapidjson::Value &value, entt::entity block, WorldScene &scene) {
     entt::registry &blocksRegistry = scene.world.blocks.registry;
-    Sprite &sprite = blocksRegistry.emplace<BlockSpriteComponent>(block, BlockSpriteComponent {}).sprite;
     SpriteFrames &frames = blocksRegistry.emplace<BlockFramesComponent>(block, BlockFramesComponent {}).frames;
-
-    sprite.box.size = glm::vec2(0.5f);
 
     frames.loadFrames(BlockRendererFactory::getBlockTexture(value, scene).uvBox, { 10, 2 });
 }

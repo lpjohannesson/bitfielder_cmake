@@ -6,8 +6,8 @@
 #include "gfx/core/texture_atlas.h"
 
 namespace bf {
-	struct FontProperties {
-		SpriteBatch *spriteBatch = nullptr;
+	class FontProperties {
+	public:
 		glm::vec2 position{};
 		bool centered = false;
 		glm::vec4 color{ 1.0f };
@@ -29,7 +29,7 @@ namespace bf {
 		float getTextLength(std::string text, int end) const;
 		glm::vec2 getRenderPosition(std::string text, FontProperties &properties) const;
 
-		void drawText(std::string text, FontProperties &properties);
+		void drawText(std::string text, FontProperties &properties, SpriteBatch &spriteBatch);
 
 		void loadFont(TextureSection section);
 	};

@@ -49,5 +49,5 @@ void InputListOption::render(OptionListRenderer &renderer) {
 
     renderer.cursorFontProperties.position.x += cursorLength;
 
-    client->font.drawText("_", renderer.cursorFontProperties);
+    client->font.drawText("_", renderer.cursorFontProperties, client->fontSpriteBatch);
 }

@@ -14,8 +14,10 @@ void SpriteSystem::render(const WorldScene &scene) {
     auto view = world.entities.registry.view<SpriteComponent, PositionComponent>();
 
     for (auto [entity, sprite, position] : view.each()) {
-        // Draw entity sprite
-        Sprite batchSprite;
+        Sprite &batchSprite = spriteBatch.createSprite();
+
+        batchSprite.uvBox = sprite.uvBox;
+        batchSprite.color = sprite.color;
 
         bool flipX = false;
 
@@ -33,11 +35,6 @@ void SpriteSystem::render(const WorldScene &scene) {
         }
 
         batchSprite.box.start += sprite.offset;
-
-        batchSprite.uvBox = sprite.uvBox;
-        batchSprite.color = sprite.color;
-
-        spriteBatch.drawSprite(batchSprite);
     }
 
     // Upload mesh

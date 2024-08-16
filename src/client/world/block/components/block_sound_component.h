@@ -3,6 +3,6 @@
 
 namespace bf {
     struct BlockSoundComponent {
-        SoundSet *soundSet;
+        SoundSet *soundSet = nullptr;
     };
 }

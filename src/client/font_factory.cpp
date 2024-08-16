@@ -1,6 +1,5 @@
 #include "font_factory.h"
 #include <iostream>
-#include <rapidjson/document.h>
 #include "core/file_loader.h"
 
 using namespace bf;
@@ -8,17 +7,9 @@ using namespace bf;
 void FontFactory::loadFont(std::string name, const TextureAtlas &textureAtlas, Font &font) {
     // Load json
     std::string jsonPath = "assets/fonts/" + name + ".json";
-    std::string json;
-    
-    if (!FileLoader::loadText(jsonPath.c_str(), json)) {
-        std::cout << "Font \"" << jsonPath << "\" could not be found." << std::endl;
-        return;
-    }
-
-    // Parse json
     rapidjson::Document document;
     
-    if (document.Parse(json.c_str()).HasParseError()) {
+    if (!FileLoader::loadJson(jsonPath, document)) {
         std::cout << "Font \"" << jsonPath << "\" could not be parsed." << std::endl;
         return;
     }

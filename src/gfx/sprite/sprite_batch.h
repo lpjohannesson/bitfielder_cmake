@@ -10,7 +10,7 @@ namespace bf {
 		std::vector<Sprite> sprites;
 
 	public:
-		void drawSprite(const Sprite &sprite);
+		Sprite &createSprite();
 		void uploadMesh(SpriteMesh &mesh);
 	};
 }

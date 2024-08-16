@@ -1,24 +1,26 @@
 #include "basic_block_renderer.h"
 #include "client/scenes/world_scene.h"
-#include "../components/block_sprite_component.h"
+#include "../components/block_texture_component.h"
 #include "../block_renderer_factory.h"
 
 using namespace bf;
 
 void BasicBlockRenderer::render(const BlockRenderData &renderData) {
-    World &world = renderData.scene->world;
+    World &world = renderData.scene.world;
     entt::entity block = world.blocks.getEntity(renderData.blockIndex);
-    Sprite &sprite = world.blocks.registry.get<BlockSpriteComponent>(block).sprite;
+    BlockTextureComponent &blockTexture = world.blocks.registry.get<BlockTextureComponent>(block);
 
     // Draw sprite at position
+    Sprite &sprite = renderData.spriteBatch->createSprite();
+
     sprite.box.start = renderData.position;
-    renderData.spriteBatch->drawSprite(sprite);
+    sprite.box.size = glm::vec2(1.0f);
+    sprite.uvBox = blockTexture.uvBox;
 }
 
 BasicBlockRenderer::BasicBlockRenderer(const rapidjson::Value &value, entt::entity block, WorldScene &scene) {
     entt::registry &blocksRegistry = scene.world.blocks.registry;
-    Sprite &sprite = blocksRegistry.emplace<BlockSpriteComponent>(block, BlockSpriteComponent {}).sprite;
+    BlockTextureComponent &blockTexture = blocksRegistry.emplace<BlockTextureComponent>(block, BlockTextureComponent {});
 
-    sprite.box.size = glm::vec2(1.0f);
-    sprite.uvBox = BlockRendererFactory::getBlockTexture(value, scene).uvBox;
+    blockTexture.uvBox = BlockRendererFactory::getBlockTexture(value, scene).uvBox;
 }

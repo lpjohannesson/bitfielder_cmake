@@ -9,16 +9,14 @@ using namespace bf;
 
 void ClientContent::createPlayer(entt::entity player, WorldScene &scene) {
 	World &world = scene.world;
-	WorldRenderer &worldRenderer = scene.worldRenderer;
 	entt::registry &entityRegistry = world.entities.registry;
 
 	world.content.entities.createPlayer(player, world);
 	
-	// Load sprite
 	entityRegistry.emplace<SpriteComponent>(
 		player, SpriteComponent { glm::vec2(1.0f), glm::vec2(-4.0f, -2.0f) / 16.0f });
 
-	SpriteAimComponent &spriteAim = entityRegistry.emplace<SpriteAimComponent>(
+	entityRegistry.emplace<SpriteAimComponent>(
 		player, SpriteAimComponent { &playerForwardFrames, &playerUpFrames, &playerDownFrames });
 	
 	entityRegistry.emplace<SpriteAnimatorComponent>(

@@ -19,7 +19,8 @@ namespace bf {
         TextureAtlas textureAtlas;
         Texture texture;
 
-        SpriteMesh logoMesh;
+        SpriteMesh logoMesh, noticeMesh;
+        FontProperties noticeFontProperties;
 
         TextListOption
             localPlayOption,

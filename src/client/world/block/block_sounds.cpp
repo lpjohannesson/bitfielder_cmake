@@ -6,13 +6,13 @@
 using namespace bf;
 
 void BlockSounds::playBlockSound(WorldScene &scene, entt::entity block, float volume) {
-    entt::registry &blockRegistry = scene.world.blocks.registry;
+    entt::registry &blocksRegistry = scene.world.blocks.registry;
 
-    if (!blockRegistry.all_of<BlockSoundComponent>(block)) {
+    if (!blocksRegistry.all_of<BlockSoundComponent>(block)) {
         return;
     }
 
-    BlockSoundComponent &soundComponent = blockRegistry.get<BlockSoundComponent>(block);
+    BlockSoundComponent &soundComponent = blocksRegistry.get<BlockSoundComponent>(block);
 
     if (soundComponent.soundSet == nullptr) {
         return;

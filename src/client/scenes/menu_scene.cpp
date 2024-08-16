@@ -59,6 +59,20 @@ void MenuScene::changeState(MenuState menuState) {
 
 void MenuScene::updateSize(glm::ivec2 size) {
     client->updateSize(size);
+
+    // Draw notice
+    glm::vec2 noticePosition = client->getMenuInverseTransform() * glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
+    float lineHeight = client->font.lineHeight;
+
+    SpriteBatch noticeSpriteBatch;
+
+    noticeFontProperties.position = { noticePosition.x, noticePosition.y - lineHeight * 2 };
+    client->font.drawText("version 0.1.0.", noticeFontProperties, noticeSpriteBatch);
+
+    noticeFontProperties.position = { noticePosition.x, noticePosition.y - lineHeight };
+    client->font.drawText("copyright 2024 crossfrog.", noticeFontProperties, noticeSpriteBatch);
+
+    noticeSpriteBatch.uploadMesh(noticeMesh);
 }
 
 void MenuScene::update() {
@@ -179,8 +193,9 @@ void MenuScene::render() {
 
     client->spriteProgram.setTransform(client->getMenuTransform());
 
-    // Render logo
+    // Render logo and notice
     client->spriteRenderer.renderMesh(logoMesh, client->spriteProgram, texture);
+    client->spriteRenderer.renderMesh(noticeMesh, client->spriteProgram, client->fontTexture);
 
     // Render menu
     switch (menuState) {
@@ -204,6 +219,7 @@ void MenuScene::render() {
 
 MenuScene::MenuScene() :
     logoMesh(client->spriteRenderer),
+    noticeMesh(client->spriteRenderer),
     homeOptionList(optionListRenderer),
     remoteOptionList(optionListRenderer),
     connectingOptionList(optionListRenderer),
@@ -245,4 +261,6 @@ MenuScene::MenuScene() :
     // Draw logo
     TextureSection logoTexture = textureAtlas.getSection("assets/textures/menu/logo.png");
     Client::renderLogo(logoTexture, logoMesh);
+
+    noticeFontProperties.centered = true;
 }

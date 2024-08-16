@@ -14,7 +14,7 @@ namespace bf {
         static constexpr int frameStartLookup[] { 0, 4, 2, 6, 0, 4, 2, 8 };
 
         static int checkNeighbor(const BlockRenderData &renderData, glm::ivec2 offset);
-        void drawCorner(const BlockRenderData &renderData, int frame, glm::vec2 offset, Sprite &sprite, SpriteFrames &frames);
+        void drawCorner(const BlockRenderData &renderData, int frame, glm::vec2 offset, SpriteFrames &frames);
 
     public:
         void render(const BlockRenderData &renderData) override;

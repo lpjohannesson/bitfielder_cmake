@@ -4,8 +4,9 @@
 
 using namespace bf;
 
-void SpriteBatch::drawSprite(const Sprite &sprite) {
-	sprites.push_back(sprite);
+Sprite &SpriteBatch::createSprite() {
+	sprites.emplace_back();
+	return sprites.back();
 }
 
 void SpriteBatch::uploadMesh(SpriteMesh &mesh) {

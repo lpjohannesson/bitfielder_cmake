@@ -17,7 +17,7 @@ entt::entity ParticleSystem::spawnParticle(const ParticleSpawnProperties &proper
     entityRegistry.emplace<ParticleComponent>(particle, ParticleComponent {});
     entityRegistry.emplace<PositionComponent>(particle, PositionComponent { properties.position });
     entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { properties.velocity, properties.velocity });
-    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { properties.size, -properties.size * 0.5f, properties.frame, properties.color });
+    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { properties.size, -properties.size * 0.5f, properties.color, properties.frame });
 
     return particle;
 }
@@ -39,7 +39,7 @@ void ParticleSystem::spawnParticleExplosion(const ParticleExplosionProperties &p
         // Random frame
         Box2 frame = properties.frames.frames.at(rand() % properties.frames.frames.size());
 
-        spawnParticle({ properties.position, velocity * explosionSpeed, properties.size, frame, properties.color }, scene);
+        spawnParticle({ frame, properties.position, velocity * explosionSpeed, properties.size, properties.color }, scene);
     }
 }
 
