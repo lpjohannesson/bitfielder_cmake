@@ -40,6 +40,6 @@ namespace bf {
 
         void render(WorldScene &scene);
 
-        WorldRenderer(WorldScene &scene);
+        WorldRenderer();
 	};
 }

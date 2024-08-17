@@ -1,5 +1,6 @@
 #include "client_content.h"
 #include "client/scenes/world_scene.h"
+#include "client/world/block/block_renderer_factory.h"
 #include "entity/components/sprite_component.h"
 #include "entity/components/sprite_animator_component.h"
 #include "entity/components/sprite_aim_component.h"
@@ -35,6 +36,10 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene) {
 	
 	entityRegistry.emplace<VelocityComponent>(player, VelocityComponent {});
 	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(8.0f, 13.0f) / 16.0f });
+}
+
+void ClientContent::end(WorldScene &scene) {
+	BlockRendererFactory::end(scene);
 }
 
 ClientContent::ClientContent(WorldScene &scene) {
@@ -97,4 +102,5 @@ ClientContent::ClientContent(WorldScene &scene) {
 	groundSound = soundSet.loadSound("assets/sounds/ground.wav");
 
 	blockSounds.loadSounds();
+	BlockRendererFactory::start(scene);
 }

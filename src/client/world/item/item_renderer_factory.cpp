@@ -2,10 +2,14 @@
 #include "client/scenes/world_scene.h"
 #include <iostream>
 #include "core/file_loader.h"
-#include "components/item_renderer_component.h"
+#include "components/item_texture_component.h"
 #include "world/registry/components/registry_name_component.h"
 
 using namespace bf;
+
+TextureSection ItemRendererFactory::getItemTexture(const rapidjson::Value &value, const WorldScene &scene) {
+    return RendererFactory::getTexture("assets/textures/world/items/", value, scene);
+}
 
 void ItemRendererFactory::createItem(entt::entity item, WorldScene &scene) {
     entt::registry &itemsRegistry = scene.world.items.registry;
@@ -22,7 +26,8 @@ void ItemRendererFactory::createItem(entt::entity item, WorldScene &scene) {
 
     rapidjson::Value &value = document["item"];
 
-    
+    itemsRegistry.emplace<ItemTextureComponent>(item,
+        ItemTextureComponent { getItemTexture(value, scene).uvBox });
 }
 
 void ItemRendererFactory::start(WorldScene &scene) {
@@ -32,14 +37,5 @@ void ItemRendererFactory::start(WorldScene &scene) {
 }
 
 void ItemRendererFactory::end(WorldScene &scene) {
-    entt::registry &itemsRegistry = scene.world.items.registry;
-
-    for (entt::entity item : scene.world.items.entities) {
-        if (!itemsRegistry.all_of<ItemRendererComponent>(item)) {
-            continue;
-        }
-
-        delete itemsRegistry.get<ItemRendererComponent>(item).renderer;
-        itemsRegistry.erase<ItemRendererComponent>(item);
-    }
+    
 }

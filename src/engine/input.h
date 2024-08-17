@@ -7,21 +7,53 @@
 #include "input_action.h"
 
 namespace bf {
+        template <typename T>
+        class InputActionMap {
+        private:
+                std::unordered_map<T, InputAction*> actions;
+
+        public:
+                inline void addAction(InputAction &action, T key) {
+                        actions.emplace(key, &action);
+                }
+
+                inline InputAction *getAction(T key) const {
+                        auto foundAction = actions.find(key);
+
+                        if (foundAction == actions.end()) {
+                                return nullptr;
+                        }
+                        
+                        return foundAction->second;
+                }
+
+                inline void keyDown(T key) {
+                        InputAction *action = getAction(key);
+
+                        if (action == nullptr) {
+                                return;
+                        }
+
+                        action->value = 1.0f;
+                }
+
+                inline void keyUp(T key) {
+                        InputAction *action = getAction(key);
+
+                        if (action == nullptr) {
+                                return;
+                        }
+
+                        action->value = 0.0f;
+                }
+        };
+
         class Input {
         private:
-                float joyDeadzone = 0.5f;
-
-                std::unordered_map<SDL_Keycode, InputAction*> keyboardActions;
-                std::unordered_map<SDL_GameControllerButton, InputAction*> joyButtonActions;
-
-                glm::vec2 joyStick{};
-                
                 bool textMode = false;
                 int textCursor = 0;
 
                 SDL_GameControllerButton getControllerJoyButton(Uint8 button);
-                
-                void applyStickInput(float &axis, const float &nextAxis, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton);
 
                 void keyDown(SDL_Keycode key);
                 void keyUp(SDL_Keycode key);
@@ -29,24 +61,26 @@ namespace bf {
                 void joyButtonDown(SDL_GameControllerButton button);
                 void joyButtonUp(SDL_GameControllerButton button);
 
-                void joyAxisMotion(SDL_GameControllerAxis axisType, Sint32 value);
+                void joyAxisMotion(SDL_GameControllerAxis axis, Sint32 value);
 
         public:
                 std::vector<InputAction*> actions;
                 std::string inputText;
+
+                InputActionMap<SDL_Keycode> keyboard;
+                InputActionMap<SDL_GameControllerButton> joyButton;
+                InputActionMap<SDL_GameControllerAxis> joyAxis;
+
+                float axisDeadzone = 0.5f;
                 
                 inline int getTextCursor() const { return textCursor; }
 
                 inline bool getTextMode() const { return textMode; }
 
+                void applyStickInput(float value, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton);
+
                 void startTextMode(std::string inputText);
                 void endTextMode();
-
-                InputAction *getKeyboardAction(SDL_Keycode key) const;
-                void addKeyboardAction(InputAction &action, SDL_Keycode key);
-
-                InputAction *getJoyButtonAction(SDL_GameControllerButton button) const;
-                void addJoyButtonAction(InputAction &action, SDL_GameControllerButton button);
 
                 void processEvent(SDL_Event &event);
 

@@ -44,36 +44,12 @@ SDL_GameControllerButton Input::getControllerJoyButton(Uint8 button) {
 #endif
 }
 
-void Input::applyStickInput(float &axis, const float &nextAxis, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton) {
-    if (nextAxis <= -joyDeadzone && axis > -joyDeadzone) {
-        joyButtonDown(negativeButton);
-    }
-    else if (axis <= -joyDeadzone && nextAxis > -joyDeadzone) {
-        joyButtonUp(negativeButton);
-    }
-
-    if (nextAxis >= joyDeadzone && axis < joyDeadzone) {
-        joyButtonDown(positiveButton);
-    }
-    else if (axis >= joyDeadzone && nextAxis < joyDeadzone) {
-        joyButtonUp(positiveButton);
-    }
-
-    axis = nextAxis;
-}
-
 void Input::keyDown(SDL_Keycode key) {
     if (textMode) {
         return;
     }
 
-    InputAction *action = getKeyboardAction(key);
-
-    if (action == nullptr) {
-        return;
-    }
-
-    action->pressed = true;
+    keyboard.keyDown(key);
 }
 
 void Input::keyUp(SDL_Keycode key) {
@@ -81,13 +57,7 @@ void Input::keyUp(SDL_Keycode key) {
         return;
     }
 
-    InputAction *action = getKeyboardAction(key);
-
-    if (action == nullptr) {
-        return;
-    }
-
-    action->pressed = false;
+    keyboard.keyUp(key);
 }
 
 void Input::joyButtonDown(SDL_GameControllerButton button) {
@@ -95,13 +65,7 @@ void Input::joyButtonDown(SDL_GameControllerButton button) {
         return;
     }
 
-    InputAction *action = getJoyButtonAction(button);
-
-    if (action == nullptr) {
-        return;
-    }
-
-    action->pressed = true;
+    joyButton.keyDown(button);
 }
 
 void Input::joyButtonUp(SDL_GameControllerButton button) {
@@ -109,31 +73,62 @@ void Input::joyButtonUp(SDL_GameControllerButton button) {
         return;
     }
 
-    InputAction *action = getJoyButtonAction(button);
-
-    if (action == nullptr) {
-        return;
-    }
-
-    action->pressed = false;
+    joyButton.keyUp(button);
 }
 
-void Input::joyAxisMotion(SDL_GameControllerAxis axisType, Sint32 value) {
+void Input::joyAxisMotion(SDL_GameControllerAxis axis, Sint32 value) {
     if (textMode) {
         return;
     }
 
     // Normalize value
-    float nextAxis = value / 32767.0f;
+    float axisValue = value / 32767.0f;
 
-    switch (axisType) {
-    case SDL_CONTROLLER_AXIS_LEFTX:
-        applyStickInput(joyStick.x, nextAxis, SDL_CONTROLLER_BUTTON_DPAD_LEFT, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-        break;
+    // Apply stick to dpad
+    switch (axis) {
+        case SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX:
+            applyStickInput(axisValue,
+                SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+                SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
 
-    case SDL_CONTROLLER_AXIS_LEFTY:
-        applyStickInput(joyStick.y, nextAxis, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-        break;
+            break;
+
+        case SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY:
+            applyStickInput(axisValue,
+                SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
+                SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+
+            break;
+        
+        default:
+            InputAction *action = joyAxis.getAction(axis);
+
+            if (action == nullptr) {
+                break;
+            }
+
+            if (glm::abs(axisValue) < axisDeadzone) {
+                action->value = 0.0f;
+            }
+            else {
+                action->value = axisValue;
+            }
+            
+            break;
+    }
+}
+
+void Input::applyStickInput(float value, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton) {
+    InputAction *negativeAction = joyButton.getAction(negativeButton);
+
+    if (negativeAction != nullptr) {
+        negativeAction->value = (float)(value <= -axisDeadzone);
+    }
+
+    InputAction *positiveAction = joyButton.getAction(positiveButton);
+
+    if (positiveAction != nullptr) {
+        positiveAction->value = (float)(value >= axisDeadzone);
     }
 }
 
@@ -146,41 +141,13 @@ void Input::startTextMode(std::string inputText) {
 
     // Release all actions
     for (InputAction *action : actions) {
-        action->pressed = false;
+        action->value = 0.0f;
     }
 }
 
 void Input::endTextMode() {
     textMode = false;
     SDL_StopTextInput();
-}
-
-InputAction *Input::getKeyboardAction(SDL_Keycode key) const {
-    auto foundAction = keyboardActions.find(key);
-
-    if (foundAction == keyboardActions.end()) {
-        return nullptr;
-    }
-    
-    return foundAction->second;
-}
-
-void Input::addKeyboardAction(InputAction &action, SDL_Keycode key) {
-    keyboardActions.emplace(key, &action);
-}
-
-InputAction *Input::getJoyButtonAction(SDL_GameControllerButton button) const {
-    auto foundAction = joyButtonActions.find(button);
-
-    if (foundAction == joyButtonActions.end()) {
-        return nullptr;
-    }
-    
-    return foundAction->second;
-}
-
-void Input::addJoyButtonAction(InputAction &action, SDL_GameControllerButton button) {
-    joyButtonActions.emplace(button, &action);
 }
 
 void Input::processEvent(SDL_Event &event) {
@@ -272,6 +239,6 @@ void Input::update() {
 
     // Update last pressed actions
     for (InputAction *action : actions) {
-        action->lastPressed = action->pressed;
+        action->lastValue = action->value;
     }
 }

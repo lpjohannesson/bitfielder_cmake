@@ -8,9 +8,9 @@ namespace bf {
         bool inputActive = false;
         std::string headerText, inputText;
 
-        virtual void optionPressed(OptionList &optionList) override;
-        virtual void optionHoverUpdate(OptionList &optionList) override;
+        void optionPressed(OptionList &optionList) override;
+        void optionHoverUpdate(OptionList &optionList) override;
 
-        virtual void render(OptionListRenderer &renderer) override;
+        void render(OptionListRenderer &renderer) override;
     };
 }

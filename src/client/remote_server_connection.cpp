@@ -1,4 +1,5 @@
 #include "remote_server_connection.h"
+#include "scenes/world_scene.h"
 #include "scenes/menu_scene.h"
 
 #ifdef NX
@@ -73,7 +74,7 @@ bool RemoteServerConnection::host(WorldScene &scene) {
         case ENET_EVENT_TYPE_RECEIVE: {
             Packet packet;
             packet.write((uint8_t*)event.packet->data, (size_t)event.packet->dataLength);
-            scene.readPacket(packet);
+            ClientPacketManager::readPacket(packet, scene);
 
             enet_packet_destroy(event.packet);
 

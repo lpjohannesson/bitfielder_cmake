@@ -3,31 +3,24 @@
 #include <iostream>
 #include "core/file_loader.h"
 #include "core/color.h"
+#include "renderers/block_renderer.h"
 #include "renderers/basic_block_renderer.h"
 #include "renderers/auto_block_renderer.h"
 #include "components/block_renderer_component.h"
 #include "components/block_partial_component.h"
 #include "components/block_color_component.h"
+#include "components/block_sound_component.h"
+#include "components/block_particle_component.h"
 #include "world/registry/components/registry_name_component.h"
-#include "client/world/block/components/block_sound_component.h"
 
 using namespace bf;
 
-TextureSection BlockRendererFactory::getTexture(const std::string basePath, const rapidjson::Value &value, const WorldScene &scene) {
-    std::string texturePath = value["texture"].GetString();
-    std::string textureFullPath = basePath + texturePath + ".png";
-
-    const TextureAtlas &textureAtlas = scene.worldRenderer.textureAtlas;
-
-    return textureAtlas.getSection(textureFullPath);
-}
-
 TextureSection BlockRendererFactory::getBlockTexture(const rapidjson::Value &value, const WorldScene &scene) {
-    return getTexture("assets/textures/world/blocks/", value, scene);
+    return RendererFactory::getTexture("assets/textures/world/blocks/", value, scene);
 }
 
 TextureSection BlockRendererFactory::getParticleTexture(const rapidjson::Value &value, const WorldScene &scene) {
-    return getTexture("assets/textures/world/blocks/particles/", value, scene);
+    return RendererFactory::getTexture("assets/textures/world/blocks/particles/", value, scene);
 }
 
 void BlockRendererFactory::createParticle(const std::string name, entt::entity block, WorldScene &scene) {
@@ -96,8 +89,7 @@ void BlockRendererFactory::createBlock(entt::entity block, WorldScene &scene) {
     blocksRegistry.emplace<BlockRendererComponent>(block, BlockRendererComponent { blockRenderer });
 
     if (document.HasMember("color")) {
-        BlockColorComponent &blockColor = blocksRegistry.emplace<BlockColorComponent>(block, BlockColorComponent {});
-        blockColor.color = Color::parseHex(document["color"].GetString());
+        blocksRegistry.emplace<BlockColorComponent>(block, BlockColorComponent { Color::parseHex(document["color"].GetString()) });
     }
 
     if (document.HasMember("sound")) {

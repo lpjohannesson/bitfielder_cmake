@@ -1,7 +1,7 @@
 #include "world_renderer.h"
+#include "client/scenes/world_scene.h"
 #include <SDL2/SDL_image.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "client/scenes/world_scene.h"
 #include "client/client.h"
 #include "core/file_loader.h"
 #include "core/color.h"
@@ -135,7 +135,7 @@ void WorldRenderer::render(WorldScene &scene) {
     hud.render(scene);
 }
 
-WorldRenderer::WorldRenderer(WorldScene &scene) :
+WorldRenderer::WorldRenderer() :
     backSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_back.glsl"),
     shadowSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_shadow.glsl"),
     lightSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_light.glsl") {

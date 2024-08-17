@@ -16,6 +16,6 @@ namespace bf {
 		entt::entity getEntity(int index) const;
 		int getEntityByName(const std::string name) const;
 
-		virtual entt::entity createEntity(const std::string name);
+		entt::entity createEntity(const std::string name);
 	};
 }

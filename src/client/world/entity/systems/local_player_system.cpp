@@ -77,7 +77,7 @@ void LocalPlayerSystem::jump(LocalPlayerData &data) {
     }
     else {
         // Stop jump on release
-        bool jumpReleased = data.scene.paused || !client->clientInput.jump.pressed;
+        bool jumpReleased = data.scene.paused || !client->clientInput.jump.pressed();
 
         if (!data.localPlayer.jumpStopped &&
             data.velocity.velocity.y < 0.0f &&
@@ -181,10 +181,10 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
     // Check input
     bool onFrontLayer;
 
-    if (client->clientInput.modifyBlockFront.pressed) {
+    if (client->clientInput.modifyBlockFront.pressed()) {
         onFrontLayer = true;
     }
-    else if (client->clientInput.modifyBlockBack.pressed) {
+    else if (client->clientInput.modifyBlockBack.pressed()) {
         onFrontLayer = false;
     }
     else {
@@ -273,7 +273,7 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
             return false;
         }
 
-        data.scene.placeBlock(*blockPosition, onFrontLayer, *blockData, data.localPlayer.selectedBlockIndex);
+        data.scene.placeBlock(data.localPlayer.selectedBlockIndex, *blockPosition, onFrontLayer, *blockData);
     }
     else {
         data.scene.destroyBlock(*blockPosition, onFrontLayer, *blockData);
@@ -283,7 +283,7 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
     SpriteAnimatorSystem::playAnimation(data.spriteAnimator, data.spriteAnimation, (int)PlayerAnimation::PUNCH);
 
     // Send to server
-    data.scene.writeReplaceBlock(*blockPosition, onFrontLayer, *blockData);
+    ClientPacketManager::writeReplaceBlock(*blockPosition, onFrontLayer, *blockData, data.scene);
     
     // TODO: Disable body
     data.velocity.velocity = { 0.0f, 0.0f };
@@ -313,8 +313,8 @@ void LocalPlayerSystem::update(WorldScene &scene) {
     }
     else {
         movement = {
-        (float)client->clientInput.right.pressed - (float)client->clientInput.left.pressed,
-        (float)client->clientInput.down.pressed - (float)client->clientInput.up.pressed
+        (float)client->clientInput.right.pressed() - (float)client->clientInput.left.pressed(),
+        (float)client->clientInput.down.pressed() - (float)client->clientInput.up.pressed()
     };
     }
 
@@ -392,7 +392,7 @@ void LocalPlayerSystem::update(WorldScene &scene) {
         localPlayer.lastPosition = position.position;
 
         if (data.stateChanged) {
-            scene.writePlayerState();
+            ClientPacketManager::writePlayerState(scene);
         }
     }
 }

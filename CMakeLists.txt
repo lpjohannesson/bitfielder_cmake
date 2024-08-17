@@ -70,6 +70,7 @@ if (CLIENT)
 
         src/client/client.cpp
         src/client/client_input.cpp
+        src/client/client_packet_manager.cpp
         src/client/local_client_connection.cpp
         src/client/local_server_connection.cpp
         src/client/remote_server_connection.cpp
@@ -83,6 +84,7 @@ if (CLIENT)
         
         src/client/world/client_content.cpp
         src/client/world/world_renderer.cpp
+        src/client/world/renderer_factory.cpp
         src/client/world/camera.cpp
         src/client/world/shadow_buffer.cpp
         src/client/world/hud.cpp

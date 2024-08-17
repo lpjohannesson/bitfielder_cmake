@@ -146,7 +146,7 @@ Engine::Engine() : fullscreenAction(input) {
 
 	SDL_JoystickOpen(0);
 
-	input.addKeyboardAction(fullscreenAction, SDLK_F11);
+	input.keyboard.addAction(fullscreenAction, SDLK_F11);
 }
 
 Engine::~Engine() {

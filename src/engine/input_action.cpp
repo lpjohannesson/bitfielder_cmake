@@ -3,12 +3,20 @@
 
 using namespace bf;
 
+bool InputAction::pressed() const {
+    return value != 0.0f;
+}
+
+bool InputAction::lastPressed() const {
+    return lastValue != 0.0f;
+}
+
 bool InputAction::justPressed() const {
-    return pressed && !lastPressed;
+    return pressed() && !lastPressed();
 }
 
 bool InputAction::justReleased() const {
-    return !pressed && lastPressed;
+    return !pressed() && lastPressed();
 }
 
 InputAction::InputAction(Input &input) {

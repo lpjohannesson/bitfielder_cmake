@@ -59,15 +59,15 @@ void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sect
 
                 // Render front
                 renderData.blockIndex = blockData.getFrontIndex();
-                renderData.spriteBatch = &frontSpriteBatch;
                 renderData.onFrontLayer = true;
+                renderData.spriteBatch = &frontSpriteBatch;
 
                 renderBlock(renderData);
 
                 // Render back
                 renderData.blockIndex = blockData.getBackIndex();
-                renderData.spriteBatch = &backSpriteBatch;
                 renderData.onFrontLayer = false;
+                renderData.spriteBatch = &backSpriteBatch;
 
                 renderBlock(renderData);
 

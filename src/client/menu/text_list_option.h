@@ -7,6 +7,6 @@ namespace bf {
     public:
         std::string text;
 
-        virtual void render(OptionListRenderer &renderer) override;
+        void render(OptionListRenderer &renderer) override;
     };
 }

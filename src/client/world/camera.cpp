@@ -24,11 +24,12 @@ void Camera::setZoom(float zoom) {
 
 void Camera::update(WorldScene &scene) {
     CameraPlayerInfo playerInfo = getPlayerInfo(scene);
+    float deltaTime = gameTime.getDeltaTime();
 
     // Camera Y
     if (playerInfo.isModifyingBlock) {
         targetY = playerInfo.position.y;
-        Direction::targetAxis(targetPosition.y, targetY, slowPanSpeedY * gameTime.getDeltaTime());
+        Direction::targetAxis(targetPosition.y, targetY, slowPanSpeedY * deltaTime);
     }
     else {
         if (position.y < playerInfo.position.y) {
@@ -41,7 +42,7 @@ void Camera::update(WorldScene &scene) {
                 targetY = playerInfo.position.y;
             }
 
-            Direction::targetAxis(targetPosition.y, targetY, panSpeedY * gameTime.getDeltaTime());
+            Direction::targetAxis(targetPosition.y, targetY, panSpeedY * deltaTime);
         }
     }
 
@@ -54,13 +55,28 @@ void Camera::update(WorldScene &scene) {
     targetOffset.x = glm::clamp(targetOffset.x + (dragX - targetPosition.x) * dragSpeedX, -maxOffsetX, maxOffsetX);
     targetPosition.x = dragX;
 
-    // Offset Y by aim
-    Direction::targetAxis(targetOffset.y, playerInfo.aim * aimHeight, slowPanSpeedY * gameTime.getDeltaTime());
+    // Offset Y by aim with timer
+    float verticalTarget = 0.0f;
+    
+    if (playerInfo.aim == 0.0f) {
+        verticalTimer = verticalTime;
+    }
+    else {
+        verticalTimer = glm::max(0.0f, verticalTimer - deltaTime);
+
+        if (verticalTimer == 0.0f) {
+            verticalTarget = playerInfo.aim * aimHeight;
+        }
+    }
+
+    Direction::targetAxis(targetOffset.y, verticalTarget, slowPanSpeedY * deltaTime);
+
+    // Offset by stick
+    ClientInput &clientInput = client->clientInput;
+    glm::vec2 stickOffset = glm::vec2(clientInput.cameraX.value, clientInput.cameraY.value) * maxStickOffset;
 
     // Smooth positions to targets
-    float deltaTime = gameTime.getDeltaTime();
-
-    position = glm::lerp(targetPosition, position, glm::pow(smooth, deltaTime));
+    position = glm::lerp(targetPosition + stickOffset, position, glm::pow(smooth, deltaTime));
     offset = glm::lerp(targetOffset, offset, glm::pow(smooth, deltaTime));
 
     glm::vec2 translation = -(position + offset);
@@ -77,11 +93,13 @@ void Camera::start(WorldScene &scene) {
 }
 
 Camera::Camera() {
-    dragDistanceX = 1.0f;
+    smooth = glm::pow(2.0f, -16.0f);
+    dragDistanceX = 0.75f;
     dragSpeedX = 0.3f;
     maxOffsetX = 2.5f;
     panSpeedY = 8.0f;
     slowPanSpeedY = 4.0f;
     aimHeight = 2.0f;
-    smooth = glm::pow(2.0f, -16.0f);
+    verticalTime = 0.5f;
+    maxStickOffset = 3.0f;
 }

@@ -10,7 +10,8 @@ namespace bf {
 			modifyBlockFront, modifyBlockBack, 
 			selectItemLeft, selectItemRight,
 			pause,
-			zoomIn, zoomOut;
+			zoomIn, zoomOut,
+			cameraX, cameraY;
 
         ClientInput();
 	};

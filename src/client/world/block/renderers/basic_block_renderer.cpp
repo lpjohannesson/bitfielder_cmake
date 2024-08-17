@@ -20,7 +20,7 @@ void BasicBlockRenderer::render(const BlockRenderData &renderData) {
 
 BasicBlockRenderer::BasicBlockRenderer(const rapidjson::Value &value, entt::entity block, WorldScene &scene) {
     entt::registry &blocksRegistry = scene.world.blocks.registry;
-    BlockTextureComponent &blockTexture = blocksRegistry.emplace<BlockTextureComponent>(block, BlockTextureComponent {});
-
-    blockTexture.uvBox = BlockRendererFactory::getBlockTexture(value, scene).uvBox;
+    
+    blocksRegistry.emplace<BlockTextureComponent>(block,
+        BlockTextureComponent { BlockRendererFactory::getBlockTexture(value, scene).uvBox });
 }
