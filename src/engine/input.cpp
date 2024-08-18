@@ -44,16 +44,42 @@ SDL_GameControllerButton Input::getControllerJoyButton(Uint8 button) {
 #endif
 }
 
+void Input::applyJoyAxis(float value, InputAction *action) {
+    if (action == nullptr) {
+        return;
+    }
+
+    if (glm::abs(value) < axisDeadzone) {
+        if (joystickMode) {
+            action->value = 0.0f;
+        }
+    }
+    else {
+        action->value = value;
+        joystickMode = true;
+    }
+}
+
+void Input::applyStickInput(float value, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton) {
+    applyJoyAxis(glm::min(0.0f, value), joyButton.getAction(negativeButton));
+    applyJoyAxis(glm::max(0.0f, value), joyButton.getAction(positiveButton));
+}
+
 void Input::keyDown(SDL_Keycode key) {
     if (textMode) {
         return;
     }
 
     keyboard.keyDown(key);
+    joystickMode = false;
 }
 
 void Input::keyUp(SDL_Keycode key) {
     if (textMode) {
+        return;
+    }
+
+    if (joystickMode) {
         return;
     }
 
@@ -66,10 +92,15 @@ void Input::joyButtonDown(SDL_GameControllerButton button) {
     }
 
     joyButton.keyDown(button);
+    joystickMode = true;
 }
 
 void Input::joyButtonUp(SDL_GameControllerButton button) {
     if (textMode) {
+        return;
+    }
+
+    if (!joystickMode) {
         return;
     }
 
@@ -101,34 +132,9 @@ void Input::joyAxisMotion(SDL_GameControllerAxis axis, Sint32 value) {
             break;
         
         default:
-            InputAction *action = joyAxis.getAction(axis);
+            applyJoyAxis(axisValue, joyAxis.getAction(axis));
 
-            if (action == nullptr) {
-                break;
-            }
-
-            if (glm::abs(axisValue) < axisDeadzone) {
-                action->value = 0.0f;
-            }
-            else {
-                action->value = axisValue;
-            }
-            
             break;
-    }
-}
-
-void Input::applyStickInput(float value, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton) {
-    InputAction *negativeAction = joyButton.getAction(negativeButton);
-
-    if (negativeAction != nullptr) {
-        negativeAction->value = (float)(value <= -axisDeadzone);
-    }
-
-    InputAction *positiveAction = joyButton.getAction(positiveButton);
-
-    if (positiveAction != nullptr) {
-        positiveAction->value = (float)(value >= axisDeadzone);
     }
 }
 
@@ -229,7 +235,6 @@ void Input::processEvent(SDL_Event &event) {
             break;
         }
     }
-    
 }
 
 void Input::update() {

@@ -55,6 +55,9 @@ namespace bf {
 
                 SDL_GameControllerButton getControllerJoyButton(Uint8 button);
 
+                void applyJoyAxis(float value, InputAction *action);
+                void applyStickInput(float value, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton);
+
                 void keyDown(SDL_Keycode key);
                 void keyUp(SDL_Keycode key);
 
@@ -71,13 +74,13 @@ namespace bf {
                 InputActionMap<SDL_GameControllerButton> joyButton;
                 InputActionMap<SDL_GameControllerAxis> joyAxis;
 
+                bool joystickMode = false;
+
                 float axisDeadzone = 0.5f;
                 
                 inline int getTextCursor() const { return textCursor; }
 
                 inline bool getTextMode() const { return textMode; }
-
-                void applyStickInput(float value, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton);
 
                 void startTextMode(std::string inputText);
                 void endTextMode();
