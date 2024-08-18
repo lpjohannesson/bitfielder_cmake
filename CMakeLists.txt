@@ -58,6 +58,7 @@ if (CLIENT)
         src/world/block/block_serializer.cpp
         src/world/block/block_content.cpp
 
+        src/world/item/inventory.cpp
         src/world/item/item_content.cpp
 
         src/world/entity/entities.cpp
@@ -132,6 +133,7 @@ if (SERVER)
         src/world/block/block_serializer.cpp
         src/world/block/block_content.cpp
 
+        src/world/item/inventory.cpp
         src/world/item/item_content.cpp
 
         src/world/entity/entities.cpp

@@ -11,7 +11,7 @@ namespace bf {
         SpriteMesh mesh;
 
         SpriteBatch spriteBatch;
-        Sprite itemBarSprite;
+        Sprite itemBarSprite, itemArrowSprite;
 
         void updateMesh(WorldScene &scene);
         void render(WorldScene &scene);

@@ -2,5 +2,6 @@
 
 namespace bf {
     struct BlockAttachableComponent {
+        
     };
 }

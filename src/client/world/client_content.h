@@ -19,7 +19,7 @@ namespace bf {
     class ClientContent {
     public:
         SoundSet soundSet;
-        ALuint placeSound, destroySound, jumpSound, groundSound;
+        ALuint placeSound, destroySound, jumpSound, groundSound, selectItemSound;
 
         BlockSounds blockSounds;
 

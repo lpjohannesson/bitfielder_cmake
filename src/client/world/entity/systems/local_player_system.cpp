@@ -7,6 +7,7 @@
 #include "core/direction.h"
 #include "sprite_aim_system.h"
 #include "sound/sound.h"
+#include "world/item/components/item_block_component.h"
 
 using namespace bf;
 
@@ -103,8 +104,16 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &data) {
     }
 
     // Select item with wrap-around
-    int nextBlockIndex = data.localPlayer.selectedBlockIndex + selectDirection;
-    data.localPlayer.selectedBlockIndex = Direction::posmod(nextBlockIndex, (int)data.scene.world.blocks.entities.size());
+    Inventory &inventory = data.inventory.inventory;
+
+    int nextBlockIndex = inventory.selectedIndex + selectDirection;
+
+    inventory.selectedIndex =
+        Direction::posmod(nextBlockIndex, (int)inventory.items.size());
+
+    data.scene.worldRenderer.hud.updateMesh(data.scene);
+
+    engine->sound.playSound(data.scene.clientContent.selectItemSound, false, 0.75f, client->getRandomPitch());
 }
 
 void LocalPlayerSystem::applyAim(LocalPlayerData &data) {
@@ -273,7 +282,22 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
             return false;
         }
 
-        data.scene.placeBlock(data.localPlayer.selectedBlockIndex, *blockPosition, onFrontLayer, *blockData);
+        // Get block from inventory
+        Inventory &inventory = data.inventory.inventory;
+        entt::entity selectedItem;
+        
+        if (!inventory.getSelectedItem(data.scene.world, selectedItem)) {
+            return false;
+        }
+
+        entt::registry &itemsRegistry = data.scene.world.items.registry;
+
+        if (!itemsRegistry.all_of<ItemBlockComponent>(selectedItem)) {
+            return false;
+        }
+
+        int blockIndex = itemsRegistry.get<ItemBlockComponent>(selectedItem).blockIndex;
+        data.scene.placeBlock(blockIndex, *blockPosition, onFrontLayer, *blockData);
     }
     else {
         data.scene.destroyBlock(*blockPosition, onFrontLayer, *blockData);
@@ -328,7 +352,8 @@ void LocalPlayerSystem::update(WorldScene &scene) {
         SpriteAnimationComponent,
         SpriteAnimatorComponent,
         AimComponent,
-        SpriteAimComponent>();
+        SpriteAimComponent,
+        InventoryComponent>();
 
     for (auto [
             entity,
@@ -341,7 +366,8 @@ void LocalPlayerSystem::update(WorldScene &scene) {
             spriteAnimation,
             spriteAnimator,
             aim,
-            spriteAim] : view.each()) {
+            spriteAim,
+            inventory] : view.each()) {
         
         LocalPlayerData data = {
             scene,
@@ -355,7 +381,8 @@ void LocalPlayerSystem::update(WorldScene &scene) {
             spriteAnimation,
             spriteAnimator,
             aim,
-            spriteAim };
+            spriteAim,
+            inventory };
 
         applyAim(data);
         animate(data);

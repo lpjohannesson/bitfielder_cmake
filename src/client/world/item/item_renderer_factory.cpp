@@ -16,7 +16,7 @@ void ItemRendererFactory::createItem(entt::entity item, WorldScene &scene) {
     std::string name = itemsRegistry.get<RegistryNameComponent>(item).name;
 
     // Load json
-    std::string jsonPath = "assets/renderers/blocks/" + name + ".json";
+    std::string jsonPath = "assets/renderers/items/" + name + ".json";
     rapidjson::Document document;
     
     if (!FileLoader::loadJson(jsonPath, document)) {
@@ -37,5 +37,5 @@ void ItemRendererFactory::start(WorldScene &scene) {
 }
 
 void ItemRendererFactory::end(WorldScene &scene) {
-    
+
 }

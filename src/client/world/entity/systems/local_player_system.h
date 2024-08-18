@@ -11,6 +11,7 @@
 #include "world/entity/components/body_component.h"
 #include "world/entity/components/sprite_flip_component.h"
 #include "world/entity/components/aim_component.h"
+#include "world/entity/components/inventory_component.h"
 
 namespace bf {
     struct LocalPlayerData {
@@ -27,6 +28,7 @@ namespace bf {
         SpriteAnimatorComponent &spriteAnimator;
         AimComponent &aim;
         SpriteAimComponent &spriteAim;
+        InventoryComponent &inventory;
 
         bool stateChanged;
     };

@@ -8,7 +8,17 @@ namespace bf {
     public:
         entt::entity
             dirt,
-            stone;
+            stone,
+            woodLog,
+            woodPlanks,
+            stick,
+            leaves,
+            bush,
+            mushroom,
+            wheat,
+            iron;
+
+        void createBlockItem(entt::entity item, entt::entity block, World &world);
 
         ItemContent(World &world);
     };

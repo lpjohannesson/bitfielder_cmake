@@ -11,7 +11,10 @@ int TextureAtlas::roundToTwoPower(int n) {
 }
 
 TextureSection TextureAtlas::getSection(const std::string path) const {
-	// TODO: Invalid textures
+	if (!std::filesystem::exists(path)) {
+		return {};
+	}
+
 	std::string canonicalPath = std::filesystem::canonical(path).string();
 
 	return sections.at(canonicalPath);

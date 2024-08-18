@@ -1,10 +1,12 @@
 #include "client_content.h"
 #include "client/scenes/world_scene.h"
 #include "client/world/block/block_renderer_factory.h"
+#include "client/world/item/item_renderer_factory.h"
 #include "entity/components/sprite_component.h"
 #include "entity/components/sprite_animator_component.h"
 #include "entity/components/sprite_aim_component.h"
 #include "entity/components/local_player_component.h"
+#include "world/entity/components/inventory_component.h"
 
 using namespace bf;
 
@@ -40,6 +42,7 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene) {
 
 void ClientContent::end(WorldScene &scene) {
 	BlockRendererFactory::end(scene);
+	ItemRendererFactory::end(scene);
 }
 
 ClientContent::ClientContent(WorldScene &scene) {
@@ -100,7 +103,32 @@ ClientContent::ClientContent(WorldScene &scene) {
 	destroySound = soundSet.loadSound("assets/sounds/destroy.wav");
 	jumpSound = soundSet.loadSound("assets/sounds/jump.wav");
 	groundSound = soundSet.loadSound("assets/sounds/ground.wav");
+	selectItemSound = soundSet.loadSound("assets/sounds/select_item.wav");
 
 	blockSounds.loadSounds();
+
 	BlockRendererFactory::start(scene);
+	ItemRendererFactory::start(scene);
+
+	// Set up inventory
+	ItemContent &items = world.content.items;
+
+	std::vector<entt::entity> itemsList = {
+		items.dirt,
+		items.stone,
+		items.woodLog,
+		items.woodPlanks,
+		items.stick,
+		items.leaves,
+		items.bush,
+		items.mushroom,
+		items.wheat,
+		items.iron
+	};
+
+	Inventory &inventory = world.entities.registry.get<InventoryComponent>(player).inventory;
+
+	for (int i = 0; i < (int)itemsList.size(); i++) {
+		inventory.setItem(i, itemsList[i], world);
+	}
 }
