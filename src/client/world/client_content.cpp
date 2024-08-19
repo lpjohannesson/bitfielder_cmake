@@ -99,11 +99,13 @@ ClientContent::ClientContent(WorldScene &scene) {
 		0.3f);
 	
 	// Load sounds
-	placeSound = soundSet.loadSound("assets/sounds/place.wav");
-	destroySound = soundSet.loadSound("assets/sounds/destroy.wav");
-	jumpSound = soundSet.loadSound("assets/sounds/jump.wav");
-	groundSound = soundSet.loadSound("assets/sounds/ground.wav");
-	selectItemSound = soundSet.loadSound("assets/sounds/select_item.wav");
+	placeSound = soundSet.createSound("assets/sounds/place.wav");
+	destroySound = soundSet.createSound("assets/sounds/destroy.wav");
+	jumpSound = soundSet.createSound("assets/sounds/jump.wav");
+	groundSound = soundSet.createSound("assets/sounds/ground.wav");
+	selectItemSound = soundSet.createSound("assets/sounds/select_item.wav");
+
+	jumpSound.volume = 0.75f;
 
 	blockSounds.loadSounds();
 

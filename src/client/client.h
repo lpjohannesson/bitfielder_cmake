@@ -5,6 +5,7 @@
 #include "gfx/sprite/sprite_batch.h"
 #include "gfx/text/font.h"
 #include "gfx/core/texture.h"
+#include "sound/sound.h"
 #include "client_input.h"
 
 namespace bf {
@@ -36,6 +37,7 @@ namespace bf {
 		glm::mat4 getMenuInverseTransform() const { return menuInverseTransform; }
 
 		float getRandomPitch();
+		void playRandomPitchSound(Sound &sound);
 
 		void updateSize(glm::ivec2 size);
 

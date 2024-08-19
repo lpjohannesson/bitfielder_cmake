@@ -7,7 +7,7 @@
 using namespace bf;
 
 void WorldFile::saveWorld(World &world, const std::string folderPath) {
-    std::string blocksFolderPath = folderPath + "/blocks";
+    std::string blocksFolderPath = folderPath + "/chunks";
 
     std::filesystem::create_directories(folderPath);
     std::filesystem::create_directories(blocksFolderPath);
@@ -32,7 +32,7 @@ bool WorldFile::loadWorld(World &world, const std::string folderPath) {
     }
 
     // Load blocks
-    std::string blocksFolderPath = folderPath + "/blocks";
+    std::string blocksFolderPath = folderPath + "/chunks";
     
     std::vector<std::filesystem::path> blockFilePaths;
     FileLoader::getFilePathObjects(blocksFolderPath, blockFilePaths);

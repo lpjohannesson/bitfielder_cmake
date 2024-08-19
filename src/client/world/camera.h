@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include "sound/sound.h"
 
 namespace bf {
     class WorldScene;

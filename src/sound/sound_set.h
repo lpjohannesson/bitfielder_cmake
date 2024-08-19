@@ -1,14 +1,13 @@
 #pragma once
 #include <vector>
-#include <AL/al.h>
-#include <AL/alc.h>
+#include "sound.h"
 
 namespace bf {
     class SoundSet {
     public:
-        std::vector<ALuint> sounds;
+        std::vector<Sound> sounds;
 
-        ALuint loadSound(const char *path);
+        Sound &createSound(const char *path);
         void reset();
 
         ~SoundSet();

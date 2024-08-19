@@ -3,30 +3,31 @@
 
 using namespace bf;
 
-void Sound::playSound(ALuint sound, bool loops, float volume, float pitch) {
+void SoundPlayer::playSound(const Sound &sound) {
     ALuint channel = channels[nextChannel];
     nextChannel = (nextChannel + 1) % CHANNEL_COUNT;
 
     alSourceStop(channel);
 
-    alSourcei(channel, AL_BUFFER, sound);
+    alSourcei(channel, AL_BUFFER, sound.sound);
+    
+    alSource3f(channel, AL_POSITION, 0.0f, 0.0f, 0.0f );
+    alSource3f(channel, AL_VELOCITY, 0.0f, 0.0f, 0.0f );
 
-    alSourcef(channel, AL_PITCH, pitch);
-    alSourcef(channel, AL_GAIN, volume);
-    alSource3f(channel, AL_POSITION, 0.0f, 0.0f, 0.0f);
-    alSource3f(channel, AL_VELOCITY, 0.0f, 0.0f, 0.0f);
-    alSourcei(channel, AL_LOOPING, loops);
+    alSourcef(channel, AL_PITCH, sound.pitch);
+    alSourcef(channel, AL_GAIN, sound.volume);
+    alSourcei(channel, AL_LOOPING, sound.loops);
 
     alSourcePlay(channel);
 }
 
-void Sound::reset() {
+void SoundPlayer::reset() {
     for (int i = 0; i < CHANNEL_COUNT; i++) {
         alSourcei(channels[i], AL_BUFFER, 0);
     }
 }
 
-Sound::Sound() {
+SoundPlayer::SoundPlayer() {
     device = alcOpenDevice(NULL);
     context = alcCreateContext(device, NULL);
     alcMakeContextCurrent(context);
@@ -36,7 +37,7 @@ Sound::Sound() {
     }
 }
 
-Sound::~Sound() {
+SoundPlayer::~SoundPlayer() {
     for (int i = 0; i < CHANNEL_COUNT; i++) {
         alDeleteSources(1, &channels[i]);
     }

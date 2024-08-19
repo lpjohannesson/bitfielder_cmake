@@ -26,6 +26,11 @@ float Client::getRandomPitch() {
     return 1.0f - maxRandomPitch + randomFloat(randomEngine) * maxRandomPitch * 2;
 }
 
+void Client::playRandomPitchSound(Sound &sound) {
+    sound.pitch = getRandomPitch();
+    engine->sound.playSound(sound);
+}
+
 void Client::updateSize(glm::ivec2 size) {
     menuTransform = glm::scale(engine->getWindowTransform(), glm::vec3(3.0f));
     menuInverseTransform = glm::inverse(menuTransform);

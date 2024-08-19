@@ -12,15 +12,19 @@ void BlockSounds::playBlockSound(WorldScene &scene, entt::entity block, float vo
         return;
     }
 
-    BlockSoundComponent &soundComponent = blocksRegistry.get<BlockSoundComponent>(block);
+    BlockSoundComponent &blockSound = blocksRegistry.get<BlockSoundComponent>(block);
 
-    if (soundComponent.soundSet == nullptr) {
+    if (blockSound.soundSet == nullptr) {
         return;
     }
 
     // Play random sound
-    int randomIndex = client->randomInt(client->randomEngine) % (int)soundComponent.soundSet->sounds.size();
-    engine->sound.playSound(soundComponent.soundSet->sounds[randomIndex], false, volume, client->getRandomPitch());
+    int randomIndex = client->randomInt(client->randomEngine) % (int)blockSound.soundSet->sounds.size();
+    
+    Sound &sound = blockSound.soundSet->sounds[randomIndex];
+    sound.volume = volume;
+
+    client->playRandomPitchSound(sound);
 }
 
 SoundSet *BlockSounds::getSoundSet(std::string name) {
@@ -42,7 +46,8 @@ void BlockSounds::loadSounds() {
 
     for (const std::string &directoryName : directoryNames) {
         // Attach folder name to sound set
-        SoundSet &soundSet = soundSets.emplace(std::piecewise_construct, std::make_tuple(directoryName), std::make_tuple()).first->second;
+        SoundSet &soundSet = soundSets.emplace(
+            std::piecewise_construct, std::make_tuple(directoryName), std::make_tuple()).first->second;
 
         // Load all sounds in folder
         std::string folderPath = basePath + directoryName;
@@ -51,7 +56,7 @@ void BlockSounds::loadSounds() {
         FileLoader::getFilePaths(folderPath.c_str(), filePaths);
 
         for (const std::string &filePath : filePaths) {
-            soundSet.loadSound(filePath.c_str());
+            soundSet.createSound(filePath.c_str());
         }
     }
 }

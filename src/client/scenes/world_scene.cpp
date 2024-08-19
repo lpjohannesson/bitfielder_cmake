@@ -58,7 +58,8 @@ void WorldScene::placeBlock(int blockIndex, glm::ivec2 position, bool onFrontLay
 
 	updateBlock(position);
 
-	engine->sound.playSound(clientContent.placeSound, false, 1.0f, client->getRandomPitch());
+	client->playRandomPitchSound(clientContent.placeSound);
+
 	BlockSounds::playBlockSound(*this, block);
 }
 
@@ -83,7 +84,7 @@ void WorldScene::destroyBlock(glm::ivec2 position, bool onFrontLayer, BlockData 
 
 	updateBlock(position);
 
-	engine->sound.playSound(clientContent.destroySound, false, 1.0f, client->getRandomPitch());
+	client->playRandomPitchSound(clientContent.destroySound);
 	BlockSounds::playBlockSound(*this, block);
 }
 

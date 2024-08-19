@@ -12,12 +12,12 @@
 #include "world/entity/components/sprite_flip_component.h"
 #include "world/entity/components/aim_component.h"
 #include "world/entity/components/inventory_component.h"
+#include "sound/sound.h"
 
 namespace bf {
     struct LocalPlayerData {
         WorldScene &scene;
 
-        glm::vec2 movement;
         LocalPlayerComponent &localPlayer;
         PositionComponent &position;
         VelocityComponent &velocity;
@@ -30,6 +30,7 @@ namespace bf {
         SpriteAimComponent &spriteAim;
         InventoryComponent &inventory;
 
+        glm::vec2 movement;
         bool stateChanged;
     };
 

@@ -33,7 +33,7 @@ namespace bf {
 		bool quitting = false;
 
 		Renderer renderer;
-		Sound sound;
+		SoundPlayer sound;
 		
 		Input input;
 		InputAction fullscreenAction;

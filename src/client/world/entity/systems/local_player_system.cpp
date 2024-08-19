@@ -26,7 +26,7 @@ void LocalPlayerSystem::move(LocalPlayerData &data) {
     bool onSurface = data.body.isOnFloor || data.body.isOnCeiling;
 
     if (onSurface && !data.localPlayer.lastOnSurface) {
-        engine->sound.playSound(data.scene.clientContent.groundSound, false);
+        client->playRandomPitchSound(data.scene.clientContent.groundSound);
 
         if (!data.body.blockCollisions.empty()) {
             for (BlockCollision &blockCollision : data.body.blockCollisions) {
@@ -73,7 +73,7 @@ void LocalPlayerSystem::jump(LocalPlayerData &data) {
             data.localPlayer.floorTime = 0.0f;
             data.localPlayer.jumpTime = 0.0f;
 
-            engine->sound.playSound(data.scene.clientContent.jumpSound, false, 0.75f, client->getRandomPitch());
+            client->playRandomPitchSound(data.scene.clientContent.jumpSound);
         }
     }
     else {
@@ -113,7 +113,7 @@ void LocalPlayerSystem::selectItems(LocalPlayerData &data) {
 
     data.scene.worldRenderer.hud.updateMesh(data.scene);
 
-    engine->sound.playSound(data.scene.clientContent.selectItemSound, false, 0.75f, client->getRandomPitch());
+    client->playRandomPitchSound(data.scene.clientContent.selectItemSound);
 }
 
 void LocalPlayerSystem::applyAim(LocalPlayerData &data) {
@@ -371,7 +371,6 @@ void LocalPlayerSystem::update(WorldScene &scene) {
         
         LocalPlayerData data = {
             scene,
-            movement,
             localPlayer,
             position,
             velocity,
@@ -382,7 +381,9 @@ void LocalPlayerSystem::update(WorldScene &scene) {
             spriteAnimator,
             aim,
             spriteAim,
-            inventory };
+            inventory,
+            movement
+        };
 
         applyAim(data);
         animate(data);

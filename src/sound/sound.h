@@ -2,9 +2,18 @@
 #include <vector>
 #include <AL/al.h>
 #include <AL/alc.h>
+#include <glm/glm.hpp>
 
 namespace bf {
     class Sound {
+    public:
+        ALuint sound;
+        bool loops = false;
+        float volume = 1.0f;
+        float pitch = 1.0f;
+    };
+
+    class SoundPlayer {
     private:
         static constexpr int CHANNEL_COUNT = 8;
 
@@ -15,10 +24,10 @@ namespace bf {
         int nextChannel = 0;
 
     public:
-        void playSound(ALuint sound, bool loops, float volume = 1.0f, float pitch = 1.0f);
+        void playSound(const Sound &sound);
         void reset();
 
-        Sound();
-        ~Sound();
+        SoundPlayer();
+        ~SoundPlayer();
     };
 }

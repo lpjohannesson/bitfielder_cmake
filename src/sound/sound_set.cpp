@@ -4,9 +4,11 @@
 
 using namespace bf;
 
-ALuint SoundSet::loadSound(const char *path) {
-    ALuint sound;
-    alGenBuffers(1, &sound);
+Sound &SoundSet::createSound(const char *path) {
+    sounds.emplace_back();
+    Sound &sound = sounds.back();
+
+    alGenBuffers(1, &sound.sound);
 
     SDL_AudioSpec wavSpec;
     Uint8 *wavBuffer;
@@ -17,18 +19,16 @@ ALuint SoundSet::loadSound(const char *path) {
         return sound;
     }
 
-    alBufferData(sound, AL_FORMAT_STEREO16, wavBuffer, wavLength, wavSpec.freq);
+    alBufferData(sound.sound, AL_FORMAT_STEREO16, wavBuffer, wavLength, wavSpec.freq);
 
     SDL_FreeWAV(wavBuffer);
-
-    sounds.push_back(sound);
 
     return sound;
 }
 
 void SoundSet::reset() {
-    for (ALuint sound : sounds) {
-        alDeleteBuffers(1, &sound);
+    for (Sound &sound : sounds) {
+        alDeleteBuffers(1, &sound.sound);
     }
 
     sounds.clear();
