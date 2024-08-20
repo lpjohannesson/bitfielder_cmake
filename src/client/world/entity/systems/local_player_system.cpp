@@ -7,6 +7,7 @@
 #include "core/direction.h"
 #include "sprite_aim_system.h"
 #include "sound/sound.h"
+#include "world/block/components/block_collision_component.h"
 #include "world/item/components/item_block_component.h"
 
 using namespace bf;
@@ -20,7 +21,7 @@ void LocalPlayerSystem::move(LocalPlayerData &data) {
     }
 
     // Fall
-    data.velocity.velocity.y += gravity * deltaTime;
+    Direction::targetAxis(data.velocity.velocity.y, maxGravity, gravity * deltaTime);
 
     // Hit ground
     bool onSurface = data.body.isOnFloor || data.body.isOnCeiling;
@@ -258,14 +259,16 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
         }
     }
     else {
-        // Check block exists
         if (centerBlockData == nullptr) {
             return false;
         }
 
         // Check for block in front
         if (forwardBlockData != nullptr) {
-            if (forwardBlockData->getFrontIndex() != 0) {
+            EntityRegistry &blocks = data.scene.world.blocks;
+            entt::entity forwardBlock = blocks.getEntity(forwardBlockData->getFrontIndex());
+
+            if (blocks.registry.all_of<BlockCollisionComponent>(forwardBlock)) {
                 return false;
             }
         }
@@ -429,6 +432,7 @@ LocalPlayerSystem::LocalPlayerSystem() {
     speed = 5.0f;
     acceleration = 24.0f;
     gravity = 20.0f;
+    maxGravity = 20.0f;
     jumpImpulse = 10.0f;
     jumpStop = 0.55f;
     maxFloorTime = 0.1f;

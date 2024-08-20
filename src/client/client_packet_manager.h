@@ -13,7 +13,8 @@ namespace bf {
 
 		static bool readEntityPacket(entt::entity &entity, Packet &packet, WorldScene &scene);
 
-		static void readBlockChunk(Packet &packet, WorldScene &scene);
+		static void readTeleportPlayer(Packet &packet, WorldScene &scene);
+		static void readChunkData(Packet &packet, WorldScene &scene);
 		static void readReplaceBlock(Packet &packet, WorldScene &scene);
 		static void readDespawnEntity(Packet &packet, WorldScene &scene);
 		static void readEntityPosition(Packet &packet, WorldScene &scene);

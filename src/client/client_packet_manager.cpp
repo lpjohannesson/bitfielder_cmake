@@ -51,7 +51,17 @@ bool ClientPacketManager::readEntityPacket(entt::entity &entity, Packet &packet,
 	return true;
 }
 
-void ClientPacketManager::readBlockChunk(Packet &packet, WorldScene &scene) {
+void ClientPacketManager::readTeleportPlayer(Packet &packet, WorldScene &scene) {
+	glm::vec2 position;
+	packet >> position;
+
+	entt::registry &entityRegistry = scene.world.entities.registry;
+	entityRegistry.get<PositionComponent>(scene.clientContent.player).position = position;
+
+	scene.camera.reset(scene);
+}
+
+void ClientPacketManager::readChunkData(Packet &packet, WorldScene &scene) {
     BlockMap<BlockChunk> &map = scene.world.map;
     BlockMapRenderer &mapRenderer = scene.worldRenderer.map;
 
@@ -181,8 +191,12 @@ void ClientPacketManager::readPacket(Packet &packet, WorldScene &scene) {
 		packet >> packetID;
 
 		switch ((ServerPacket)packetID) {
-		case ServerPacket::BLOCK_CHUNK:
-			readBlockChunk(packet, scene);
+		case ServerPacket::TELEPORT_PLAYER:
+			readTeleportPlayer(packet, scene);
+			break;
+
+		case ServerPacket::CHUNK_DATA:
+			readChunkData(packet, scene);
 			break;
 
 		case ServerPacket::REPLACE_BLOCK:

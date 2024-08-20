@@ -44,7 +44,7 @@ namespace bf {
         bool tryModifyBlock(LocalPlayerData &data);
 
     public:
-        float speed, acceleration, gravity, jumpImpulse, jumpStop, maxFloorTime, maxJumpTime, maxBlockTime, maxBlockTweenTime;
+        float speed, acceleration, gravity, maxGravity, jumpImpulse, jumpStop, maxFloorTime, maxJumpTime, maxBlockTime, maxBlockTweenTime;
 
         void update(WorldScene &scene) override;
 

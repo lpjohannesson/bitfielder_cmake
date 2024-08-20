@@ -19,7 +19,8 @@ void BlockSounds::playBlockSound(WorldScene &scene, entt::entity block, float vo
     }
 
     // Play random sound
-    int randomIndex = client->randomInt(client->randomEngine) % (int)blockSound.soundSet->sounds.size();
+    Random &random = client->random;
+    int randomIndex = random.randomInt(random.randomEngine) % (int)blockSound.soundSet->sounds.size();
     
     Sound &sound = blockSound.soundSet->sounds[randomIndex];
     sound.volume = volume;

@@ -33,7 +33,7 @@ namespace bf {
 
         void update(WorldScene &scene);
 
-        void start(WorldScene &scene);
+        void reset(WorldScene &scene);
 
         Camera();
     };

@@ -166,7 +166,7 @@ void WorldScene::render() {
 void WorldScene::start() {
 	gameTime.reset();
 
-	camera.start(*this);
+	camera.reset(*this);
 	camera.setZoom(3.0f);
 
 	// Create pause screen

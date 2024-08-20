@@ -22,6 +22,7 @@ if (CLIENT)
         src/core/packet.cpp
         src/core/game_time.cpp
         src/core/file_loader.cpp
+        src/core/random.cpp
 
         src/engine/engine.cpp
         src/engine/input.cpp
@@ -120,6 +121,7 @@ if (SERVER)
         src/core/packet.cpp
         src/core/game_time.cpp
         src/core/file_loader.cpp
+        src/core/random.cpp
 
         src/world/world.cpp
         src/world/world_file.cpp

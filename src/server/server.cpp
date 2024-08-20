@@ -8,6 +8,8 @@
 #include "world/entity/components/sprite_animation_component.h"
 #include "world/entity/components/sprite_flip_component.h"
 #include "world/entity/components/aim_component.h"
+#include "world/block/components/block_collision_component.h"
+#include "world/block/block_sample.h"
 
 using namespace bf;
 
@@ -33,9 +35,36 @@ void Server::addClient(ClientConnection *client) {
         writeRemotePlayer(packet, otherClient->player);
     }
 
-    for (int i = 0; i < 10; i++) {
-        writeBlockChunk(packet, *world.map.getChunk(i));
+    for (auto &chunkPair : world.map.chunks) {
+        writeChunkData(packet, chunkPair.second);
     }
+
+    // Find random spawn above solid block
+    glm::ivec2 spawnPosition = { 50 + random.randomInt(random.randomEngine) % 50, -1 };
+
+    BlockSample<BlockChunk> spawnSample;
+    spawnSample.sampleBlocks(world.map, spawnPosition.x, spawnPosition.x);
+
+    entt::registry &blocksRegistry = world.blocks.registry;
+
+    while (true) {
+        glm::ivec2 belowSpawnPosition = { spawnPosition.x, spawnPosition.y + 1 };
+        BlockData *belowBlockData = BlockChunk::getSampleBlock(spawnSample, belowSpawnPosition);
+
+        if (belowBlockData == nullptr) {
+            break;
+        }
+
+        entt::entity belowBlock = world.blocks.getEntity(belowBlockData->getFrontIndex());
+
+        if (blocksRegistry.all_of<BlockCollisionComponent>(belowBlock)) {
+            break;
+        }
+
+        spawnPosition = belowSpawnPosition;
+    }
+
+    writeTeleportPlayer(packet, client, spawnPosition);
 
     clients.push_back(client);
     client->writePacket(packet);
@@ -51,7 +80,9 @@ void Server::removeClient(ClientConnection *client) {
     clients.erase(std::remove(clients.begin(), clients.end(), client));
 
     // Destroy entity, keep ID
-    int playerID = entityRegistry->get<IDComponent>(client->player).id;
+    entt::registry &entityRegistry = world.entities.registry;
+
+    int playerID = entityRegistry.get<IDComponent>(client->player).id;
     world.entities.despawnEntity(playerID);
 
     // Send disconnection to others
@@ -68,8 +99,14 @@ void Server::writePlayerState(Packet &packet, entt::entity player) {
     writeEntitySpriteAim(packet, player);
 }
 
-void Server::writeBlockChunk(Packet &packet, BlockChunk &chunk) {
-    packet << (int)ServerPacket::BLOCK_CHUNK << chunk.getMapIndex();
+void Server::writeTeleportPlayer(Packet &packet, ClientConnection *client, glm::vec2 position) {
+    packet << (int)ServerPacket::TELEPORT_PLAYER << position;
+
+    world.entities.registry.get<PositionComponent>(client->player).position = position;
+}
+
+void Server::writeChunkData(Packet &packet, BlockChunk &chunk) {
+    packet << (int)ServerPacket::CHUNK_DATA << chunk.getMapIndex();
 
     BlockSerializer::writeChunk(chunk, world, packet);
 }
@@ -83,36 +120,45 @@ void Server::writeDespawnEntity(Packet &packet, int entityID) {
 }
 
 void Server::writeEntityPosition(Packet &packet, entt::entity entity) {
-    int entityID = entityRegistry->get<IDComponent>(entity).id;
-    glm::vec2 position = entityRegistry->get<PositionComponent>(entity).position;
+    entt::registry &entityRegistry = world.entities.registry;
+    
+    int entityID = entityRegistry.get<IDComponent>(entity).id;
+    glm::vec2 position = entityRegistry.get<PositionComponent>(entity).position;
 
     packet << (int)ServerPacket::ENTITY_POSITION << entityID << position;
 }
 
 void Server::writeEntitySpriteAnimation(Packet &packet, entt::entity entity) {
-    int entityID = entityRegistry->get<IDComponent>(entity).id;
-    SpriteAnimationComponent &animation = entityRegistry->get<SpriteAnimationComponent>(entity);
+    entt::registry &entityRegistry = world.entities.registry;
+
+    int entityID = entityRegistry.get<IDComponent>(entity).id;
+    SpriteAnimationComponent &animation = entityRegistry.get<SpriteAnimationComponent>(entity);
 
     packet << (int)ServerPacket::ENTITY_SPRITE_ANIMATION << entityID << animation.animationIndex;
 }
 
 void Server::writeEntitySpriteFlip(Packet &packet, entt::entity entity) {
-    int entityID = entityRegistry->get<IDComponent>(entity).id;
-    SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(entity);
+    entt::registry &entityRegistry = world.entities.registry;
+
+    int entityID = entityRegistry.get<IDComponent>(entity).id;
+    SpriteFlipComponent &spriteFlip = entityRegistry.get<SpriteFlipComponent>(entity);
 
     packet << (int)ServerPacket::ENTITY_SPRITE_FLIP << entityID << spriteFlip.flipX;
 }
 
 void Server::writeEntitySpriteAim(Packet &packet, entt::entity entity) {
-    int entityID = entityRegistry->get<IDComponent>(entity).id;
-    AimComponent &aim = entityRegistry->get<AimComponent>(entity);
+    entt::registry &entityRegistry = world.entities.registry;
+    
+    int entityID = entityRegistry.get<IDComponent>(entity).id;
+    AimComponent &aim = entityRegistry.get<AimComponent>(entity);
 
     packet << (int)ServerPacket::ENTITY_SPRITE_AIM << entityID << aim.aim;
 }
 
 void Server::writeRemotePlayer(Packet &packet, entt::entity player) {
     // TODO: Spawn entity on client after state recieved
-    int entityID = entityRegistry->get<IDComponent>(player).id;
+    entt::registry &entityRegistry = world.entities.registry;
+    int entityID = entityRegistry.get<IDComponent>(player).id;
 
     packet << (int)ServerPacket::REMOTE_PLAYER << entityID;
     
@@ -121,10 +167,12 @@ void Server::writeRemotePlayer(Packet &packet, entt::entity player) {
 
 void Server::readPlayerState(ClientConnection *client, Packet &packet) {
     // TODO: Rubber-banding
-    PositionComponent &position = entityRegistry->get<PositionComponent>(client->player);
-    SpriteAnimationComponent &spriteAnimation = entityRegistry->get<SpriteAnimationComponent>(client->player);
-    SpriteFlipComponent &spriteFlip = entityRegistry->get<SpriteFlipComponent>(client->player);
-    AimComponent &aim = entityRegistry->get<AimComponent>(client->player);
+    entt::registry &entityRegistry = world.entities.registry;
+    
+    PositionComponent &position = entityRegistry.get<PositionComponent>(client->player);
+    SpriteAnimationComponent &spriteAnimation = entityRegistry.get<SpriteAnimationComponent>(client->player);
+    SpriteFlipComponent &spriteFlip = entityRegistry.get<SpriteFlipComponent>(client->player);
+    AimComponent &aim = entityRegistry.get<AimComponent>(client->player);
 
     packet >> position.position >> spriteAnimation.animationIndex >> spriteFlip.flipX >> aim.aim;
 
@@ -182,8 +230,6 @@ void Server::readPacket(ClientConnection *client, Packet &packet) {
 }
 
 Server::Server() {
-    entityRegistry = &world.entities.registry;
-
     if (!WorldFile::loadWorld(world, "world")) {
         // Generate world
         for (int i = 0; i < 10; i++) {

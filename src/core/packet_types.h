@@ -7,7 +7,8 @@ namespace bf {
         };
 
         enum class ServerPacket {
-                BLOCK_CHUNK,
+                TELEPORT_PLAYER,
+                CHUNK_DATA,
                 REPLACE_BLOCK,
                 DESPAWN_ENTITY,
                 ENTITY_POSITION,

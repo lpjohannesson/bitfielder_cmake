@@ -84,12 +84,10 @@ void Camera::update(WorldScene &scene) {
     transform = zoomTransform * glm::translate(glm::mat4(1.0f), glm::vec3(translation, 0.0f));
 }
 
-void Camera::start(WorldScene &scene) {
+void Camera::reset(WorldScene &scene) {
     position = getPlayerInfo(scene).position;
     targetPosition = position;
     targetY = position.y;
-
-    update(scene);
 }
 
 Camera::Camera() {

@@ -23,14 +23,16 @@ entt::entity ParticleSystem::spawnParticle(const ParticleSpawnProperties &proper
 }
 
 void ParticleSystem::spawnParticleExplosion(const ParticleExplosionProperties &properties, WorldScene &scene) {
+    Random &random = client->random;
+    
     // Random count
     int explosionCountRange = explosionCountMax - explosionCountMin + 1;
-    int explosionCount = explosionCountMin + client->randomInt(client->randomEngine) % explosionCountRange;
+    int explosionCount = explosionCountMin + random.randomInt(random.randomEngine) % explosionCountRange;
 
     for (int i = 0; i < explosionCount; i++) {
         // Random speed
         float explosionSpeedRange = explosionSpeedMax - explosionSpeedMin;
-        float explosionSpeed = explosionSpeedMin + client->randomFloat(client->randomEngine) * explosionSpeedRange;
+        float explosionSpeed = explosionSpeedMin + random.randomFloat(random.randomEngine) * explosionSpeedRange;
 
         // Random angle
         float angle = glm::radians((float)(rand() % 360));

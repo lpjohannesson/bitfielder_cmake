@@ -11,16 +11,35 @@ bool World::isBlockAttachable(int index) {
 }
 
 bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
-    // Check back
     BlockData *blockData = BlockChunk::getWorldBlock(map, position);
 
-    if (blockData != nullptr) {
-        if (isBlockAttachable(blockData->getBackIndex())) {
-            return true;
-        }
+    if (blockData == nullptr) {
+        return false;
+    }
+    
+    int frontIndex = blockData->getFrontIndex();
+    int backIndex = blockData->getBackIndex();
+    
+    // Check for existing block
+    int existingBlockIndex;
+
+    if (onFrontLayer) {
+        existingBlockIndex = frontIndex;
+    }
+    else {
+        existingBlockIndex = backIndex;
     }
 
-    // Check neighbours
+    if (existingBlockIndex != 0) {
+        return false;
+    }
+
+    // Attach to back block
+    if (onFrontLayer && isBlockAttachable(backIndex)) {
+        return true;
+    }
+
+    // Attach to neighbours
     static constexpr glm::ivec2 neighborOffsets[] = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
 
     for (glm::ivec2 offset : neighborOffsets) {
@@ -36,10 +55,8 @@ bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
             return true;
         }
 
-        if (!onFrontLayer) {
-            if (isBlockAttachable(neighborBlockData->getBackIndex())) {
-                return true;
-            }
+        if (!onFrontLayer && isBlockAttachable(neighborBlockData->getBackIndex())) {
+            return true;
         }
     }
 

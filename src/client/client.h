@@ -1,5 +1,4 @@
 #pragma once
-#include <random>
 #include "engine/engine.h"
 #include "gfx/sprite/sprite_renderer.h"
 #include "gfx/sprite/sprite_batch.h"
@@ -7,6 +6,7 @@
 #include "gfx/core/texture.h"
 #include "sound/sound.h"
 #include "client_input.h"
+#include "core/random.h"
 
 namespace bf {
 	class Client {
@@ -14,10 +14,8 @@ namespace bf {
 		glm::mat4 menuTransform, menuInverseTransform;
 
 	public:
-		std::default_random_engine randomEngine;
-        std::uniform_int_distribution<int> randomInt;
-        std::uniform_real_distribution<float> randomFloat;
-
+		Random random;
+		
 		ClientInput clientInput;
 
         SpriteRenderer spriteRenderer;
