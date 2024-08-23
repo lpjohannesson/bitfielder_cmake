@@ -23,11 +23,11 @@ glm::ivec2 BlockChunk::worldToChunk(glm::ivec2 position, int chunkIndex) {
 	return { position.x - chunkIndex * SIZE.x, position.y };  
 }
 
-BlockData *BlockChunk::getWorldBlock(BlockMap<BlockChunk> &map, glm::ivec2 position) {
+BlockData *BlockChunk::getWorldBlock(glm::ivec2 position, BlockMap<BlockChunk> &map) {
 	GET_BLOCK(map);
 }
 
-BlockData *BlockChunk::getSampleBlock(BlockSample<BlockChunk> &sample, glm::ivec2 position) {
+BlockData *BlockChunk::getSampleBlock(glm::ivec2 position, BlockSample<BlockChunk> &sample) {
 	GET_BLOCK(sample);
 }
 
@@ -52,7 +52,8 @@ BlockChunk::BlockChunk(int mapIndex) : BlockMapElement(mapIndex) {
 			
 			blockData.setFrontIndex(0);
 			blockData.setBackIndex(0);
-			blockData.setSunlight(0);
+
+			blockData.getLightData() = 0;
 		}
 	}
 }

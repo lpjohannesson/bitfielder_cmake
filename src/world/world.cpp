@@ -11,7 +11,7 @@ bool World::isBlockAttachable(int index) {
 }
 
 bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
-    BlockData *blockData = BlockChunk::getWorldBlock(map, position);
+    BlockData *blockData = BlockChunk::getWorldBlock(position, map);
 
     if (blockData == nullptr) {
         return false;
@@ -43,9 +43,9 @@ bool World::isBlockPlaceable(glm::ivec2 position, bool onFrontLayer) {
     static constexpr glm::ivec2 neighborOffsets[] = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
 
     for (glm::ivec2 offset : neighborOffsets) {
-        glm::vec2 neighborPosition = position + offset;
+        glm::ivec2 neighborPosition = position + offset;
 
-        BlockData *neighborBlockData = BlockChunk::getWorldBlock(map, neighborPosition);
+        BlockData *neighborBlockData = BlockChunk::getWorldBlock(neighborPosition, map);
 
         if (neighborBlockData == nullptr) {
             continue;

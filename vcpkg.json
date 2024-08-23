@@ -5,8 +5,8 @@
     "entt",
     "enet",
     "rapidjson",
-
     "zlib",
+    
     "libpng",
     "sdl2-image",
     "glad",

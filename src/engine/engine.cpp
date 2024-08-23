@@ -1,6 +1,7 @@
 #include "engine.h"
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include "gfx/core/renderer.h"
 #include "core/game_time.h"
 
 using namespace bf;
@@ -30,7 +31,7 @@ void Engine::updateSize() {
 	glm::vec2 halfSize = glm::floor(glm::vec2(windowSize) * 0.5f);
 	windowTransform = glm::ortho(-halfSize.x, halfSize.x, halfSize.y, -halfSize.y);
 
-	renderer.updateSize(windowSize);
+	Renderer::updateSize(windowSize);
 	
 	if (currentScene != nullptr) {
 		currentScene->updateSize(windowSize);
@@ -106,7 +107,6 @@ bool Engine::update() {
 Engine::Engine() : fullscreenAction(input) {
 	engine = this;
 
-	// Use OpenGL
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -120,19 +120,16 @@ Engine::Engine() : fullscreenAction(input) {
 	windowSize = { 640, 480 };
 #endif
 
-	// Create window
 	window = SDL_CreateWindow(
 		"bitfielder",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		windowSize.x, windowSize.y,
-		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
 	glContext = SDL_GL_CreateContext(window);
-
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-	// Enable vsync
 	SDL_GL_SetSwapInterval(1);
 
 	updateSize();

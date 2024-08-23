@@ -1,23 +1,28 @@
 #include "block_map_renderer.h"
 #include "client/scenes/world_scene.h"
+#include <glm/gtx/easing.hpp>
+#include "block_render_data.h"
 #include "client/client.h"
-#include "components/block_renderer_component.h"
+#include "renderers/basic_block_renderer.h"
+#include "renderers/auto_block_renderer.h"
 
 using namespace bf;
 
-void BlockMapRenderer::renderBlock(const BlockRenderData &renderData) {
-    const World &world = renderData.scene.world;
+void BlockMapRenderer::renderBlock(const BlockRenderData &data) {
+    const World &world = data.scene.world;
     const entt::registry &blocksRegistry = world.blocks.registry;
 
-    entt::entity block = world.blocks.getEntity(renderData.blockIndex);
+    entt::entity block = world.blocks.getEntity(data.blockIndex);
 
-    // Get renderer or skip
-    if (!blocksRegistry.all_of<BlockRendererComponent>(block)) {
+    if (blocksRegistry.all_of<BlockBasicRendererComponent>(block)) {
+        BasicBlockRenderer::render(data);
         return;
     }
 
-    BlockRenderer *blockRenderer = blocksRegistry.get<BlockRendererComponent>(block).renderer;
-    blockRenderer->render(renderData);
+    if (blocksRegistry.all_of<BlockAutoRendererComponent>(block)) {
+        AutoBlockRenderer::render(data);
+        return;
+    }
 }
 
 void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sectionStart, int sectionEnd) {
@@ -72,15 +77,35 @@ void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sect
                 renderBlock(renderData);
 
                 // Render light
-                int light = blockData.getSunlight();
+                int sunlight = blockData.getSunlight();
 
-                if (light < 15) {
-                    Sprite &lightSprite = lightSpriteBatch.createSprite();
-                    
-                    lightSprite.box.start = position;
-                    lightSprite.box.size = glm::vec2(1.0f);
-                    lightSprite.color = glm::vec4(glm::vec3((float)light / 15.0f), 0.0f);
+                if (sunlight == 15) {
+                    continue;
                 }
+
+                glm::ivec3 sourceLight = {
+                    blockData.getRedLight(),
+                    blockData.getGreenLight(),
+                    blockData.getBlueLight()
+                };
+
+                if (sourceLight == glm::ivec3(15)) {
+                    continue;
+                }
+
+                glm::ivec3 lightValue = glm::max(sourceLight, glm::ivec3(sunlight));
+                glm::vec3 lightColor = glm::vec3(lightValue) / 15.0f;
+
+                Sprite &lightSprite = lightSpriteBatch.createSprite();
+                
+                lightSprite.box.start = position;
+                lightSprite.box.size = glm::vec2(1.0f);
+
+                lightSprite.color = glm::vec4(
+                    glm::quadraticEaseOut(lightColor.r),
+                    glm::quadraticEaseOut(lightColor.g),
+                    glm::quadraticEaseOut(lightColor.b),
+                    1.0f);
             }
         }
 

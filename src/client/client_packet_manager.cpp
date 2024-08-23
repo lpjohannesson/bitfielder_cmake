@@ -96,7 +96,7 @@ void ClientPacketManager::readReplaceBlock(Packet &packet, WorldScene &scene) {
 
 	packet >> position >> onFrontLayer >> blockIndex;
 
-	BlockData *blockData = BlockChunk::getWorldBlock(scene.world.map, position);
+	BlockData *blockData = BlockChunk::getWorldBlock(position, scene.world.map);
 
 	if (blockData == nullptr) {
 		return;

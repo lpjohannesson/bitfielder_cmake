@@ -108,7 +108,7 @@ using namespace bf;
         for (int blockSide = blockSideStart; blockSide <= blockSideEnd; blockSide++) {\
             glm::ivec2 blockPosition = { BLOCK_X, BLOCK_Y };\
             \
-            BlockData *blockData = BlockChunk::getSampleBlock(blockSample, blockPosition);\
+            BlockData *blockData = BlockChunk::getSampleBlock(blockPosition, blockSample);\
             \
             if (blockData == nullptr) {\
                 continue;\

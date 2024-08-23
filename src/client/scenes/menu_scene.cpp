@@ -2,6 +2,7 @@
 #include "engine/engine.h"
 #include "core/file_loader.h"
 #include "core/game_time.h"
+#include "gfx/core/renderer.h"
 #include "client/local_server_connection.h"
 
 using namespace bf;
@@ -189,7 +190,7 @@ void MenuScene::update() {
 }
 
 void MenuScene::render() {
-    engine->renderer.clearScreen({ 0.0f, 0.5f, 0.5f, 1.0f });
+    Renderer::clearScreen({ 0.0f, 0.5f, 0.5f, 1.0f });
 
     client->spriteProgram.setTransform(client->getMenuTransform());
 

@@ -6,11 +6,11 @@
 
 using namespace bf;
 
-int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ivec2 offset) {
-    const World &world = renderData.scene.world;
+int AutoBlockRenderer::checkNeighbor(const BlockRenderData &data, glm::ivec2 offset) {
+    const World &world = data.scene.world;
     const entt::registry &blocksRegistry = world.blocks.registry;
 
-    BlockData *neighborBlockData = BlockChunk::getSampleBlock(renderData.blockSample, renderData.position + offset);
+    BlockData *neighborBlockData = BlockChunk::getSampleBlock(data.position + offset, data.blockSample);
 
     if (neighborBlockData == nullptr) {
         return 0;
@@ -19,14 +19,14 @@ int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ive
     // Yes if same block on same layer
     int neighborBlockIndex;
 
-    if (renderData.onFrontLayer) {
+    if (data.onFrontLayer) {
         neighborBlockIndex = neighborBlockData->getFrontIndex();
     }
     else {
         neighborBlockIndex = neighborBlockData->getBackIndex();
     }
 
-    if (renderData.blockIndex == neighborBlockIndex) {
+    if (data.blockIndex == neighborBlockIndex) {
         return 1;
     }
 
@@ -38,7 +38,7 @@ int AutoBlockRenderer::checkNeighbor(const BlockRenderData &renderData, glm::ive
     }
 
     // Yes if on back and back is not partial
-    if (!renderData.onFrontLayer) {
+    if (!data.onFrontLayer) {
         entt::entity neighborBackBlock = world.blocks.getEntity(neighborBlockData->getBackIndex());
 
         if (!blocksRegistry.all_of<BlockPartialComponent>(neighborBackBlock)) {
@@ -89,9 +89,11 @@ void AutoBlockRenderer::render(const BlockRenderData &renderData) {
     drawCorner(renderData, bottomRightFrame, { 0.5f, 0.5f }, frames);
 }
 
-AutoBlockRenderer::AutoBlockRenderer(const rapidjson::Value &value, entt::entity block, WorldScene &scene) {
-    entt::registry &blocksRegistry = scene.world.blocks.registry;
-    SpriteFrames &frames = blocksRegistry.emplace<BlockFramesComponent>(block, BlockFramesComponent {}).frames;
+void AutoBlockRenderer::createBlock(const BlockRendererFactoryData &data) {
+    entt::registry &blocksRegistry = data.scene.world.blocks.registry;
+    
+    blocksRegistry.emplace<BlockAutoRendererComponent>(data.block, BlockAutoRendererComponent {});
 
-    frames.loadFrames(BlockRendererFactory::getBlockTexture(value, scene).uvBox, { 10, 2 });
+    SpriteFrames &frames = blocksRegistry.emplace<BlockFramesComponent>(data.block, BlockFramesComponent {}).frames;
+    frames.loadFrames(BlockRendererFactory::getBlockTexture(data.value, data.scene).uvBox, { 10, 2 });
 }

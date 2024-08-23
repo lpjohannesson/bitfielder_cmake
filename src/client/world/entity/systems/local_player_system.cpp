@@ -217,8 +217,10 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
         forwardBlockPosition = { centerBlockPosition.x, centerBlockPosition.y + (int)data.movement.y };
     }
 
-    BlockData *centerBlockData = BlockChunk::getWorldBlock(data.scene.world.map, centerBlockPosition);
-    BlockData *forwardBlockData = BlockChunk::getWorldBlock(data.scene.world.map, forwardBlockPosition);
+    BlockMap<BlockChunk> &map = data.scene.world.map;
+
+    BlockData *centerBlockData = BlockChunk::getWorldBlock(centerBlockPosition, map);
+    BlockData *forwardBlockData = BlockChunk::getWorldBlock(forwardBlockPosition, map);
 
     glm::ivec2 *blockPosition;
     BlockData *blockData;

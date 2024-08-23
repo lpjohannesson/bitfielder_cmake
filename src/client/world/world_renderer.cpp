@@ -2,9 +2,10 @@
 #include "client/scenes/world_scene.h"
 #include <SDL2/SDL_image.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "client/client.h"
 #include "core/file_loader.h"
 #include "core/color.h"
+#include "gfx/core/renderer.h"
+#include "client/client.h"
 
 using namespace bf;
 
@@ -96,7 +97,7 @@ void WorldRenderer::render(WorldScene &scene) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, windowSize.x, windowSize.y);
 
-    engine->renderer.clearScreen(backgroundColor);
+    Renderer::clearScreen(backgroundColor);
 
     for (const BlockMesh *blockMesh : blockMeshes.chunks) {
         if (blockMesh == nullptr) {

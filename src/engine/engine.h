@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
-#include "gfx/core/renderer.h"
 #include "scene.h"
 #include "input.h"
 #include "sound/sound.h"
@@ -31,8 +30,7 @@ namespace bf {
 		inline glm::mat4 getWindowTransform() const { return windowTransform; }
 
 		bool quitting = false;
-
-		Renderer renderer;
+		
 		SoundPlayer sound;
 		
 		Input input;

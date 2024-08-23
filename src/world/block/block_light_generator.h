@@ -28,14 +28,16 @@ namespace bf {
 
         static bool isBlockOpaque(BlockData &blockData, World &world);
 
-        static void queueNeighboringChunk(BlockChunk *chunk, int x, std::queue<BlockLightCell> &cellQueue);
+        static void queueNeighboringChunk(int x, BlockChunk *chunk, std::queue<BlockLightCell> &cellQueue);
+
+        static void spreadSunlight(std::queue<BlockLightCell> &cellQueue, World &world, Box2i &resultBox);
+        static void updateSunlight(glm::ivec2 position, World &world, Box2i &resultBox);
 
     public:
         static constexpr int MAX_LIGHT = 15;
 
         static void updateLight(glm::ivec2 position, World &world, Box2i &resultBox);
 
-        static void spreadLight(std::queue<BlockLightCell> &cellQueue, World &world, Box2i &resultBox);
         static void generateChunk(BlockChunk &chunk, World &world);
     };
 }

@@ -4,7 +4,7 @@
 namespace bf {
 	class Renderer {
 	public:
-		void updateSize(glm::ivec2 size);
-		void clearScreen(glm::vec4 color);
+		static void updateSize(glm::ivec2 size);
+		static void clearScreen(glm::vec4 color);
 	};
 }

@@ -15,6 +15,5 @@ namespace bf {
         static void createBlock(entt::entity block, WorldScene &scene);
     
         static void start(WorldScene &scene);
-        static void end(WorldScene &scene);
     };
 }

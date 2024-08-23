@@ -35,7 +35,3 @@ void ItemRendererFactory::start(WorldScene &scene) {
         createItem(item, scene);
     }
 }
-
-void ItemRendererFactory::end(WorldScene &scene) {
-
-}

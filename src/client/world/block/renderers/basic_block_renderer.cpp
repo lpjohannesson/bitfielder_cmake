@@ -5,22 +5,24 @@
 
 using namespace bf;
 
-void BasicBlockRenderer::render(const BlockRenderData &renderData) {
-    World &world = renderData.scene.world;
-    entt::entity block = world.blocks.getEntity(renderData.blockIndex);
+void BasicBlockRenderer::render(const BlockRenderData &data) {
+    World &world = data.scene.world;
+    entt::entity block = world.blocks.getEntity(data.blockIndex);
     BlockTextureComponent &blockTexture = world.blocks.registry.get<BlockTextureComponent>(block);
 
     // Draw sprite at position
-    Sprite &sprite = renderData.spriteBatch->createSprite();
+    Sprite &sprite = data.spriteBatch->createSprite();
 
-    sprite.box.start = renderData.position;
+    sprite.box.start = data.position;
     sprite.box.size = glm::vec2(1.0f);
     sprite.uvBox = blockTexture.uvBox;
 }
 
-BasicBlockRenderer::BasicBlockRenderer(const rapidjson::Value &value, entt::entity block, WorldScene &scene) {
-    entt::registry &blocksRegistry = scene.world.blocks.registry;
+void BasicBlockRenderer::createBlock(const BlockRendererFactoryData &data) {
+    entt::registry &blocksRegistry = data.scene.world.blocks.registry;
     
-    blocksRegistry.emplace<BlockTextureComponent>(block,
-        BlockTextureComponent { BlockRendererFactory::getBlockTexture(value, scene).uvBox });
+    blocksRegistry.emplace<BlockBasicRendererComponent>(data.block, BlockBasicRendererComponent {});
+
+    blocksRegistry.emplace<BlockTextureComponent>(data.block,
+        BlockTextureComponent { BlockRendererFactory::getBlockTexture(data.value, data.scene).uvBox });
 }

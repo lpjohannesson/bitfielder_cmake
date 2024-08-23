@@ -1,10 +1,11 @@
 #pragma once
-#include "block_renderer.h"
+#include "../block_render_data.h"
 #include "gfx/sprite/sprite.h"
 #include "gfx/sprite/sprite_frames.h"
+#include "../components/block_auto_renderer_component.h"
 
 namespace bf {
-    class AutoBlockRenderer : public BlockRenderer {
+    class AutoBlockRenderer {
     private:
         static constexpr int 
             SHIFT_HORIZONTAL = 0,
@@ -13,12 +14,11 @@ namespace bf {
         
         static constexpr int frameStartLookup[] { 0, 4, 2, 6, 0, 4, 2, 8 };
 
-        static int checkNeighbor(const BlockRenderData &renderData, glm::ivec2 offset);
-        void drawCorner(const BlockRenderData &renderData, int frame, glm::vec2 offset, SpriteFrames &frames);
+        static int checkNeighbor(const BlockRenderData &data, glm::ivec2 offset);
+        static void drawCorner(const BlockRenderData &data, int frame, glm::vec2 offset, SpriteFrames &frames);
 
     public:
-        void render(const BlockRenderData &renderData) override;
-
-        AutoBlockRenderer(const rapidjson::Value &value, entt::entity block, WorldScene &scene);
+        static void render(const BlockRenderData &data);
+        static void createBlock(const BlockRendererFactoryData &data);
     };
 }

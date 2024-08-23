@@ -1,16 +1,16 @@
 #pragma once
+#include "gfx/sprite/sprite_batch.h"
 #include "world/block/block_map.h"
 #include "world/block/block_chunk.h"
 #include "block_mesh.h"
-#include "renderers/block_renderer.h"
-#include "gfx/sprite/sprite_batch.h"
+#include "block_render_data.h"
 
 namespace bf {
     class WorldScene;
 
     class BlockMapRenderer {
     private:
-        void renderBlock(const BlockRenderData &renderData);
+        void renderBlock(const BlockRenderData &data);
 
     public:
         BlockMap<BlockMesh> map;

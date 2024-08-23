@@ -1,11 +1,11 @@
 #pragma once
-#include "block_renderer.h"
+#include "../block_render_data.h"
+#include "../components/block_basic_renderer_component.h"
 
 namespace bf {
-    class BasicBlockRenderer : public BlockRenderer {
+    class BasicBlockRenderer {
     public:
-        void render(const BlockRenderData &renderData) override;
-        
-        BasicBlockRenderer(const rapidjson::Value &value, entt::entity block, WorldScene &scene);
+        static void render(const BlockRenderData &data);
+        static void createBlock(const BlockRendererFactoryData &data);
     };
 }

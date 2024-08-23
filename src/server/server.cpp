@@ -49,7 +49,7 @@ void Server::addClient(ClientConnection *client) {
 
     while (true) {
         glm::ivec2 belowSpawnPosition = { spawnPosition.x, spawnPosition.y + 1 };
-        BlockData *belowBlockData = BlockChunk::getSampleBlock(spawnSample, belowSpawnPosition);
+        BlockData *belowBlockData = BlockChunk::getSampleBlock(belowSpawnPosition, spawnSample);
 
         if (belowBlockData == nullptr) {
             break;
@@ -191,7 +191,7 @@ void Server::readReplaceBlock(ClientConnection *client, Packet &packet) {
 
     packet >> position >> onFrontLayer >> blockIndex;
 
-    BlockData *blockData = BlockChunk::getWorldBlock(world.map, position);
+    BlockData *blockData = BlockChunk::getWorldBlock(position, world.map);
 
     if (blockData == nullptr) {
         return;

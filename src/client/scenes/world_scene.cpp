@@ -183,8 +183,6 @@ void WorldScene::start() {
 }
 
 void WorldScene::end() {
-	clientContent.end(*this);
-	
 	server->end();
 	delete server;
 

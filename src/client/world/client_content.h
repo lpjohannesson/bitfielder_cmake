@@ -38,8 +38,6 @@ namespace bf {
         void createPlayer(entt::entity player, WorldScene &scene);
         void createLocalPlayer(entt::entity player, WorldScene &scene);
 
-        void end(WorldScene &scene);
-
         ClientContent(WorldScene &scene);
     };
 }

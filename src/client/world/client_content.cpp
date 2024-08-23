@@ -40,11 +40,6 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene) {
 	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(8.0f, 13.0f) / 16.0f });
 }
 
-void ClientContent::end(WorldScene &scene) {
-	BlockRendererFactory::end(scene);
-	ItemRendererFactory::end(scene);
-}
-
 ClientContent::ClientContent(WorldScene &scene) {
 	World &world = scene.world;
 	WorldRenderer &worldRenderer = scene.worldRenderer;

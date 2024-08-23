@@ -8,7 +8,6 @@
 
 namespace bf {
     class WorldScene;
-    class BlockMapRenderer;
 
     class BlockRenderData {
     public:
@@ -22,8 +21,10 @@ namespace bf {
         bool onFrontLayer;
     };
 
-    class BlockRenderer {
+    class BlockRendererFactoryData {
     public:
-        inline virtual void render(const BlockRenderData &renderData) {}
+        rapidjson::Value &value;
+        WorldScene &scene;
+        entt::entity block;
     };
 }

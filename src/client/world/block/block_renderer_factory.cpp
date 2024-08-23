@@ -3,15 +3,13 @@
 #include <iostream>
 #include "core/file_loader.h"
 #include "core/color.h"
-#include "renderers/block_renderer.h"
-#include "renderers/basic_block_renderer.h"
-#include "renderers/auto_block_renderer.h"
-#include "components/block_renderer_component.h"
 #include "components/block_partial_component.h"
 #include "components/block_color_component.h"
 #include "components/block_sound_component.h"
 #include "components/block_particle_component.h"
 #include "world/registry/components/registry_name_component.h"
+#include "renderers/basic_block_renderer.h"
+#include "renderers/auto_block_renderer.h"
 
 using namespace bf;
 
@@ -71,22 +69,19 @@ void BlockRendererFactory::createBlock(entt::entity block, WorldScene &scene) {
     if (!value.HasMember("type")) {
         return;
     }
-    
-    BlockRenderer *blockRenderer;
 
+    BlockRendererFactoryData data = { value, scene, block };
     std::string blockType = value["type"].GetString();
 
     if (blockType == "basic") {
-        blockRenderer = new BasicBlockRenderer(value, block, scene);
+        BasicBlockRenderer::createBlock(data);
     }
     else if (blockType == "auto") {
-        blockRenderer = new AutoBlockRenderer(value, block, scene);
+        AutoBlockRenderer::createBlock(data);
     }
     else {
         return;
     }
-
-    blocksRegistry.emplace<BlockRendererComponent>(block, BlockRendererComponent { blockRenderer });
 
     if (document.HasMember("color")) {
         blocksRegistry.emplace<BlockColorComponent>(block, BlockColorComponent { Color::parseHex(document["color"].GetString()) });
@@ -105,18 +100,5 @@ void BlockRendererFactory::createBlock(entt::entity block, WorldScene &scene) {
 void BlockRendererFactory::start(WorldScene &scene) {
     for (entt::entity block : scene.world.blocks.entities) {
         createBlock(block, scene);
-    }
-}
-
-void BlockRendererFactory::end(WorldScene &scene) {
-    entt::registry &blocksRegistry = scene.world.blocks.registry;
-
-    for (entt::entity block : scene.world.blocks.entities) {
-        if (!blocksRegistry.all_of<BlockRendererComponent>(block)) {
-            continue;
-        }
-
-        delete blocksRegistry.get<BlockRendererComponent>(block).renderer;
-        blocksRegistry.erase<BlockRendererComponent>(block);
     }
 }
