@@ -10,6 +10,11 @@ namespace bf {
         int light;
     };
 
+    class BlockLightQueue {
+    public:
+        std::queue<BlockLightCell> sun, red, green, blue;
+    };
+
     class BlockLightGenerator {
     private:
         static constexpr int LIGHT_STEP = 1;
@@ -28,10 +33,10 @@ namespace bf {
 
         static bool isBlockOpaque(BlockData &blockData, World &world);
 
-        static void queueNeighboringChunk(int x, BlockChunk *chunk, std::queue<BlockLightCell> &cellQueue);
+        static void queueNeighboringChunk(int x, BlockChunk *chunk, BlockLightQueue &queue);
 
-        static void spreadSunlight(std::queue<BlockLightCell> &cellQueue, World &world, Box2i &resultBox);
-        static void updateSunlight(glm::ivec2 position, World &world, Box2i &resultBox);
+        static void spreadLight(BlockLightQueue &queue, World &world, Box2i &resultBox);
+        static void updateSunlight(glm::ivec2 position, BlockLightQueue &queue, World &world, Box2i &resultBox);
 
     public:
         static constexpr int MAX_LIGHT = 15;

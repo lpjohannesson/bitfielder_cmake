@@ -4,7 +4,7 @@
 
 using namespace bf;
 
-#define REMOVE_LIGHT(GET_LIGHT, SET_LIGHT)\
+#define REMOVE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE)\
     while (!removalQueue.empty()) {\
         BlockLightCell cell = removalQueue.front();\
         removalQueue.pop();\
@@ -24,7 +24,7 @@ using namespace bf;
         \
         /* Requeue if brighter or spread */\
         if (cell.light <= nextLight) {\
-            cellQueue.push({ cell.position, nextLight });\
+            CELL_QUEUE.push({ cell.position, nextLight });\
         }\
         else {\
             for (glm::ivec2 offset : offsets) {\
@@ -36,10 +36,10 @@ using namespace bf;
         resultBox.expandPoint(cell.position);\
     }
 
-#define SPREAD_LIGHT(GET_LIGHT, SET_LIGHT) {\
-    while (!cellQueue.empty()) {\
-        BlockLightCell cell = cellQueue.front();\
-        cellQueue.pop();\
+#define SPREAD_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE) {\
+    while (!CELL_QUEUE.empty()) {\
+        BlockLightCell cell = CELL_QUEUE.front();\
+        CELL_QUEUE.pop();\
         \
         BlockData *blockData = BlockChunk::getWorldBlock(cell.position, world.map);\
         \
@@ -62,20 +62,18 @@ using namespace bf;
         }\
         \
         for (glm::ivec2 offset : offsets) {\
-            cellQueue.push({ cell.position + offset, nextLight });\
+            CELL_QUEUE.push({ cell.position + offset, nextLight });\
         }\
     }\
 }
 
-#define UPDATE_SOURCE_LIGHT(GET_LIGHT, SET_LIGHT, LIGHT_CHANNEL)\
+#define UPDATE_SOURCE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE, LIGHT_CHANNEL)\
     removalQueue.push({ position, MAX_LIGHT + 1 });\
-    REMOVE_LIGHT(GET_LIGHT, SET_LIGHT);\
+    REMOVE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE);\
     \
     if (hasLight) {\
-        cellQueue.push({ position, LIGHT_CHANNEL });\
-    }\
-    \
-    SPREAD_LIGHT(GET_LIGHT, SET_LIGHT);
+        CELL_QUEUE.push({ position, LIGHT_CHANNEL });\
+    }
 
 bool BlockLightGenerator::isBlockOpaque(BlockData &blockData, World &world) {
     entt::entity block = world.blocks.getEntity(blockData.getFrontIndex());
@@ -83,36 +81,33 @@ bool BlockLightGenerator::isBlockOpaque(BlockData &blockData, World &world) {
     return world.blocks.registry.all_of<BlockOpaqueComponent>(block);
 }
 
-void BlockLightGenerator::queueNeighboringChunk(int x, BlockChunk *chunk, std::queue<BlockLightCell> &cellQueue) {
-    // TODO: Colour channels
-
+void BlockLightGenerator::queueNeighboringChunk(int x, BlockChunk *chunk, BlockLightQueue &queue) {
     if (chunk == nullptr) {
         return;
     }
 
-    int blockStartX = chunk->getMapIndex() * BlockChunk::SIZE.x;
+    int blockX = chunk->getMapIndex() * BlockChunk::SIZE.x + x;
 
     for (int y = 0; y < BlockChunk::SIZE.y; y++) {
         BlockData &blockData = chunk->getBlock({ x, y });
+        glm::ivec2 position = { blockX, y };
 
-        cellQueue.push({ { blockStartX + x, y }, blockData.getSunlight() });
-        blockData.setSunlight(0);
+        queue.sun.push({ position, blockData.getSunlight() });
+        queue.red.push({ position, blockData.getRedLight() });
+        queue.green.push({ position, blockData.getGreenLight() });
+        queue.blue.push({ position, blockData.getBlueLight() });
+
+        blockData.getLightData() = 0;
     }
 }
 
-void BlockLightGenerator::spreadSunlight(std::queue<BlockLightCell> &cellQueue, World &world, Box2i &resultBox) {
-    SPREAD_LIGHT(getSunlight, setSunlight);
-}
-
-void BlockLightGenerator::updateSunlight(glm::ivec2 position, World &world, Box2i &resultBox) {
+void BlockLightGenerator::updateSunlight(glm::ivec2 position, BlockLightQueue &queue, World &world, Box2i &resultBox) {
     BlockData *blockData = BlockChunk::getWorldBlock(position, world.map);
 
     // Skip if not full light
     if (blockData->getSunlight() < MAX_LIGHT) {
         return;
     }
-
-    std::queue<BlockLightCell> cellQueue;
 
     glm::ivec2 belowPosition = position;
 
@@ -138,7 +133,7 @@ void BlockLightGenerator::updateSunlight(glm::ivec2 position, World &world, Box2
             removalQueue.push({ belowPosition, MAX_LIGHT + 1 });
         }
 
-        REMOVE_LIGHT(getSunlight, setSunlight)
+        REMOVE_LIGHT(getSunlight, setSunlight, queue.sun)
     }
     else {
         // Add light below
@@ -156,7 +151,7 @@ void BlockLightGenerator::updateSunlight(glm::ivec2 position, World &world, Box2
                 break;
             }
 
-            cellQueue.push({ belowPosition, MAX_LIGHT });
+            queue.sun.push({ belowPosition, MAX_LIGHT });
             belowBlockData->setSunlight(0);
 
             // Stop on opaque blocks
@@ -165,13 +160,16 @@ void BlockLightGenerator::updateSunlight(glm::ivec2 position, World &world, Box2
             }
         }
     }
+}
 
-    spreadSunlight(cellQueue, world, resultBox);
+void BlockLightGenerator::spreadLight(BlockLightQueue &queue, World &world, Box2i &resultBox) {
+    SPREAD_LIGHT(getSunlight, setSunlight, queue.sun);
+    SPREAD_LIGHT(getRedLight, setRedLight, queue.red);
+    SPREAD_LIGHT(getGreenLight, setGreenLight, queue.green);
+    SPREAD_LIGHT(getBlueLight, setBlueLight, queue.blue);
 }
 
 void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &resultBox) {
-    updateSunlight(position, world, resultBox);
-
     BlockData *blockData = BlockChunk::getWorldBlock(position, world.map);
 
     glm::ivec3 lightColor{};
@@ -191,28 +189,26 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
         }
     }
     
-    std::queue<BlockLightCell> cellQueue, removalQueue;
+    BlockLightQueue queue;
+    std::queue<BlockLightCell> removalQueue;
 
-    UPDATE_SOURCE_LIGHT(getRedLight, setRedLight, lightColor.r);
-    UPDATE_SOURCE_LIGHT(getGreenLight, setGreenLight, lightColor.g);
-    UPDATE_SOURCE_LIGHT(getBlueLight, setBlueLight, lightColor.b);
+    updateSunlight(position, queue, world, resultBox);
+    UPDATE_SOURCE_LIGHT(getRedLight, setRedLight, queue.red, lightColor.r);
+    UPDATE_SOURCE_LIGHT(getGreenLight, setGreenLight, queue.green, lightColor.g);
+    UPDATE_SOURCE_LIGHT(getBlueLight, setBlueLight, queue.blue, lightColor.b);
+
+    spreadLight(queue, world, resultBox);
 }
 
 void BlockLightGenerator::generateChunk(BlockChunk &chunk, World &world) {
     int blockStartX = chunk.getMapIndex() * BlockChunk::SIZE.x;
     
-    std::queue<BlockLightCell> cellQueue;
-
-    // Queue neighbours
-    int mapIndex = chunk.getMapIndex();
-
-    queueNeighboringChunk(BlockChunk::SIZE.x - 1, world.map.getChunk(mapIndex - 1), cellQueue);
-    queueNeighboringChunk(0, world.map.getChunk(mapIndex + 1), cellQueue);
+    BlockLightQueue queue;
 
     // Fill top with full sunlight
     for (int x = 0; x < BlockChunk::SIZE.x; x++) {
         for (int y = 0; y < BlockChunk::SIZE.y; y++) {
-            cellQueue.push({ { blockStartX + x, y }, MAX_LIGHT });
+            queue.sun.push({ { blockStartX + x, y }, MAX_LIGHT });
 
             if (isBlockOpaque(chunk.getBlock({ x, y }), world)) {
                 break;
@@ -220,6 +216,12 @@ void BlockLightGenerator::generateChunk(BlockChunk &chunk, World &world) {
         }
     }
 
-    Box2i box;
-    spreadSunlight(cellQueue, world, box);
+    // Queue neighbours
+    int mapIndex = chunk.getMapIndex();
+
+    queueNeighboringChunk(BlockChunk::SIZE.x - 1, world.map.getChunk(mapIndex - 1), queue);
+    queueNeighboringChunk(0, world.map.getChunk(mapIndex + 1), queue);
+
+    Box2i resultBox;
+    spreadLight(queue, world, resultBox);
 }
