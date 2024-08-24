@@ -4,7 +4,6 @@
 #include "components/sprite_animation_component.h"
 #include "components/sprite_flip_component.h"
 #include "components/aim_component.h"
-#include "components/inventory_component.h"
 
 using namespace bf;
 
@@ -15,7 +14,6 @@ void EntityContent::createPlayer(entt::entity player, World &world) {
     entityRegistry.emplace<SpriteAnimationComponent>(player, SpriteAnimationComponent {});
     entityRegistry.emplace<SpriteFlipComponent>(player, SpriteFlipComponent {});
     entityRegistry.emplace<AimComponent>(player, AimComponent {});
-    entityRegistry.emplace<InventoryComponent>(player, InventoryComponent {});
 }
 
 EntityContent::EntityContent(World &world) {

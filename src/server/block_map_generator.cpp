@@ -72,7 +72,9 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
     for (int y = groundStart; y < groundEnd; y++) {
         for (int x = 0; x < BlockChunk::SIZE.x; x++) {
             BlockData &block = chunk.getBlock({ x, y });
-            BlockData &aboveBlock = chunk.getBlock({ x, y - 1 });
+
+            glm::ivec2 abovePosition = { x, y - 1 };
+            BlockData &aboveBlock = chunk.getBlock(abovePosition);
 
             if (block.getFrontIndex() == dirtIndex && aboveBlock.getFrontIndex() == airIndex) {
                 block.setFrontIndex(grassIndex);
@@ -85,6 +87,11 @@ void BlockMapGenerator::generateChunk(BlockChunk &chunk, World &world) {
                     }
                     else {
                         aboveBlock.setFrontIndex(mushroomIndex);
+
+                        glm::ivec2 lightPosition = { blockX + x, abovePosition.y };
+
+                        Box2i resultBox;
+                        BlockLightGenerator::updateLight(lightPosition, world, resultBox);
                     }
                 }
             }

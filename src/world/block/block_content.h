@@ -21,6 +21,7 @@ namespace bf {
             bush,
             mushroom,
             wheat,
+            torch,
             iron,
             gold,
             wool;

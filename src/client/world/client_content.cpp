@@ -38,6 +38,7 @@ void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene) {
 	
 	entityRegistry.emplace<VelocityComponent>(player, VelocityComponent {});
 	entityRegistry.emplace<BodyComponent>(player, BodyComponent { glm::vec2(8.0f, 13.0f) / 16.0f });
+	entityRegistry.emplace<InventoryComponent>(player, InventoryComponent {});
 }
 
 ClientContent::ClientContent(WorldScene &scene) {
@@ -119,7 +120,7 @@ ClientContent::ClientContent(WorldScene &scene) {
 		items.leaves,
 		items.bush,
 		items.mushroom,
-		items.wheat,
+		items.torch,
 		items.iron
 	};
 

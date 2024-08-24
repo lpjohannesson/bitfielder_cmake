@@ -42,6 +42,9 @@ ItemContent::ItemContent(World &world) {
     wheat = world.items.createEntity("wheat");
     createBlockItem(wheat, blocks.wheat, world);
 
+    torch = world.items.createEntity("torch");
+    createBlockItem(torch, blocks.torch, world);
+
     iron = world.items.createEntity("block_iron");
     createBlockItem(iron, blocks.iron, world);
 }

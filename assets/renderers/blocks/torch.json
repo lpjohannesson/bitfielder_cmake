@@ -1,0 +1,9 @@
+{
+    "block": {
+        "partial": true,
+        "type": "basic",
+        "texture": "torch"
+    },
+    "particle": "wood",
+    "sound": "wood"
+}

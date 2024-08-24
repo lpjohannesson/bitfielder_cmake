@@ -47,9 +47,12 @@ BlockContent::BlockContent(World &world) {
     bush = world.blocks.createEntity("bush");
 
     mushroom = world.blocks.createEntity("mushroom");
-    blocksRegistry.emplace<BlockLightComponent>(mushroom, BlockLightComponent { { 15, 11, 8 } });
+    blocksRegistry.emplace<BlockLightComponent>(mushroom, BlockLightComponent { { 8, 11, 15 } });
 
     wheat = world.blocks.createEntity("wheat");
+
+    torch = world.blocks.createEntity("torch");
+    blocksRegistry.emplace<BlockLightComponent>(torch, BlockLightComponent { { 15, 11, 8 } });
 
     iron = world.blocks.createEntity("block_iron");
     createSolid(world, iron);
