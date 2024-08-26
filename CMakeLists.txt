@@ -208,8 +208,6 @@ elseif(NX)
         APP_AUTHOR "crossfrog"
         APP_VERSION "0.1.0")
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/include)
-
     file(GLOB SWITCH_LIBS_LIST ${SWITCH_LIBS}/*.a)
     list(JOIN SWITCH_LIBS_LIST "\;" SWITCH_LIBS_LIST)
     target_link_libraries(client ${SWITCH_LIBS_LIST})

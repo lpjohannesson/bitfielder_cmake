@@ -3,45 +3,53 @@
 
 using namespace bf;
 
-SDL_GameControllerButton Input::getControllerJoyButton(Uint8 button) {
+InputAction *Input::getControllerAction(Uint8 button) {
 #ifdef NX
-    SDL_GameControllerButton buttons[] {
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-		SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-	};
-
-	return buttons[button];
-
-#else
-    return SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_INVALID;
-
+    switch (button) {
+    case 0:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);
+    case 1:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B);
+    case 2:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X);
+    case 3:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y);
+    case 4:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSTICK);
+    case 5:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSTICK);
+    case 6:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+    case 7:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+    case 8:
+        return joyAxis.getAction(SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+    case 9:
+        return joyAxis.getAction(SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+    case 10:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START);
+    case 11:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK);
+    case 12:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+    case 13:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP);
+    case 14:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+    case 15:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+    case 16:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+    case 17:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP);
+    case 18:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+    case 19:
+        return joyButton.getAction(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+    }
 #endif
+
+    return nullptr;
 }
 
 void Input::applyJoyAxis(float value, InputAction *action) {
@@ -226,13 +234,27 @@ void Input::processEvent(SDL_Event &event) {
             joyAxisMotion((SDL_GameControllerAxis)event.caxis.axis, event.caxis.value);
             break;
 
-        case SDL_JOYBUTTONDOWN:
-            joyButtonDown(getControllerJoyButton(event.jbutton.button));
-            break;
+        case SDL_JOYBUTTONDOWN: {
+            InputAction *action = getControllerAction(event.jbutton.button);
 
-        case SDL_JOYBUTTONUP:
-            joyButtonUp(getControllerJoyButton(event.jbutton.button));
+            if (action == nullptr) {
+                break;
+            }
+
+            action->value = 1.0f;
             break;
+        }
+            
+        case SDL_JOYBUTTONUP: {
+            InputAction *action = getControllerAction(event.jbutton.button);
+
+            if (action == nullptr) {
+                break;
+            }
+
+            action->value = 0.0f;
+            break;
+        }
         }
     }
 }

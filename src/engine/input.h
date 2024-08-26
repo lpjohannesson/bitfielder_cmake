@@ -53,7 +53,7 @@ namespace bf {
                 bool textMode = false;
                 int textCursor = 0;
 
-                SDL_GameControllerButton getControllerJoyButton(Uint8 button);
+                InputAction *getControllerAction(Uint8 button);
 
                 void applyJoyAxis(float value, InputAction *action);
                 void applyStickInput(float value, SDL_GameControllerButton negativeButton, SDL_GameControllerButton positiveButton);

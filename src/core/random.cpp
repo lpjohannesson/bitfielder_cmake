@@ -1,3 +1,4 @@
+#include <climits>
 #include "random.h"
 
 using namespace bf;

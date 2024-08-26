@@ -115,7 +115,7 @@ Engine::Engine() : fullscreenAction(input) {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 
 #ifdef NX
-	windowSize = { 1920, 1080 };
+	windowSize = { 1280, 720 };
 #else
 	windowSize = { 640, 480 };
 #endif

@@ -1,14 +1,10 @@
 {
-    "vcpkg.general.enable": true,
-    "vcpkg.target.hostTriplet": "x64-windows",
-    "vcpkg.target.defaultTriplet": "x64-windows",
-    "vcpkg.target.useStaticLib": false,
     "cmake.debugConfig": {
         "console": "integratedTerminal",
     },
     "vcpkg.target.installDependencies": true,
     "vcpkg.target.preferSystemLibs": false,
-    "vcpkg.target.useManifest": false,
+    "vcpkg.target.useManifest": true,
     "files.associations": {
         "algorithm": "cpp",
         "any": "cpp",
@@ -115,5 +111,10 @@
         "cinttypes": "cpp",
         "regex": "cpp",
         "resumable": "cpp"
-    }
+    },
+    "vcpkg.target.useStaticLib": false,
+    "vcpkg.target.defaultTriplet": "",
+    "cmake.configureArgs": [
+        "-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic"
+    ]
 }
