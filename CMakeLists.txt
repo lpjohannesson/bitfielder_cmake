@@ -6,12 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-if(WIN32)
+if(NX)
+    set(CLIENT 1)
+
+else()
     set(CLIENT 1)
     set(SERVER 1)
-
-elseif(NX)
-    set(CLIENT 1)
     
 endif()
 
@@ -114,6 +114,8 @@ if (CLIENT)
         src/client/scenes/world_scene.cpp
 
         src/client/main.cpp)
+    
+    target_compile_definitions(client PRIVATE GLM_ENABLE_EXPERIMENTAL)
 endif()
 
 if (SERVER)
@@ -149,58 +151,11 @@ if (SERVER)
         src/server/server_host.cpp
 
         src/server/main.cpp)
+    
+    target_compile_definitions(server PRIVATE GLM_ENABLE_EXPERIMENTAL)
 endif()
 
-if(WIN32)
-    target_compile_definitions(client PUBLIC NOMINMAX)
-
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg_installed/x64-windows/share)
-
-    find_package(SDL2 CONFIG REQUIRED)
-    find_package(EnTT CONFIG REQUIRED)
-    find_package(unofficial-enet CONFIG REQUIRED)
-    find_package(RapidJSON CONFIG REQUIRED)
-    find_package(ZLIB REQUIRED)
-
-    if (CLIENT)
-        find_package(PNG REQUIRED)
-        find_package(SDL2_image CONFIG REQUIRED)
-        find_package(glad CONFIG REQUIRED)
-        find_package(OpenAL CONFIG REQUIRED)
-
-        target_compile_definitions(client PRIVATE GLM_ENABLE_EXPERIMENTAL)
-
-        target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
-        target_link_libraries(client PRIVATE EnTT::EnTT)
-        target_link_libraries(client PRIVATE unofficial::enet::enet)
-        target_link_libraries(client PRIVATE rapidjson)
-        target_link_libraries(client PRIVATE ZLIB::ZLIB)
-
-        target_link_libraries(client PRIVATE PNG::PNG)
-        target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
-        target_link_libraries(client PRIVATE glad::glad)
-        target_link_libraries(client PRIVATE OpenAL::OpenAL)
-
-        if(WIN32)
-            target_link_libraries(client PRIVATE ws2_32)
-        endif()
-    endif()
-
-    if (SERVER)
-        target_compile_definitions(server PRIVATE GLM_ENABLE_EXPERIMENTAL)
-
-        target_link_libraries(server PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
-        target_link_libraries(server PRIVATE EnTT::EnTT)
-        target_link_libraries(server PRIVATE unofficial::enet::enet)
-        target_link_libraries(server PRIVATE rapidjson)
-        target_link_libraries(server PRIVATE ZLIB::ZLIB)
-
-        if(WIN32)
-            target_link_libraries(server PRIVATE ws2_32)
-        endif()
-    endif()
-
-elseif(NX)
+if(NX)
     target_compile_definitions(client PUBLIC NX)
 
     set_target_properties(client PROPERTIES
@@ -219,6 +174,49 @@ elseif(NX)
         ${LIBNX_LIBS}/libnx.a)
 
     add_nro_target(client)
+
+else()
+    target_compile_definitions(client PUBLIC NOMINMAX)
+
+    find_package(SDL2 CONFIG REQUIRED)
+    find_package(EnTT CONFIG REQUIRED)
+    find_package(unofficial-enet CONFIG REQUIRED)
+    find_package(RapidJSON CONFIG REQUIRED)
+    find_package(ZLIB REQUIRED)
+
+    if (CLIENT)
+        find_package(PNG REQUIRED)
+        find_package(SDL2_image CONFIG REQUIRED)
+        find_package(glad CONFIG REQUIRED)
+        find_package(OpenAL CONFIG REQUIRED)
+
+        target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+        target_link_libraries(client PRIVATE EnTT::EnTT)
+        target_link_libraries(client PRIVATE unofficial::enet::enet)
+        target_link_libraries(client PRIVATE rapidjson)
+        target_link_libraries(client PRIVATE ZLIB::ZLIB)
+
+        target_link_libraries(client PRIVATE PNG::PNG)
+        target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+        target_link_libraries(client PRIVATE glad::glad)
+        target_link_libraries(client PRIVATE OpenAL::OpenAL)
+
+        if(WIN32)
+            target_link_libraries(client PRIVATE ws2_32)
+        endif()
+    endif()
+
+    if (SERVER)
+        target_link_libraries(server PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
+        target_link_libraries(server PRIVATE EnTT::EnTT)
+        target_link_libraries(server PRIVATE unofficial::enet::enet)
+        target_link_libraries(server PRIVATE rapidjson)
+        target_link_libraries(server PRIVATE ZLIB::ZLIB)
+
+        if(WIN32)
+            target_link_libraries(server PRIVATE ws2_32)
+        endif()
+    endif()
 endif()
 
-add_custom_command(TARGET client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${PROJECT_SOURCE_DIR}/assets" $<TARGET_FILE_DIR:client>/assets)
+add_custom_command(TARGET client POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/assets" $<TARGET_FILE_DIR:client>/assets)

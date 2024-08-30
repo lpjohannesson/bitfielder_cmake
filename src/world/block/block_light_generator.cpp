@@ -4,18 +4,18 @@
 
 using namespace bf;
 
-#define REMOVE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE)\
+#define REMOVE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE, CELL_CHECK)\
     while (!removalQueue.empty()) {\
         BlockLightCell cell = removalQueue.front();\
         removalQueue.pop();\
         \
-        BlockData *nextBlockData = BlockChunk::getWorldBlock(cell.position, world.map);\
+        BlockData *cellBlockData = BlockChunk::getWorldBlock(cell.position, world.map);\
         \
-        if (nextBlockData == nullptr) {\
+        if (cellBlockData == nullptr) {\
             continue;\
         }\
         \
-        int nextLight = nextBlockData->GET_LIGHT();\
+        int nextLight = cellBlockData->GET_LIGHT();\
         \
         /* Skip if already removed */\
         if (nextLight == 0) {\
@@ -32,7 +32,9 @@ using namespace bf;
             }\
         }\
         \
-        nextBlockData->SET_LIGHT(0);\
+        CELL_CHECK\
+        \
+        cellBlockData->SET_LIGHT(0);\
         resultBox.expandPoint(cell.position);\
     }
 
@@ -67,12 +69,27 @@ using namespace bf;
     }\
 }
 
+#define SOURCE_LIGHT_CHECK(CELL_QUEUE, LIGHT_CHANNEL)\
+    /* Check for light source */\
+    entt::entity blocks[] = {\
+        world.blocks.getEntity(cellBlockData->getFrontIndex()),\
+        world.blocks.getEntity(cellBlockData->getBackIndex())\
+    };\
+    \
+    for (entt::entity block : blocks) {\
+        if (!blocksRegistry.all_of<BlockLightComponent>(block)) {\
+            continue;\
+        }\
+        \
+        CELL_QUEUE.push({ cell.position, blocksRegistry.get<BlockLightComponent>(block).color.LIGHT_CHANNEL });\
+    }\
+
 #define UPDATE_SOURCE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE, LIGHT_CHANNEL)\
     removalQueue.push({ position, MAX_LIGHT + 1 });\
-    REMOVE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE);\
+    REMOVE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE, SOURCE_LIGHT_CHECK(CELL_QUEUE, LIGHT_CHANNEL))\
     \
     if (hasLight) {\
-        CELL_QUEUE.push({ position, LIGHT_CHANNEL });\
+        CELL_QUEUE.push({ position, lightColor.LIGHT_CHANNEL });\
     }
 
 bool BlockLightGenerator::isBlockOpaque(BlockData &blockData, World &world) {
@@ -133,7 +150,7 @@ void BlockLightGenerator::updateSunlight(glm::ivec2 position, BlockLightQueue &q
             removalQueue.push({ belowPosition, MAX_LIGHT + 1 });
         }
 
-        REMOVE_LIGHT(getSunlight, setSunlight, queue.sun)
+        REMOVE_LIGHT(getSunlight, setSunlight, queue.sun, ;)
     }
     else {
         // Add light below
@@ -183,19 +200,21 @@ void BlockLightGenerator::updateLight(glm::ivec2 position, World &world, Box2i &
     entt::registry &blocksRegistry = world.blocks.registry;
 
     for (entt::entity block : blocks) {
-        if (blocksRegistry.all_of<BlockLightComponent>(block)) {
-            lightColor = glm::max(lightColor, blocksRegistry.get<BlockLightComponent>(block).color);
-            hasLight = true;
+        if (!blocksRegistry.all_of<BlockLightComponent>(block)) {
+            continue;
         }
+
+        lightColor = glm::max(lightColor, blocksRegistry.get<BlockLightComponent>(block).color);
+        hasLight = true;
     }
     
     BlockLightQueue queue;
     std::queue<BlockLightCell> removalQueue;
 
     updateSunlight(position, queue, world, resultBox);
-    UPDATE_SOURCE_LIGHT(getRedLight, setRedLight, queue.red, lightColor.r);
-    UPDATE_SOURCE_LIGHT(getGreenLight, setGreenLight, queue.green, lightColor.g);
-    UPDATE_SOURCE_LIGHT(getBlueLight, setBlueLight, queue.blue, lightColor.b);
+    UPDATE_SOURCE_LIGHT(getRedLight, setRedLight, queue.red, r);
+    UPDATE_SOURCE_LIGHT(getGreenLight, setGreenLight, queue.green, g);
+    UPDATE_SOURCE_LIGHT(getBlueLight, setBlueLight, queue.blue, b);
 
     spreadLight(queue, world, resultBox);
 }

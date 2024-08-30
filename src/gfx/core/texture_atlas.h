@@ -21,7 +21,7 @@ namespace bf {
 
 	class TextureAtlas {
 	private:
-		static constexpr glm::ivec2 CHECK_STEP = { 16, 16 };
+		static constexpr glm::ivec2 CHECK_STEP = { 8, 8 };
 		static constexpr int MIN_WIDTH = 256;
 
 		std::unordered_map<std::string, TextureSection> sections;
