@@ -6,5 +6,6 @@ namespace bf {
     public:
         static int posmod(int a, int b);
         static void targetAxis(float &axis, float target, float change);
+        static int roundToTwoPower(int n);
     };
 }

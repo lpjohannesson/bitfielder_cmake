@@ -25,10 +25,6 @@ namespace bf {
                 { -1, 0 },
                 { 1, 0 },
                 { 0, 1 },
-            },
-            sideOffsets[] = {
-                { -1, 0 },
-                { 1, 0 },
             };
 
         static bool isBlockOpaque(BlockData &blockData, World &world);

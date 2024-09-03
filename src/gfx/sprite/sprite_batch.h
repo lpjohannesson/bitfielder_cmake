@@ -8,6 +8,8 @@ namespace bf {
 	class SpriteBatch {
 	private:
 		std::vector<Sprite> sprites;
+		
+		void addColor(glm::vec4 color, std::vector<uint8_t> &data);
 
 	public:
 		Sprite &createSprite();

@@ -27,14 +27,19 @@ void SpriteRenderer::createIndexBuffer() {
 }
 
 void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program) const {
+	// Bind color texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mesh.colorTexture.getGLTexture());
+
 	glUseProgram(program.getGLProgram());
 
 	glBindVertexArray(mesh.getGLVertexArray());
+
 	glDrawElements(GL_TRIANGLES, mesh.elementCount, GL_UNSIGNED_INT, nullptr);
 }
 
 void SpriteRenderer::renderMesh(const SpriteMesh &mesh, const SpriteProgram &program, const Texture &texture) const {
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
 
 	renderMesh(mesh, program);

@@ -20,5 +20,5 @@ void main() {
         discard;
     }
 
-    outColor.rgb = color.rgb;
+    outColor.r = 1.0;
 }

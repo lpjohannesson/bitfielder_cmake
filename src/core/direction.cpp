@@ -20,3 +20,7 @@ void Direction::targetAxis(float &axis, float target, float change) {
         axis = glm::max(target, axis - change);
     }
 }
+
+int Direction::roundToTwoPower(int n) {
+	return (int)glm::pow(2.0f, glm::ceil(glm::log(n) / glm::log(2.0f)));
+}

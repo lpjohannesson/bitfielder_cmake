@@ -26,8 +26,6 @@ namespace bf {
 
 		std::unordered_map<std::string, TextureSection> sections;
 
-		static int roundToTwoPower(int n); 
-
 	public:
 		TextureSection getSection(const std::string path) const;
 

@@ -12,8 +12,12 @@ namespace bf {
         inline GLuint getGLProgram() const { return glProgram; }
 
         void setTransform(glm::mat4 transform);
+		void assignTexture(int index, const char *name);
 
-        SpriteProgram(const char *vertexPath, const char *fragmentPath);
+		void attachShader(GLuint shader);
+		void link();
+
+        SpriteProgram();
         ~SpriteProgram();
 	};
 }

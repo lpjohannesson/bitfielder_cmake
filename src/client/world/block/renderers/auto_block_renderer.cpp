@@ -71,10 +71,10 @@ void AutoBlockRenderer::render(const BlockRenderData &renderData) {
 
     // Lookup frames with offsets per corner
     int
-        topLeftFrame = frameStartLookup[leftMask | topMask | topLeftMask],
-        topRightFrame = frameStartLookup[rightMask | topMask | topRightMask] + 1,
-        bottomLeftFrame = frameStartLookup[leftMask | bottomMask | bottomLeftMask] + 10,
-        bottomRightFrame = frameStartLookup[rightMask | bottomMask | bottomRightMask] + 11;
+        topLeftFrame = frameStarts[leftMask | topMask | topLeftMask],
+        topRightFrame = frameStarts[rightMask | topMask | topRightMask] + 1,
+        bottomLeftFrame = frameStarts[leftMask | bottomMask | bottomLeftMask] + 10,
+        bottomRightFrame = frameStarts[rightMask | bottomMask | bottomRightMask] + 11;
     
     // Draw corners
     World &world = renderData.scene.world;

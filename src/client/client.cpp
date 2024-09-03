@@ -3,6 +3,7 @@
 #include "core/file_loader.h"
 #include "font_factory.h"
 #include "scenes/menu_scene.h"
+#include "gfx/core/shader.h"
 
 using namespace bf;
 
@@ -36,10 +37,29 @@ void Client::updateSize(glm::ivec2 size) {
     menuInverseTransform = glm::inverse(menuTransform);
 }
 
-Client::Client(Engine &engine) :
-    spriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl") {
-        
+Client::Client(Engine &engine) {
     client = this;
+
+    // Create shaders
+    GLuint
+        glVertexShader = glCreateShader(GL_VERTEX_SHADER),
+        glCommonShader = glCreateShader(GL_FRAGMENT_SHADER),
+        glFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	Shader::compileShader(glVertexShader, "assets/shaders/vertex.glsl");
+    Shader::compileShader(glCommonShader, "assets/shaders/common.glsl");
+    Shader::compileShader(glFragmentShader, "assets/shaders/fragment.glsl");
+
+    spriteProgram.attachShader(glVertexShader);
+    spriteProgram.attachShader(glCommonShader);
+    spriteProgram.attachShader(glFragmentShader);
+    spriteProgram.link();
+
+    spriteProgram.assignTexture(1, "fTexture");
+
+	glDeleteShader(glVertexShader);
+    glDeleteShader(glCommonShader);
+	glDeleteShader(glFragmentShader);
 
     // Load fonts
     std::vector<std::string> fontTexturePaths;

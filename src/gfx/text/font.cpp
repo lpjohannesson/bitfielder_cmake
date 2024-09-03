@@ -45,7 +45,7 @@ void Font::drawText(std::string text, FontProperties &properties, SpriteBatch &s
 
     letterSprite.box.start.y = properties.position.y;
     letterSprite.box.size = frameSize;
-    letterSprite.color = properties.color;
+    letterSprite.setColor(properties.color);
 
     letterSprite.box.start = getRenderPosition(text, properties);
 

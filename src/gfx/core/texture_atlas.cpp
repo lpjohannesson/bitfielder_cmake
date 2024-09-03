@@ -3,12 +3,9 @@
 #include <iostream>
 #include <SDL2/SDL_image.h>
 #include <algorithm> 
+#include "core/direction.h"
 
 using namespace bf;
-
-int TextureAtlas::roundToTwoPower(int n) {
-	return (int)glm::pow(2.0f, glm::ceil(glm::log(n) / glm::log(2.0f)));
-}
 
 TextureSection TextureAtlas::getSection(const std::string path) const {
 	if (!std::filesystem::exists(path)) {
@@ -45,7 +42,7 @@ SDL_Surface *TextureAtlas::loadSurface(const std::vector<std::string> &paths) {
 
 		// Expand atlas width
 		if (atlasSize.x < size.x) {
-			atlasSize.x = roundToTwoPower(size.x);
+			atlasSize.x = Direction::roundToTwoPower(size.x);
 		}
 
 		// Add to dictionary
@@ -99,7 +96,7 @@ SDL_Surface *TextureAtlas::loadSurface(const std::vector<std::string> &paths) {
 		int height = box.start.y + box.size.y;
 
 		if (atlasSize.y < height) {
-			atlasSize.y = roundToTwoPower(height);
+			atlasSize.y = Direction::roundToTwoPower(height);
 		}
 	}
 

@@ -12,7 +12,7 @@ namespace bf {
             SHIFT_VERTICAL = 1,
             SHIFT_DIAGONAL = 2;
         
-        static constexpr int frameStartLookup[] { 0, 4, 2, 6, 0, 4, 2, 8 };
+        static constexpr int frameStarts[] { 0, 4, 2, 6, 0, 4, 2, 8 };
 
         static int checkNeighbor(const BlockRenderData &data, glm::ivec2 offset);
         static void drawCorner(const BlockRenderData &data, int frame, glm::vec2 offset, SpriteFrames &frames);

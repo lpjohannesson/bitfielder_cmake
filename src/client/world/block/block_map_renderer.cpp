@@ -5,8 +5,67 @@
 #include "client/client.h"
 #include "renderers/basic_block_renderer.h"
 #include "renderers/auto_block_renderer.h"
+#include "components/block_partial_component.h"
 
 using namespace bf;
+
+bool BlockMapRenderer::isBlockOccluded(const BlockData &blockData, const WorldScene &scene) {
+    entt::entity block = scene.world.blocks.getEntity(blockData.getFrontIndex());
+    return !scene.world.blocks.registry.all_of<BlockPartialComponent>(block);
+}
+
+BlockLightRenderData BlockMapRenderer::getLightData(const BlockData &blockData) {
+    // Get colour
+    int sunlight = blockData.getSunlight();
+
+    glm::ivec3 sourceLight = {
+        blockData.getRedLight(),
+        blockData.getGreenLight(),
+        blockData.getBlueLight()
+    };
+
+    glm::ivec3 lightValue = glm::max(sourceLight, glm::ivec3(sunlight));
+    glm::vec3 color = glm::vec3(lightValue) / 15.0f;
+
+    color = glm::vec3(
+        glm::quadraticEaseOut(color.r),
+        glm::quadraticEaseOut(color.g),
+        glm::quadraticEaseOut(color.b));
+
+    return { color, false };
+}
+
+glm::vec4 BlockMapRenderer::getCornerColor(
+    int horizontalIndex,
+    int verticalIndex,
+    int diagonalIndex,
+    BlockLightRenderData data,
+    const BlockLightRenderData neighborDatas[]) {
+
+    const BlockLightRenderData
+        &horizontalData = neighborDatas[horizontalIndex],
+        &verticalData = neighborDatas[verticalIndex],
+        &diagonalData = neighborDatas[diagonalIndex];
+    
+    // Average colour edges
+    glm::vec3 color = (
+        data.color +
+        horizontalData.color +
+        verticalData.color +
+        diagonalData.color) * 0.25f;
+
+    // Apply ambient occlusion
+    if (!data.occluded) {
+        float occlusionScale = (
+            (float)horizontalData.occluded +
+            (float)verticalData.occluded +
+            (float)diagonalData.occluded) * 0.25f * 0.3f;
+
+        color *= 1.0f - occlusionScale;
+    }
+    
+    return glm::vec4(color, 1.0f);
+}
 
 void BlockMapRenderer::renderBlock(const BlockRenderData &data) {
     const World &world = data.scene.world;
@@ -47,7 +106,6 @@ void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sect
         // Draw vertical sections
         int sectionY = sectionIndex * BlockMesh::SECTION_SIZE.y;
 
-        // Create light sprites
         for (int y = 0; y < BlockMesh::SECTION_SIZE.y; y++) {
             for (int x = 0; x < BlockMesh::SECTION_SIZE.x; x++) {
                 // Get positions
@@ -77,35 +135,41 @@ void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sect
                 renderBlock(renderData);
 
                 // Render light
-                int sunlight = blockData.getSunlight();
+                BlockLightRenderData lightData = getLightData(blockData);
+                lightData.occluded = isBlockOccluded(blockData, scene);
 
-                if (sunlight == 15) {
-                    continue;
+                entt::entity backBlock = scene.world.blocks.getEntity(blockData.getBackIndex());
+                lightData.occluded |= scene.world.blocks.registry.all_of<BlockPartialComponent>(backBlock);
+
+                BlockLightRenderData neighborLightDatas[8];
+
+                for (int i = 0; i < 8; i++) {
+                    glm::ivec2 neighborPosition = position + lightOffsets[i];
+                    BlockData *neighborBlockData = BlockChunk::getSampleBlock(neighborPosition, blockSample);
+
+                    BlockLightRenderData &neighborLightData = neighborLightDatas[i];
+
+                    if (neighborBlockData == nullptr) {
+                        neighborLightData = { glm::vec3(1.0f), false };
+                        continue;
+                    }
+
+                    neighborLightData = getLightData(*neighborBlockData);
+
+                    if (!lightData.occluded) {
+                        neighborLightData.occluded = isBlockOccluded(*neighborBlockData, scene);
+                    }
                 }
-
-                glm::ivec3 sourceLight = {
-                    blockData.getRedLight(),
-                    blockData.getGreenLight(),
-                    blockData.getBlueLight()
-                };
-
-                if (sourceLight == glm::ivec3(15)) {
-                    continue;
-                }
-
-                glm::ivec3 lightValue = glm::max(sourceLight, glm::ivec3(sunlight));
-                glm::vec3 lightColor = glm::vec3(lightValue) / 15.0f;
 
                 Sprite &lightSprite = lightSpriteBatch.createSprite();
                 
                 lightSprite.box.start = position;
                 lightSprite.box.size = glm::vec2(1.0f);
 
-                lightSprite.color = glm::vec4(
-                    glm::quadraticEaseOut(lightColor.r),
-                    glm::quadraticEaseOut(lightColor.g),
-                    glm::quadraticEaseOut(lightColor.b),
-                    1.0f);
+                lightSprite.topLeftColor = getCornerColor(3, 1, 0, lightData, neighborLightDatas);
+                lightSprite.topRightColor = getCornerColor(4, 1, 2, lightData, neighborLightDatas);
+                lightSprite.bottomLeftColor = getCornerColor(3, 6, 5, lightData, neighborLightDatas);
+                lightSprite.bottomRightColor = getCornerColor(4, 6, 7, lightData, neighborLightDatas);
             }
         }
 

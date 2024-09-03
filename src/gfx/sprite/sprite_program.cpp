@@ -9,27 +9,26 @@ void SpriteProgram::setTransform(glm::mat4 transform) {
 	glUniformMatrix4fv(glTransformLocation, 1, GL_FALSE, glm::value_ptr(transform));
 }
 
-SpriteProgram::SpriteProgram(const char *vertexPath, const char *fragmentPath) {
-	glProgram = glCreateProgram();
+void SpriteProgram::assignTexture(int index, const char *name) {
+	GLint location = glGetUniformLocation(glProgram, name);
 
-    // Create shaders
-    GLuint glVertexShader = glCreateShader(GL_VERTEX_SHADER);
-    GLuint glFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glUseProgram(glProgram);
+	glUniform1i(location, index);
+}
 
-	Shader::compileShader(glVertexShader, vertexPath);
-    Shader::compileShader(glFragmentShader, fragmentPath);
+void SpriteProgram::attachShader(GLuint shader) {
+	glAttachShader(glProgram, shader);
+}
 
-    glAttachShader(glProgram, glVertexShader);
-    glAttachShader(glProgram, glFragmentShader);
+void SpriteProgram::link() {
+	Shader::linkProgram(glProgram);
 
-    Shader::linkProgram(glProgram);
-
-	// Delete shaders
-	glDeleteShader(glVertexShader);
-	glDeleteShader(glFragmentShader);
-
-	// Find transform
 	glTransformLocation = glGetUniformLocation(glProgram, "transform");
+	assignTexture(0, "fColorTexture");
+}
+
+SpriteProgram::SpriteProgram() {
+	glProgram = glCreateProgram();
 }
 
 SpriteProgram::~SpriteProgram() {

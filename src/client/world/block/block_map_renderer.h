@@ -8,8 +8,33 @@
 namespace bf {
     class WorldScene;
 
+    struct BlockLightRenderData {
+        glm::vec3 color;
+        bool occluded;
+    };
+
     class BlockMapRenderer {
     private:
+        static constexpr glm::ivec2 lightOffsets[] = {
+            { -1, -1 },
+            { 0, -1 },
+            { 1, -1 },
+            { -1, 0 },
+            { 1, 0 },
+            { -1, 1 },
+            { 0, 1 },
+            { 1, 1 }
+        };
+
+        static bool isBlockOccluded(const BlockData &blockData, const WorldScene &scene);
+        static BlockLightRenderData getLightData(const BlockData &blockData);
+        static glm::vec4 getCornerColor(
+            int horizontalIndex,
+            int verticalIndex,
+            int diagonalIndex,
+            BlockLightRenderData data,
+            const BlockLightRenderData neighborDatas[]);
+
         void renderBlock(const BlockRenderData &data);
 
     public:

@@ -33,6 +33,7 @@ if (CLIENT)
         src/gfx/core/texture.cpp
         src/gfx/core/texture_atlas.cpp
 
+        src/gfx/sprite/sprite.cpp
         src/gfx/sprite/sprite_mesh.cpp
         src/gfx/sprite/sprite_program.cpp
         src/gfx/sprite/sprite_renderer.cpp

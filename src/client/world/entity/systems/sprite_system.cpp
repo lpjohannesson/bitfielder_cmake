@@ -17,7 +17,7 @@ void SpriteSystem::render(const WorldScene &scene) {
         Sprite &batchSprite = spriteBatch.createSprite();
 
         batchSprite.uvBox = sprite.uvBox;
-        batchSprite.color = sprite.color;
+        batchSprite.setColor(sprite.color);
 
         bool flipX = false;
 

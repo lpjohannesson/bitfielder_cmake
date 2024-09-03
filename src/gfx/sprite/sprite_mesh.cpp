@@ -5,17 +5,23 @@
 using namespace bf;
 
 void SpriteMesh::startAttributes() {
-	// Position
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, position));
+	glBindVertexArray(glVertexArray);
+
+	// Sprite index
+	glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, spriteIndex));
 	glEnableVertexAttribArray(0);
 
-	// UV
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, uv));
+	// Position
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, position));
 	glEnableVertexAttribArray(1);
 
-	// Colour
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, color));
+	// UV
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, uv));
 	glEnableVertexAttribArray(2);
+
+	// Colour position
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, colorPosition));
+	glEnableVertexAttribArray(3);
 }
 
 SpriteMesh::SpriteMesh(const SpriteRenderer &renderer) {

@@ -24,18 +24,20 @@ void Shader::compileShader(GLuint glShader, const char *path) {
 	GLint compileStatus;
 	glGetShaderiv(glShader, GL_COMPILE_STATUS, &compileStatus);
 
-	if (compileStatus == 0) {
-		// Print error
-		int errorLength;
-		glGetShaderiv(glShader, GL_INFO_LOG_LENGTH, &errorLength);
-
-		std::vector<GLchar> error;
-		error.resize(errorLength);
-
-		glGetShaderInfoLog(glShader, errorLength, &errorLength, error.data());
-
-		std::cout << "Shader compilation failed: " << std::endl << error.data() << std::endl;
+	if (compileStatus != 0) {
+		return;
 	}
+
+	// Print error
+	int errorLength;
+	glGetShaderiv(glShader, GL_INFO_LOG_LENGTH, &errorLength);
+
+	std::vector<GLchar> error;
+	error.resize(errorLength);
+
+	glGetShaderInfoLog(glShader, errorLength, &errorLength, error.data());
+
+	std::cout << "Shader compilation failed: " << std::endl << error.data() << std::endl;
 }
 
 void Shader::linkProgram(GLuint glProgram) {
@@ -46,16 +48,18 @@ void Shader::linkProgram(GLuint glProgram) {
 	GLint linkStatus;
 	glGetProgramiv(glProgram, GL_LINK_STATUS, &linkStatus);
 
-	if (linkStatus == 0) {
-		// Print error
-		int errorLength;
-		glGetProgramiv(glProgram, GL_INFO_LOG_LENGTH, &errorLength);
-
-		std::vector<GLchar> error;
-		error.resize(errorLength);
-
-		glGetProgramInfoLog(glProgram, errorLength, &errorLength, error.data());
-
-		std::cout << "Program link failed: " << std::endl << error.data() << std::endl;
+	if (linkStatus != 0) {
+		return;
 	}
+
+	// Print error
+	int errorLength;
+	glGetProgramiv(glProgram, GL_INFO_LOG_LENGTH, &errorLength);
+
+	std::vector<GLchar> error;
+	error.resize(errorLength);
+
+	glGetProgramInfoLog(glProgram, errorLength, &errorLength, error.data());
+
+	std::cout << "Program link failed: " << std::endl << error.data() << std::endl;
 }

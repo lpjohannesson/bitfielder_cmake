@@ -2,20 +2,23 @@
 
 precision mediump float;
 
-layout (location = 0) in vec2 vPosition;
-layout (location = 1) in vec2 vUV;
-layout (location = 2) in vec4 vColor;
+layout (location = 0) in float vSpriteIndex;
+layout (location = 1) in vec2 vPosition;
+layout (location = 2) in vec2 vUV;
+layout (location = 3) in vec2 vColorPosition;
 
+flat out float fSpriteIndex;
 out vec2 fPosition;
 out vec2 fUV;
-out vec4 fColor;
+out vec2 fColorPosition;
 
 uniform mat4 transform;
 
 void main() {
     gl_Position = transform * vec4(vPosition, 0.0, 1.0);
     
+    fSpriteIndex = vSpriteIndex;
     fPosition = (gl_Position.xy + 1.0) * 0.5;
     fUV = vUV;
-    fColor = vec4(1.0f) - vColor;
+    fColorPosition = vColorPosition;
 }

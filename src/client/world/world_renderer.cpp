@@ -6,6 +6,7 @@
 #include "core/color.h"
 #include "gfx/core/renderer.h"
 #include "client/client.h"
+#include "gfx/core/shader.h"
 
 using namespace bf;
 
@@ -45,10 +46,10 @@ void WorldRenderer::render(WorldScene &scene) {
     entities.render(scene);
 
     // Bind textures
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texture.getGLTexture());
 
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, shadowBuffer.texture.getGLTexture());
 
     // Get visible chunks, including shadows
@@ -66,9 +67,9 @@ void WorldRenderer::render(WorldScene &scene) {
 
     // Set transforms
     client->spriteProgram.setTransform(viewTransform);
-    backSpriteProgram.setTransform(viewTransform);
-    shadowSpriteProgram.setTransform(shadowViewTransform);
-    lightSpriteProgram.setTransform(viewTransform);
+    blockBackProgram.setTransform(viewTransform);
+    blockShadowProgram.setTransform(shadowViewTransform);
+    blockLightProgram.setTransform(viewTransform);
 
     // Render shadow to framebuffer
     glm::ivec2 windowSize = engine->getWindowSize();
@@ -87,11 +88,11 @@ void WorldRenderer::render(WorldScene &scene) {
         for (int sectionIndex = sectionStart; sectionIndex <= sectionEnd; sectionIndex++) {
             const BlockMeshSection &section = blockMesh->sections[sectionIndex];
 
-            client->spriteRenderer.renderMesh(section.frontMesh, shadowSpriteProgram);
+            client->spriteRenderer.renderMesh(section.frontMesh, blockShadowProgram);
         }
     }
 
-    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, shadowSpriteProgram);
+    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, blockShadowProgram);
 
     // Render main scene
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -107,7 +108,7 @@ void WorldRenderer::render(WorldScene &scene) {
         for (int sectionIndex = sectionStart; sectionIndex <= sectionEnd; sectionIndex++) {
             const BlockMeshSection &section = blockMesh->sections[sectionIndex];
 
-            client->spriteRenderer.renderMesh(section.backMesh, backSpriteProgram);
+            client->spriteRenderer.renderMesh(section.backMesh, blockBackProgram);
             client->spriteRenderer.renderMesh(section.frontMesh, client->spriteProgram);
         }
     }
@@ -127,7 +128,7 @@ void WorldRenderer::render(WorldScene &scene) {
         for (int sectionIndex = sectionStart; sectionIndex <= sectionEnd; sectionIndex++) {
             const BlockMeshSection &section = blockMesh->sections[sectionIndex];
 
-            client->spriteRenderer.renderMesh(section.lightMesh, lightSpriteProgram);
+            client->spriteRenderer.renderMesh(section.lightMesh, blockLightProgram);
         }
     }
 
@@ -136,24 +137,51 @@ void WorldRenderer::render(WorldScene &scene) {
     hud.render(scene);
 }
 
-WorldRenderer::WorldRenderer() :
-    backSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_back.glsl"),
-    shadowSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_shadow.glsl"),
-    lightSpriteProgram("assets/shaders/vertex.glsl", "assets/shaders/fragment_light.glsl") {
+WorldRenderer::WorldRenderer() {
+    // Create shaders
+    GLuint
+        glVertexShader = glCreateShader(GL_VERTEX_SHADER),
+        glCommonShader = glCreateShader(GL_FRAGMENT_SHADER),
+        glBlockBackShader = glCreateShader(GL_FRAGMENT_SHADER),
+        glBlockShadowShader = glCreateShader(GL_FRAGMENT_SHADER),
+        glBlockLightShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+	Shader::compileShader(glVertexShader, "assets/shaders/vertex.glsl");
+    Shader::compileShader(glCommonShader, "assets/shaders/common.glsl");
+    Shader::compileShader(glBlockBackShader, "assets/shaders/block_back.glsl");
+    Shader::compileShader(glBlockShadowShader, "assets/shaders/block_shadow.glsl");
+    Shader::compileShader(glBlockLightShader, "assets/shaders/block_light.glsl");
+
+    blockBackProgram.attachShader(glVertexShader);
+    blockBackProgram.attachShader(glCommonShader);
+    blockBackProgram.attachShader(glBlockBackShader);
+    blockBackProgram.link();
+
+    blockShadowProgram.attachShader(glVertexShader);
+    blockShadowProgram.attachShader(glCommonShader);
+    blockShadowProgram.attachShader(glBlockShadowShader);
+    blockShadowProgram.link();
+
+    blockLightProgram.attachShader(glVertexShader);
+    blockLightProgram.attachShader(glCommonShader);
+    blockLightProgram.attachShader(glBlockLightShader);
+    blockLightProgram.link();
+
+	glDeleteShader(glVertexShader);
+	glDeleteShader(glCommonShader);
+    glDeleteShader(glBlockBackShader);
+    glDeleteShader(glBlockShadowShader);
+    glDeleteShader(glBlockLightShader);
+    
+    blockBackProgram.assignTexture(1, "fTexture");
+    blockBackProgram.assignTexture(2, "fShadowTexture");
+
+    blockShadowProgram.assignTexture(1, "fTexture");
+
+    loadTextureAtlas();
 
     backgroundColor = Color::parseHex("56f9d3");
 
     // Set shadow offset
     shadowTransform = glm::translate(glm::mat4(1.0f), glm::vec3(glm::vec2(SHADOW_OFFSET), 0.0f));
-
-    // Bind textures for back program
-    GLint
-        backTextureLocation = glGetUniformLocation(backSpriteProgram.getGLProgram(), "fTexture"),
-        backShadowTextureLocation = glGetUniformLocation(backSpriteProgram.getGLProgram(), "fShadowTexture");
-
-    glUseProgram(backSpriteProgram.getGLProgram());
-    glUniform1i(backTextureLocation, 0);
-    glUniform1i(backShadowTextureLocation, 1);
-
-    loadTextureAtlas();
 }
