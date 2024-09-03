@@ -2,7 +2,7 @@
 
 precision mediump float;
 
-in float fSpriteIndex;
+flat in float fSpriteIndex;
 in vec2 fColorPosition;
 
 out vec4 outColor;

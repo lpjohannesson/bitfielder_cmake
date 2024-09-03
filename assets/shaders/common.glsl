@@ -16,7 +16,7 @@ vec4 getSpriteBaseColor(float fSpriteIndex, vec2 fColorPosition, sampler2D fColo
         bottomColor = mix(bottomLeftColor, bottomRightColor, fColorPosition.x),
         color = mix(topColor, bottomColor, fColorPosition.y);
 
-    return glm::vec4(1.0) - color;
+    return vec4(1.0) - color;
 }
 
 vec4 getSpriteColor(float fSpriteIndex, vec2 fUV, vec2 fColorPosition, sampler2D fColorTexture, sampler2D fTexture) {

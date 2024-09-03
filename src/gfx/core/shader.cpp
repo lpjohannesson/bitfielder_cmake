@@ -37,7 +37,7 @@ void Shader::compileShader(GLuint glShader, const char *path) {
 
 	glGetShaderInfoLog(glShader, errorLength, &errorLength, error.data());
 
-	std::cout << "Shader compilation failed: " << std::endl << error.data() << std::endl;
+	std::cout << "Shader compilation \"" << path << "\" failed: " << std::endl << error.data() << std::endl;
 }
 
 void Shader::linkProgram(GLuint glProgram) {
