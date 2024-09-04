@@ -26,9 +26,9 @@ namespace bf {
                 void writeReplaceBlock(Packet &packet, glm::ivec2 position, bool onFrontLayer, int blockIndex);
                 void writeDespawnEntity(Packet &packet, int playerID);
                 void writeEntityPosition(Packet &packet, entt::entity entity);
-                void writeEntitySpriteAnimation(Packet &packet, entt::entity entity);
-                void writeEntitySpriteFlip(Packet &packet, entt::entity entity);
-                void writeEntitySpriteAim(Packet &packet, entt::entity entity);
+                void writeEntityAnimation(Packet &packet, entt::entity entity);
+                void writeEntityFlip(Packet &packet, entt::entity entity);
+                void writeEntityAim(Packet &packet, entt::entity entity);
                 void writeRemotePlayer(Packet &packet, entt::entity player);
 
                 void readPlayerState(ClientConnection *client, Packet &packet);

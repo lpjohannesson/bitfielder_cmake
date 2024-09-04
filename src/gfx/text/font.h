@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <glm/glm.hpp>
-#include "gfx/sprite/sprite_frames.h"
+#include "gfx/sprite/sprite_set.h"
 #include "gfx/sprite/sprite_batch.h"
 #include "gfx/core/texture_atlas.h"
 
@@ -17,8 +17,8 @@ namespace bf {
 	private:
 		static constexpr glm::ivec2 FRAME_COUNTS = { 16, 6 };
 
-		SpriteFrames frames;
-		glm::ivec2 frameSize;
+		SpriteSet sprites;
+		glm::ivec2 size;
 
 		static int getCharacterIndex(char c);
 

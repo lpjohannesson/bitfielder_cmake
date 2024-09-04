@@ -1,7 +1,7 @@
 #pragma once
 
 namespace bf {
-	struct SpriteFlipComponent {
+	struct FlipComponent {
 	    bool flipX = false;
 	};
 }

@@ -1,4 +1,5 @@
 /vcpkg_installed
 /build
 /build_switch
+/build_android
 /.vscode

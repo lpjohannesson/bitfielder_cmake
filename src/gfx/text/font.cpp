@@ -44,7 +44,7 @@ void Font::drawText(std::string text, FontProperties &properties, SpriteBatch &s
     Sprite letterSprite;
 
     letterSprite.box.start.y = properties.position.y;
-    letterSprite.box.size = frameSize;
+    letterSprite.box.size = size;
     letterSprite.setColor(properties.color);
 
     letterSprite.box.start = getRenderPosition(text, properties);
@@ -54,7 +54,7 @@ void Font::drawText(std::string text, FontProperties &properties, SpriteBatch &s
     for (int i = 0; i < text.length(); i++) {
         // Draw character
         int characterIndex = getCharacterIndex(text.at(i));
-        letterSprite.uvBox = frames.frames.at(characterIndex);
+        letterSprite.uvBox = sprites.boxes.at(characterIndex);
 
         Sprite &sprite = spriteBatch.createSprite();
         sprite = letterSprite;
@@ -65,6 +65,6 @@ void Font::drawText(std::string text, FontProperties &properties, SpriteBatch &s
 }
 
 void Font::loadFont(TextureSection section) {
-    frames.loadFrames(section.uvBox, FRAME_COUNTS);
-    frameSize = section.box.size / FRAME_COUNTS;
+    sprites.loadSprites(section.uvBox, FRAME_COUNTS);
+    size = section.box.size / FRAME_COUNTS;
 }

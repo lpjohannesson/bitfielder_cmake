@@ -55,11 +55,11 @@ Client::Client(Engine &engine) {
     spriteProgram.attachShader(glFragmentShader);
     spriteProgram.link();
 
-    spriteProgram.assignTexture(1, "fTexture");
-
 	glDeleteShader(glVertexShader);
     glDeleteShader(glCommonShader);
 	glDeleteShader(glFragmentShader);
+
+    spriteProgram.assignTexture(1, "fTexture");
 
     // Load fonts
     std::vector<std::string> fontTexturePaths;

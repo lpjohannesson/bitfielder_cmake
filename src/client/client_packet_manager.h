@@ -18,9 +18,9 @@ namespace bf {
 		static void readReplaceBlock(Packet &packet, WorldScene &scene);
 		static void readDespawnEntity(Packet &packet, WorldScene &scene);
 		static void readEntityPosition(Packet &packet, WorldScene &scene);
-		static void readEntitySpriteAnimation(Packet &packet, WorldScene &scene);
-		static void readEntitySpriteFlip(Packet &packet, WorldScene &scene);
-		static void readEntitySpriteAim(Packet &packet, WorldScene &scene);
+		static void readEntityAnimation(Packet &packet, WorldScene &scene);
+		static void readEntityFlip(Packet &packet, WorldScene &scene);
+		static void readEntityAim(Packet &packet, WorldScene &scene);
 		static void readRemotePlayer(Packet &packet, WorldScene &scene);
 
 		static void readPacket(Packet &packet, WorldScene &scene);

@@ -1,7 +1,7 @@
 #pragma once
 #include "../block_render_data.h"
 #include "gfx/sprite/sprite.h"
-#include "gfx/sprite/sprite_frames.h"
+#include "gfx/sprite/sprite_set.h"
 #include "../components/block_auto_renderer_component.h"
 
 namespace bf {
@@ -15,7 +15,7 @@ namespace bf {
         static constexpr int frameStarts[] { 0, 4, 2, 6, 0, 4, 2, 8 };
 
         static int checkNeighbor(const BlockRenderData &data, glm::ivec2 offset);
-        static void drawCorner(const BlockRenderData &data, int frame, glm::vec2 offset, SpriteFrames &frames);
+        static void drawCorner(const BlockRenderData &data, int index, glm::vec2 offset, SpriteSet &sprites);
 
     public:
         static void render(const BlockRenderData &data);

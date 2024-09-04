@@ -2,11 +2,10 @@
 #include "client/scenes/world_scene.h"
 #include "core/packet_types.h"
 #include "world/block/block_serializer.h" 
-#include "world/entity/components/sprite_flip_component.h"
+#include "world/entity/components/flip_component.h"
 #include "world/entity/components/aim_component.h"
-#include "client/world/entity/components/local_player_component.h"
-#include "client/world/entity/components/sprite_aim_component.h"
-#include "client/world/entity/systems/sprite_aim_system.h"
+#include "world/entity/components/local_player_component.h"
+#include "world/entity/components/sprite_set_component.h"
 
 using namespace bf;
 
@@ -17,11 +16,11 @@ void ClientPacketManager::writePlayerState(WorldScene &scene) {
 	Packet packet;
 
 	glm::vec2 position = entityRegistry.get<PositionComponent>(player).position;
-	SpriteAnimationComponent &animation = entityRegistry.get<SpriteAnimationComponent>(player);
-	SpriteFlipComponent &spriteFlip = entityRegistry.get<SpriteFlipComponent>(player);
+	AnimationComponent &animation = entityRegistry.get<AnimationComponent>(player);
+	FlipComponent &flip = entityRegistry.get<FlipComponent>(player);
 	AimComponent &aim = entityRegistry.get<AimComponent>(player);
 
-	packet << (int)ClientPacket::PLAYER_STATE << position << animation.animationIndex << spriteFlip.flipX << aim.aim;
+	packet << (int)ClientPacket::PLAYER_STATE << position << animation.index << flip.flipX << aim.aim;
 	scene.server->writePacket(packet);
 }
 
@@ -129,7 +128,7 @@ void ClientPacketManager::readEntityPosition(Packet &packet, WorldScene &scene) 
 	packet >> position.position;
 }
 
-void ClientPacketManager::readEntitySpriteAnimation(Packet &packet, WorldScene &scene) {
+void ClientPacketManager::readEntityAnimation(Packet &packet, WorldScene &scene) {
     entt::registry &entityRegistry = scene.world.entities.registry;
 	entt::entity entity;
 	
@@ -137,16 +136,16 @@ void ClientPacketManager::readEntitySpriteAnimation(Packet &packet, WorldScene &
 		return;
 	}
 
-	int animationIndex;
-	packet >> animationIndex;
+	int index;
+	packet >> index;
 
-	SpriteAnimationComponent &animation = entityRegistry.get<SpriteAnimationComponent>(entity);
-	SpriteAnimatorComponent &animator = entityRegistry.get<SpriteAnimatorComponent>(entity);
+	AnimatorComponent &animator = entityRegistry.get<AnimatorComponent>(entity);
+	AnimationComponent &animation = entityRegistry.get<AnimationComponent>(entity);
 
-	SpriteAnimatorSystem::playAnimation(animator, animation, animationIndex);
+	AnimatorSystem::playAnimation(animator, animation, index);
 }
 
-void ClientPacketManager::readEntitySpriteFlip(Packet &packet, WorldScene &scene) {
+void ClientPacketManager::readEntityFlip(Packet &packet, WorldScene &scene) {
 	entt::registry &entityRegistry = scene.world.entities.registry;
 	entt::entity entity;
 	
@@ -154,11 +153,11 @@ void ClientPacketManager::readEntitySpriteFlip(Packet &packet, WorldScene &scene
 		return;
 	}
 
-	SpriteFlipComponent &spriteFlip = entityRegistry.get<SpriteFlipComponent>(entity);
-	packet >> spriteFlip.flipX;
+	FlipComponent &flip = entityRegistry.get<FlipComponent>(entity);
+	packet >> flip.flipX;
 }
 
-void ClientPacketManager::readEntitySpriteAim(Packet &packet, WorldScene &scene) {
+void ClientPacketManager::readEntityAim(Packet &packet, WorldScene &scene) {
 	entt::registry &entityRegistry = scene.world.entities.registry;
 	entt::entity entity;
 	
@@ -167,12 +166,7 @@ void ClientPacketManager::readEntitySpriteAim(Packet &packet, WorldScene &scene)
 	}
 
 	AimComponent &aim = entityRegistry.get<AimComponent>(entity);
-	SpriteAimComponent &spriteAim = entityRegistry.get<SpriteAimComponent>(entity);
-	SpriteAnimatorComponent &animator = entityRegistry.get<SpriteAnimatorComponent>(entity);
-
 	packet >> aim.aim;
-
-	animator.frames = SpriteAimSystem::getAimFrames(spriteAim, aim.aim);
 }
 
 void ClientPacketManager::readRemotePlayer(Packet &packet, WorldScene &scene) {
@@ -211,16 +205,16 @@ void ClientPacketManager::readPacket(Packet &packet, WorldScene &scene) {
 			readEntityPosition(packet, scene);
 			break;
 
-		case ServerPacket::ENTITY_SPRITE_ANIMATION:
-			readEntitySpriteAnimation(packet, scene);
+		case ServerPacket::ENTITY_ANIMATION:
+			readEntityAnimation(packet, scene);
 			break;
 
-		case ServerPacket::ENTITY_SPRITE_FLIP:
-			readEntitySpriteFlip(packet, scene);
+		case ServerPacket::ENTITY_FLIP:
+			readEntityFlip(packet, scene);
 			break;
 
-		case ServerPacket::ENTITY_SPRITE_AIM:
-			readEntitySpriteAim(packet, scene);
+		case ServerPacket::ENTITY_AIM:
+			readEntityAim(packet, scene);
 			break;
 		
 		case ServerPacket::REMOTE_PLAYER:

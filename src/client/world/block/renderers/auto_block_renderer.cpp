@@ -1,6 +1,6 @@
 #include "auto_block_renderer.h"
 #include "client/scenes/world_scene.h"
-#include "../components/block_frames_component.h"
+#include "../components/block_sprite_set_component.h"
 #include "../components/block_partial_component.h"
 #include "../block_renderer_factory.h"
 
@@ -49,12 +49,12 @@ int AutoBlockRenderer::checkNeighbor(const BlockRenderData &data, glm::ivec2 off
     return 0;
 }
 
-void AutoBlockRenderer::drawCorner(const BlockRenderData &renderData, int frame, glm::vec2 offset, SpriteFrames &frames) {
+void AutoBlockRenderer::drawCorner(const BlockRenderData &renderData, int index, glm::vec2 offset, SpriteSet &sprites) {
     Sprite &sprite = renderData.spriteBatch->createSprite();
     
     sprite.box.start = glm::vec2(renderData.position) + offset;
     sprite.box.size = glm::vec2(0.5f);
-    sprite.uvBox = frames.frames.at(frame);
+    sprite.uvBox = sprites.boxes.at(index);
 }
 
 void AutoBlockRenderer::render(const BlockRenderData &renderData) {
@@ -81,12 +81,12 @@ void AutoBlockRenderer::render(const BlockRenderData &renderData) {
     entt::entity block = world.blocks.getEntity(renderData.blockIndex);
     entt::registry &blocksRegistry = world.blocks.registry;
     
-    SpriteFrames &frames = blocksRegistry.get<BlockFramesComponent>(block).frames;
+    SpriteSet &sprites = blocksRegistry.get<BlockSpriteSetComponent>(block).sprites;
 
-    drawCorner(renderData, topLeftFrame, { 0.0f, 0.0f }, frames);
-    drawCorner(renderData, topRightFrame, { 0.5f, 0.0f }, frames);
-    drawCorner(renderData, bottomLeftFrame, { 0.0f, 0.5f }, frames);
-    drawCorner(renderData, bottomRightFrame, { 0.5f, 0.5f }, frames);
+    drawCorner(renderData, topLeftFrame, { 0.0f, 0.0f }, sprites);
+    drawCorner(renderData, topRightFrame, { 0.5f, 0.0f }, sprites);
+    drawCorner(renderData, bottomLeftFrame, { 0.0f, 0.5f }, sprites);
+    drawCorner(renderData, bottomRightFrame, { 0.5f, 0.5f }, sprites);
 }
 
 void AutoBlockRenderer::createBlock(const BlockRendererFactoryData &data) {
@@ -94,6 +94,9 @@ void AutoBlockRenderer::createBlock(const BlockRendererFactoryData &data) {
     
     blocksRegistry.emplace<BlockAutoRendererComponent>(data.block, BlockAutoRendererComponent {});
 
-    SpriteFrames &frames = blocksRegistry.emplace<BlockFramesComponent>(data.block, BlockFramesComponent {}).frames;
-    frames.loadFrames(BlockRendererFactory::getBlockTexture(data.value, data.scene).uvBox, { 10, 2 });
+    SpriteSet &sprites = blocksRegistry.emplace<BlockSpriteSetComponent>(
+        data.block, BlockSpriteSetComponent {}).sprites;
+    
+    sprites.loadSprites(
+        BlockRendererFactory::getBlockTexture(data.value, data.scene).uvBox, { 10, 2 });
 }

@@ -42,7 +42,7 @@ void BlockRendererFactory::createParticle(const std::string name, entt::entity b
     // Load frames
     int frameCount = document["frameCount"].GetInt();
 
-    particle.frames.loadFrames(texture.uvBox, { frameCount, 1 });
+    particle.sprites.loadSprites(texture.uvBox, { frameCount, 1 });
     particle.size = glm::vec2(texture.box.size.x / frameCount, texture.box.size.y) / 16.0f;
 }
 

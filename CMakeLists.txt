@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 project(bitfielder LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -38,10 +38,7 @@ if (CLIENT)
         src/gfx/sprite/sprite_program.cpp
         src/gfx/sprite/sprite_renderer.cpp
         src/gfx/sprite/sprite_batch.cpp
-        src/gfx/sprite/sprite_frames.cpp
-
-        src/gfx/sprite/animation/sprite_animation.cpp
-        src/gfx/sprite/animation/sprite_animation_set.cpp
+        src/gfx/sprite/sprite_set.cpp
 
         src/gfx/text/font.cpp
 
@@ -102,14 +99,19 @@ if (CLIENT)
 
         src/client/world/item/item_renderer_factory.cpp
 
-        src/client/world/entity/entity_renderer.cpp
+        src/client/world/entity/sprite_aim_set.cpp
 
-        src/client/world/entity/systems/sprite_system.cpp
-        src/client/world/entity/systems/sprite_animator_system.cpp
-        src/client/world/entity/systems/sprite_aim_system.cpp
+        src/client/world/entity/systems/animator_system.cpp
         src/client/world/entity/systems/particle_system.cpp
         src/client/world/entity/systems/effect_sprite_system.cpp
         src/client/world/entity/systems/local_player_system.cpp
+
+        src/client/world/entity/systems/render/sprite_system.cpp
+        src/client/world/entity/systems/render/sprite_animator_system.cpp
+        src/client/world/entity/systems/render/player_render_system.cpp
+
+        src/client/world/entity/animation/animation.cpp
+        src/client/world/entity/animation/animation_set.cpp
         
         src/client/scenes/menu_scene.cpp
         src/client/scenes/world_scene.cpp
@@ -220,4 +222,4 @@ else()
     endif()
 endif()
 
-add_custom_command(TARGET client COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/assets" $<TARGET_FILE_DIR:client>/assets)
+add_custom_command(TARGET client COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${PROJECT_SOURCE_DIR}/assets" $<TARGET_FILE_DIR:client>/assets)

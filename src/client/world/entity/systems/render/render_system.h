@@ -5,6 +5,6 @@ namespace bf {
     
 	class RenderSystem {
     public:
-        inline virtual void render(const WorldScene &scene) {}
+        inline virtual void render(WorldScene &scene) {}
     };
 }

@@ -17,7 +17,7 @@ entt::entity ParticleSystem::spawnParticle(const ParticleSpawnProperties &proper
     entityRegistry.emplace<ParticleComponent>(particle, ParticleComponent {});
     entityRegistry.emplace<PositionComponent>(particle, PositionComponent { properties.position });
     entityRegistry.emplace<VelocityComponent>(particle, VelocityComponent { properties.velocity, properties.velocity });
-    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { properties.size, -properties.size * 0.5f, properties.color, properties.frame });
+    entityRegistry.emplace<SpriteComponent>(particle, SpriteComponent { properties.size, -properties.size * 0.5f, properties.uvBox });
 
     return particle;
 }
@@ -39,15 +39,15 @@ void ParticleSystem::spawnParticleExplosion(const ParticleExplosionProperties &p
         glm::vec2 velocity = { glm::cos(angle), glm::sin(angle) };
 
         // Random frame
-        Box2 frame = properties.frames.frames.at(rand() % properties.frames.frames.size());
+        Box2 uvBox = properties.sprites.boxes.at(rand() % properties.sprites.boxes.size());
 
-        spawnParticle({ frame, properties.position, velocity * explosionSpeed, properties.size, properties.color }, scene);
+        spawnParticle({ uvBox, properties.position, velocity * explosionSpeed, properties.size, properties.color }, scene);
     }
 }
 
 void ParticleSystem::update(WorldScene &scene) {
     float deltaTime = gameTime.getDeltaTime();
-    Box2 screenBox = scene.worldRenderer.getScreenBox();
+    const Box2 &screenBox = scene.worldRenderer.screenBox;
 
     auto view = scene.world.entities.registry.view<ParticleComponent, PositionComponent, VelocityComponent, SpriteComponent>();
 

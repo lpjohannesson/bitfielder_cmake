@@ -40,7 +40,7 @@ void WorldScene::spawnBlockParticles(glm::vec2 position, entt::entity block) {
 	}
 
 	BlockParticleComponent blockParticle = blocksRegistry.get<BlockParticleComponent>(block);
-	clientContent.particleSystem.spawnParticleExplosion({ blockParticle.frames, position + glm::vec2(0.5f), blockParticle.size }, *this);
+	clientContent.particleSystem.spawnParticleExplosion({ blockParticle.sprites, position + glm::vec2(0.5f), blockParticle.size }, *this);
 }
 
 void WorldScene::placeBlock(int blockIndex, glm::ivec2 position, bool onFrontLayer, BlockData &blockData) {

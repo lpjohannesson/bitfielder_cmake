@@ -1,17 +1,19 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
+#include "core/box2.h"
+#include "gfx/sprite/sprite_set.h"
 #include "client_entity_system.h"
-#include "gfx/sprite/animation/sprite_animation_set.h"
+#include "../animation/animation_set.h"
 
 namespace bf {
     class EffectSpriteProperties {
     public:
+        SpriteSet sprites;
+        AnimationSet animations;
         glm::vec2 size;
-        SpriteFrames spriteFrames;
-        SpriteAnimationSet animationSet;
 
-        void createProperties(glm::vec2 size, Box2 uvBox, glm::ivec2 frameCounts, const std::vector<int> frames, float duration);
+        void createProperties(Box2 box, glm::ivec2 counts, const std::vector<int> frames, float duration, glm::vec2 size);
     };
 
     class EffectSpriteSystem : public ClientEntitySystem {

@@ -12,9 +12,9 @@ namespace bf {
                 REPLACE_BLOCK,
                 DESPAWN_ENTITY,
                 ENTITY_POSITION,
-                ENTITY_SPRITE_ANIMATION,
-                ENTITY_SPRITE_FLIP,
-                ENTITY_SPRITE_AIM,
+                ENTITY_ANIMATION,
+                ENTITY_FLIP,
+                ENTITY_AIM,
                 REMOTE_PLAYER
         };
 }
