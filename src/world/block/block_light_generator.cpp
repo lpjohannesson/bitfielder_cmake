@@ -82,7 +82,7 @@ using namespace bf;
         }\
         \
         CELL_QUEUE.push({ cell.position, blocksRegistry.get<BlockLightComponent>(block).color.LIGHT_CHANNEL });\
-    }\
+    }
 
 #define UPDATE_SOURCE_LIGHT(GET_LIGHT, SET_LIGHT, CELL_QUEUE, LIGHT_CHANNEL)\
     removalQueue.push({ position, MAX_LIGHT + 1 });\
