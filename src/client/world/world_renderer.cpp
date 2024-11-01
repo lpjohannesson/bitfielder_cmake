@@ -78,7 +78,7 @@ void WorldRenderer::render(WorldScene &scene) {
     glViewport(0, 0, windowSize.x, windowSize.y);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const BlockMesh *blockMesh : blockMeshes.chunks) {
         if (blockMesh == nullptr) {
@@ -130,6 +130,7 @@ void WorldRenderer::render(WorldScene &scene) {
             const BlockMeshSection &section = blockMesh->sections[sectionIndex];
 
             client->spriteRenderer.renderMesh(section.lightMesh, blockLightProgram);
+            client->spriteRenderer.renderMesh(section.aoMesh, blockLightProgram);
         }
     }
 

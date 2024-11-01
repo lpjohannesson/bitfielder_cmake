@@ -10,6 +10,7 @@
 using namespace bf;
 
 bool BlockMapRenderer::isBlockOccluded(const BlockData &blockData, const WorldScene &scene) {
+    // Get whether front is not partial
     entt::entity block = scene.world.blocks.getEntity(blockData.getFrontIndex());
     return !scene.world.blocks.registry.all_of<BlockPartialComponent>(block);
 }
@@ -35,36 +36,51 @@ BlockLightRenderData BlockMapRenderer::getLightData(const BlockData &blockData) 
     return { color, false };
 }
 
-glm::vec4 BlockMapRenderer::getCornerColor(
-    int horizontalIndex,
-    int verticalIndex,
-    int diagonalIndex,
-    BlockLightRenderData data,
-    const BlockLightRenderData neighborDatas[]) {
-
-    const BlockLightRenderData
-        &horizontalData = neighborDatas[horizontalIndex],
-        &verticalData = neighborDatas[verticalIndex],
-        &diagonalData = neighborDatas[diagonalIndex];
+void BlockMapRenderer::drawLightSprites(
+    glm::vec2 position,
+    const BlockLightRenderData center,
+    const BlockLightRenderData neighbors[],
+    SpriteBatch &lightSpriteBatch,
+    SpriteBatch &aoSpriteBatch) {
     
-    // Average colour edges
-    glm::vec3 color = (
-        data.color +
-        horizontalData.color +
-        verticalData.color +
-        diagonalData.color) * 0.25f;
+    // Create sprites
+    Sprite lightSprite, aoSprite;
 
-    // Apply ambient occlusion
-    if (!data.occluded) {
-        float occlusionScale = (
-            (float)horizontalData.occluded +
-            (float)verticalData.occluded +
-            (float)diagonalData.occluded) * 0.25f * 0.3f;
+    lightSprite.box.start = aoSprite.box.start = position;
+    lightSprite.box.size = aoSprite.box.size = glm::vec2(1.0f);
+    
+    for (int i = 0; i < 4; i++) {
+        // Get neighbours for each corner
+        const int (&neighborIndices)[3] = neighborIndicesTable[i];
 
-        color *= 1.0f - occlusionScale;
+        // Draw average color
+        glm::vec3 color = center.color;
+        
+        for (int neighborIndex : neighborIndices) {
+            color += neighbors[neighborIndex].color;
+        }
+
+        color *= 0.25f;
+
+        lightSprite.cornerColors[i] = glm::vec4(color, 1.0f);
+
+        // Draw ambient occlusion
+        if (!center.occluded) {
+            float ao = 0.0f;
+
+            for (int neighborIndex : neighborIndices) {
+                ao += (float)neighbors[neighborIndex].occluded;
+            }
+
+            ao *= 0.1f;
+            aoSprite.cornerColors[i] = glm::vec4(glm::vec3(1.0f - ao), 1.0f);
+        }
     }
-    
-    return glm::vec4(color, 1.0f);
+
+    // Draw sprites
+    // TODO: Check for blank sprites
+    lightSpriteBatch.createSprite() = lightSprite;
+    aoSpriteBatch.createSprite() = aoSprite;
 }
 
 void BlockMapRenderer::renderBlock(const BlockRenderData &data) {
@@ -135,41 +151,37 @@ void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sect
                 renderBlock(renderData);
 
                 // Render light
-                BlockLightRenderData lightData = getLightData(blockData);
-                lightData.occluded = isBlockOccluded(blockData, scene);
+                BlockLightRenderData lightCenter = getLightData(blockData);
+                lightCenter.occluded = isBlockOccluded(blockData, scene);
 
+                // Occlude center if back block is partial
                 entt::entity backBlock = scene.world.blocks.getEntity(blockData.getBackIndex());
-                lightData.occluded |= scene.world.blocks.registry.all_of<BlockPartialComponent>(backBlock);
+                lightCenter.occluded |= scene.world.blocks.registry.all_of<BlockPartialComponent>(backBlock);
 
-                BlockLightRenderData neighborLightDatas[8];
+                // Get light neighbors
+                BlockLightRenderData lightNeighbors[8];
 
                 for (int i = 0; i < 8; i++) {
                     glm::ivec2 neighborPosition = position + lightOffsets[i];
                     BlockData *neighborBlockData = BlockChunk::getSampleBlock(neighborPosition, blockSample);
 
-                    BlockLightRenderData &neighborLightData = neighborLightDatas[i];
+                    BlockLightRenderData &lightNeighbor = lightNeighbors[i];
 
+                    // Default to white on no neighbor
                     if (neighborBlockData == nullptr) {
-                        neighborLightData = { glm::vec3(1.0f), false };
+                        lightNeighbor = { glm::vec3(1.0f), false };
                         continue;
                     }
 
-                    neighborLightData = getLightData(*neighborBlockData);
+                    lightNeighbor = getLightData(*neighborBlockData);
 
-                    if (!lightData.occluded) {
-                        neighborLightData.occluded = isBlockOccluded(*neighborBlockData, scene);
+                    if (!lightCenter.occluded) {
+                        lightNeighbor.occluded = isBlockOccluded(*neighborBlockData, scene);
                     }
                 }
 
-                Sprite &lightSprite = lightSpriteBatch.createSprite();
-                
-                lightSprite.box.start = position;
-                lightSprite.box.size = glm::vec2(1.0f);
-
-                lightSprite.topLeftColor = getCornerColor(3, 1, 0, lightData, neighborLightDatas);
-                lightSprite.topRightColor = getCornerColor(4, 1, 2, lightData, neighborLightDatas);
-                lightSprite.bottomLeftColor = getCornerColor(3, 6, 5, lightData, neighborLightDatas);
-                lightSprite.bottomRightColor = getCornerColor(4, 6, 7, lightData, neighborLightDatas);
+                drawLightSprites(
+                    position, lightCenter, lightNeighbors, lightSpriteBatch, aoSpriteBatch);
             }
         }
 
@@ -179,5 +191,13 @@ void BlockMapRenderer::createMesh(BlockChunk &chunk, WorldScene &scene, int sect
         frontSpriteBatch.uploadMesh(section.frontMesh);
         backSpriteBatch.uploadMesh(section.backMesh);
         lightSpriteBatch.uploadMesh(section.lightMesh);
+        aoSpriteBatch.uploadMesh(section.aoMesh);
     }
+}
+
+BlockMapRenderer::BlockMapRenderer() {
+    frontSpriteBatch.defaultDepth = WorldRenderer::BLOCK_FRONT_DEPTH;
+    backSpriteBatch.defaultDepth = WorldRenderer::BLOCK_BACK_DEPTH;
+    lightSpriteBatch.defaultDepth = WorldRenderer::BLOCK_LIGHT_DEPTH;
+    aoSpriteBatch.defaultDepth = WorldRenderer::BLOCK_AO_DEPTH;
 }

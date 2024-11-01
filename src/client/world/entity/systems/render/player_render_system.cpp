@@ -67,4 +67,6 @@ PlayerRenderSystem::PlayerRenderSystem() : mesh(client->spriteRenderer) {
     // Skip texture slot 2 for shadow buffer
     skinProgram.assignTexture(1, "fTexture");
     skinProgram.assignTexture(3, "fSkinTexture");
+
+    skinSpriteBatch.defaultDepth = overlaySpriteBatch.defaultDepth = WorldRenderer::ENTITY_DEPTH;
 }

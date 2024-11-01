@@ -12,7 +12,7 @@ void SpriteMesh::startAttributes() {
 	glEnableVertexAttribArray(0);
 
 	// Position
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, position));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SpriteVertex), (void*)offsetof(SpriteVertex, position));
 	glEnableVertexAttribArray(1);
 
 	// UV

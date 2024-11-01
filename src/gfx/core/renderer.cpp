@@ -3,6 +3,11 @@
 
 using namespace bf;
 
+void Renderer::start() {
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_ALWAYS);
+}
+
 void Renderer::updateSize(glm::ivec2 size) {
 	glViewport(0, 0, size.x, size.y);
 }

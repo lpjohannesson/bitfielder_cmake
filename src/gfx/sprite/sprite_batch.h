@@ -12,6 +12,8 @@ namespace bf {
 		void addColor(glm::vec4 color, std::vector<uint8_t> &data);
 
 	public:
+		float defaultDepth = 1.0f;
+
 		Sprite &createSprite();
 		void uploadMesh(SpriteMesh &mesh);
 	};

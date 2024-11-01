@@ -84,7 +84,9 @@ void BlockRendererFactory::createBlock(entt::entity block, WorldScene &scene) {
     }
 
     if (document.HasMember("color")) {
-        blocksRegistry.emplace<BlockColorComponent>(block, BlockColorComponent { Color::parseHex(document["color"].GetString()) });
+        blocksRegistry.emplace<BlockColorComponent>(block, BlockColorComponent {
+            Color::parseHex(document["color"].GetString())
+        });
     }
 
     if (document.HasMember("sound")) {

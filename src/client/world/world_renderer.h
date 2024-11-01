@@ -19,6 +19,13 @@ namespace bf {
     public:
         static constexpr float SHADOW_OFFSET = 2.0f / 16.0f;
 
+        static constexpr float
+            BLOCK_BACK_DEPTH = 0.1f,
+            BLOCK_AO_DEPTH = 0.2f,
+            BLOCK_FRONT_DEPTH = 0.3f,
+            ENTITY_DEPTH = 0.4f,
+            BLOCK_LIGHT_DEPTH = 0.5f;
+
         glm::mat4 shadowTransform, viewTransform, shadowViewTransform;
         Box2 screenBox;
 

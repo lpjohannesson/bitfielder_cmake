@@ -6,5 +6,7 @@ namespace bf {
 	public:
 		static void updateSize(glm::ivec2 size);
 		static void clearScreen(glm::vec4 color);
+		
+		static void start();
 	};
 }

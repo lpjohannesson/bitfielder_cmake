@@ -16,6 +16,6 @@ namespace bf {
 
         void render(WorldScene &scene) override;
 
-        inline SpriteSystem() : mesh(client->spriteRenderer) {}
+        SpriteSystem();
 	};
 }
