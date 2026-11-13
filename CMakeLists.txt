@@ -186,6 +186,7 @@ else()
     find_package(enet CONFIG REQUIRED)
     find_package(RapidJSON CONFIG REQUIRED)
     find_package(ZLIB REQUIRED)
+    find_package(glm REQUIRED)
 
     if (CLIENT)
         find_package(PNG REQUIRED)
