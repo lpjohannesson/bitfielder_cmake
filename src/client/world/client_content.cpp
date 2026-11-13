@@ -1,13 +1,11 @@
 #include "client_content.h"
 #include "client/scenes/world_scene.h"
-#include <SDL2/SDL_image.h>
 #include "client/world/block/block_renderer_factory.h"
 #include "client/world/item/item_renderer_factory.h"
 #include "entity/components/sprite_component.h"
-#include "entity/components/animator_component.h"
-#include "entity/components/sprite_set_component.h"
+#include "entity/components/sprite_animator_component.h"
+#include "entity/components/sprite_aim_component.h"
 #include "entity/components/local_player_component.h"
-#include "entity/components/skin_component.h"
 #include "world/entity/components/inventory_component.h"
 
 using namespace bf;
@@ -18,11 +16,14 @@ void ClientContent::createPlayer(entt::entity player, WorldScene &scene) {
 
 	world.content.entities.createPlayer(player, world);
 	
-	entityRegistry.emplace<AnimatorComponent>(
-		player, AnimatorComponent { &playerAnimations });
+	entityRegistry.emplace<SpriteComponent>(
+		player, SpriteComponent { glm::vec2(1.0f), glm::vec2(-4.0f, -2.0f) / 16.0f });
+
+	entityRegistry.emplace<SpriteAimComponent>(
+		player, SpriteAimComponent { &playerForwardFrames, &playerUpFrames, &playerDownFrames });
 	
-	entityRegistry.emplace<SkinComponent>(
-		player, SkinComponent { &skinTexture });
+	entityRegistry.emplace<SpriteAnimatorComponent>(
+		player, SpriteAnimatorComponent { &playerForwardFrames, &playerAnimations });
 }
 
 void ClientContent::createLocalPlayer(entt::entity player, WorldScene &scene) {
@@ -45,17 +46,20 @@ ClientContent::ClientContent(WorldScene &scene) {
 	WorldRenderer &worldRenderer = scene.worldRenderer;
 	TextureAtlas &textureAtlas = worldRenderer.textureAtlas;
 
-	// Add entity systems
-	scene.entitySystems.push_back(&animatorSystem);
-	scene.entitySystems.push_back(&particleSystem);
-	scene.entitySystems.push_back(&effectSpriteSystem);
+	// Add entity systems in order
 	scene.entitySystems.push_back(&localPlayerSystem);
+	scene.entitySystems.push_back(&particleSystem);
+	scene.entitySystems.push_back(&spriteAnimatorSystem);
+	scene.entitySystems.push_back(&effectSpriteSystem);
 
 	// Create player animations
-	glm::ivec2 playerFrameCounts = { 4, 3 };
+    TextureSection playerForwardTexture = textureAtlas.getSection("assets/textures/world/player/forward.png");
+	TextureSection playerUpTexture = textureAtlas.getSection("assets/textures/world/player/up.png");
+	TextureSection playerDownTexture = textureAtlas.getSection("assets/textures/world/player/down.png");
 
-	playerSkinSprites.loadSprites("assets/textures/world/player/skin", playerFrameCounts, textureAtlas);
-	playerOverlaySprites.loadSprites("assets/textures/world/player/overlay", playerFrameCounts, textureAtlas);
+    playerForwardFrames.loadFrames(playerForwardTexture.uvBox, { 4, 3 });
+	playerUpFrames.loadFrames(playerUpTexture.uvBox, { 4, 3 });
+	playerDownFrames.loadFrames(playerDownTexture.uvBox, { 4, 3 });
 
 	playerAnimations.addAnimation({ 0 });
 	playerAnimations.addAnimation({ 4, 5, 6, 7 }, 0.4f);
@@ -70,25 +74,25 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	// Create effect sprites
 	placeEffectProperties.createProperties(
-		textureAtlas.getSection("assets/textures/world/effects/place.png").uvBox,
+        { 1.0f, 1.0f },
+        textureAtlas.getSection("assets/textures/world/effects/place.png").uvBox,
         { 3, 1 },
 		{ 0, 1, 2 },
-		0.3f,
-		{ 1.0f, 1.0f });
+		0.3f);
 
 	destroyEffectProperties.createProperties(
-		textureAtlas.getSection("assets/textures/world/effects/destroy.png").uvBox,
+        { 1.0f, 1.0f },
+        textureAtlas.getSection("assets/textures/world/effects/destroy.png").uvBox,
         { 3, 1 },
 		{ 0, 1, 2 },
-		0.3f,
-		{ 1.0f, 1.0f });
+		0.3f);
 	
 	groundEffectProperties.createProperties(
-		textureAtlas.getSection("assets/textures/world/effects/ground.png").uvBox,
+        { 1.0f, 1.0f },
+        textureAtlas.getSection("assets/textures/world/effects/ground.png").uvBox,
         { 3, 1 },
 		{ 0, 1, 2 },
-		0.3f,
-		{ 1.0f, 1.0f });
+		0.3f);
 	
 	// Load sounds
 	placeSound = soundSet.createSound("assets/sounds/place.wav");
@@ -103,11 +107,6 @@ ClientContent::ClientContent(WorldScene &scene) {
 
 	BlockRendererFactory::start(scene);
 	ItemRendererFactory::start(scene);
-
-	// Load skin
-	SDL_Surface *skinSurface = IMG_Load("assets/textures/skins/skin.png");
-	skinTexture.loadSurface(skinSurface);
-	SDL_FreeSurface(skinSurface);
 
 	// Set up inventory
 	ItemContent &items = world.content.items;

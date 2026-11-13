@@ -43,9 +43,7 @@ void WorldRenderer::updateSize(glm::ivec2 size, WorldScene &scene) {
 void WorldRenderer::render(WorldScene &scene) {
     updateTransforms(scene);
 
-    // Render entities
-    spriteAnimatorSystem.render(scene);
-    spriteSystem.render(scene);
+    entities.render(scene);
 
     // Bind textures
     glActiveTexture(GL_TEXTURE1);
@@ -55,6 +53,8 @@ void WorldRenderer::render(WorldScene &scene) {
 	glBindTexture(GL_TEXTURE_2D, shadowBuffer.texture.getGLTexture());
 
     // Get visible chunks, including shadows
+    Box2 screenBox = getScreenBox();
+
     glm::ivec2 blockStart = glm::floor(screenBox.start - SHADOW_OFFSET);
     glm::ivec2 blockEnd = glm::floor(screenBox.getEnd());
 
@@ -92,7 +92,7 @@ void WorldRenderer::render(WorldScene &scene) {
         }
     }
 
-    client->spriteRenderer.renderMesh(spriteSystem.mesh, blockShadowProgram);
+    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, blockShadowProgram);
 
     // Render main scene
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -113,8 +113,7 @@ void WorldRenderer::render(WorldScene &scene) {
         }
     }
 
-    client->spriteRenderer.renderMesh(spriteSystem.mesh, client->spriteProgram);
-    playerRenderSystem.render(scene);
+    client->spriteRenderer.renderMesh(entities.spriteSystem.mesh, client->spriteProgram);
 
     // Render light
     glEnable(GL_BLEND);

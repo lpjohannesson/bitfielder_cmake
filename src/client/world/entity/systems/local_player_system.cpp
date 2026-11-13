@@ -5,6 +5,7 @@
 #include "client/scenes/world_scene.h"
 #include "core/game_time.h"
 #include "core/direction.h"
+#include "sprite_aim_system.h"
 #include "sound/sound.h"
 #include "world/block/components/block_collision_component.h"
 #include "world/item/components/item_block_component.h"
@@ -129,8 +130,8 @@ void LocalPlayerSystem::applyAim(LocalPlayerData &data) {
     if (data.movement.x != 0.0f) {
         bool nextSpriteFlip = data.movement.x < 0.0f;
 
-        if (nextSpriteFlip != data.flip.flipX) {
-            data.flip.flipX = nextSpriteFlip;
+        if (nextSpriteFlip != data.spriteFlip.flipX) {
+            data.spriteFlip.flipX = nextSpriteFlip;
             
             data.stateChanged = true;
         }
@@ -143,6 +144,7 @@ void LocalPlayerSystem::applyAim(LocalPlayerData &data) {
         data.stateChanged = true;
 
         data.aim.aim = nextAim;
+        data.spriteAnimator.frames = SpriteAimSystem::getAimFrames(data.spriteAim, data.aim.aim);
         
         data.stateChanged = true;
     }
@@ -177,8 +179,8 @@ void LocalPlayerSystem::animate(LocalPlayerData &data) {
         }
     }
 
-    data.stateChanged |= AnimatorSystem::playAnimation(
-        data.animator, data.animation, (int)animationIndex);
+    data.stateChanged |= SpriteAnimatorSystem::playAnimation(
+        data.spriteAnimator, data.spriteAnimation, (int)animationIndex);
 }
 
 bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
@@ -208,7 +210,7 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
     glm::ivec2 forwardBlockPosition;
 
     if (data.movement.y == 0.0f) {
-        int facingSign = data.flip.flipX ? -1 : 1;
+        int facingSign = data.spriteFlip.flipX ? -1 : 1;
         forwardBlockPosition = { centerBlockPosition.x + facingSign, centerBlockPosition.y };
     }
     else {
@@ -307,7 +309,7 @@ bool LocalPlayerSystem::tryModifyBlock(LocalPlayerData &data) {
     }
 
     // Play animation
-    AnimatorSystem::playAnimation(data.animator, data.animation, (int)PlayerAnimation::PUNCH);
+    SpriteAnimatorSystem::playAnimation(data.spriteAnimator, data.spriteAnimation, (int)PlayerAnimation::PUNCH);
 
     // Send to server
     ClientPacketManager::writeReplaceBlock(*blockPosition, onFrontLayer, *blockData, data.scene);
@@ -350,10 +352,12 @@ void LocalPlayerSystem::update(WorldScene &scene) {
         PositionComponent,
         VelocityComponent,
         BodyComponent,
-        AnimationComponent,
-        AnimatorComponent,
-        FlipComponent,
+        SpriteComponent,
+        SpriteFlipComponent,
+        SpriteAnimationComponent,
+        SpriteAnimatorComponent,
         AimComponent,
+        SpriteAimComponent,
         InventoryComponent>();
 
     for (auto [
@@ -362,10 +366,12 @@ void LocalPlayerSystem::update(WorldScene &scene) {
             position,
             velocity,
             body,
-            animation,
-            animator,
-            flip,
+            sprite,
+            spriteFlip,
+            spriteAnimation,
+            spriteAnimator,
             aim,
+            spriteAim,
             inventory] : view.each()) {
         
         LocalPlayerData data = {
@@ -374,10 +380,12 @@ void LocalPlayerSystem::update(WorldScene &scene) {
             position,
             velocity,
             body,
-            animation,
-            animator,
-            flip,
+            sprite,
+            spriteFlip,
+            spriteAnimation,
+            spriteAnimator,
             aim,
+            spriteAim,
             inventory,
             movement
         };

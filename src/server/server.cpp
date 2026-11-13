@@ -5,8 +5,8 @@
 #include "world/block/block_serializer.h"
 #include "world/entity/components/id_component.h"
 #include "world/entity/components/position_component.h"
-#include "world/entity/components/animation_component.h"
-#include "world/entity/components/flip_component.h"
+#include "world/entity/components/sprite_animation_component.h"
+#include "world/entity/components/sprite_flip_component.h"
 #include "world/entity/components/aim_component.h"
 #include "world/block/components/block_collision_component.h"
 #include "world/block/block_sample.h"
@@ -94,9 +94,9 @@ void Server::removeClient(ClientConnection *client) {
 
 void Server::writePlayerState(Packet &packet, entt::entity player) {
     writeEntityPosition(packet, player);
-    writeEntityAnimation(packet, player);
-    writeEntityFlip(packet, player);
-    writeEntityAim(packet, player);
+    writeEntitySpriteAnimation(packet, player);
+    writeEntitySpriteFlip(packet, player);
+    writeEntitySpriteAim(packet, player);
 }
 
 void Server::writeTeleportPlayer(Packet &packet, ClientConnection *client, glm::vec2 position) {
@@ -128,31 +128,31 @@ void Server::writeEntityPosition(Packet &packet, entt::entity entity) {
     packet << (int)ServerPacket::ENTITY_POSITION << entityID << position;
 }
 
-void Server::writeEntityAnimation(Packet &packet, entt::entity entity) {
+void Server::writeEntitySpriteAnimation(Packet &packet, entt::entity entity) {
     entt::registry &entityRegistry = world.entities.registry;
 
     int entityID = entityRegistry.get<IDComponent>(entity).id;
-    AnimationComponent &animation = entityRegistry.get<AnimationComponent>(entity);
+    SpriteAnimationComponent &animation = entityRegistry.get<SpriteAnimationComponent>(entity);
 
-    packet << (int)ServerPacket::ENTITY_ANIMATION << entityID << animation.index;
+    packet << (int)ServerPacket::ENTITY_SPRITE_ANIMATION << entityID << animation.animationIndex;
 }
 
-void Server::writeEntityFlip(Packet &packet, entt::entity entity) {
+void Server::writeEntitySpriteFlip(Packet &packet, entt::entity entity) {
     entt::registry &entityRegistry = world.entities.registry;
 
     int entityID = entityRegistry.get<IDComponent>(entity).id;
-    FlipComponent &flip = entityRegistry.get<FlipComponent>(entity);
+    SpriteFlipComponent &spriteFlip = entityRegistry.get<SpriteFlipComponent>(entity);
 
-    packet << (int)ServerPacket::ENTITY_FLIP << entityID << flip.flipX;
+    packet << (int)ServerPacket::ENTITY_SPRITE_FLIP << entityID << spriteFlip.flipX;
 }
 
-void Server::writeEntityAim(Packet &packet, entt::entity entity) {
+void Server::writeEntitySpriteAim(Packet &packet, entt::entity entity) {
     entt::registry &entityRegistry = world.entities.registry;
     
     int entityID = entityRegistry.get<IDComponent>(entity).id;
     AimComponent &aim = entityRegistry.get<AimComponent>(entity);
 
-    packet << (int)ServerPacket::ENTITY_AIM << entityID << aim.aim;
+    packet << (int)ServerPacket::ENTITY_SPRITE_AIM << entityID << aim.aim;
 }
 
 void Server::writeRemotePlayer(Packet &packet, entt::entity player) {
@@ -170,11 +170,11 @@ void Server::readPlayerState(ClientConnection *client, Packet &packet) {
     entt::registry &entityRegistry = world.entities.registry;
     
     PositionComponent &position = entityRegistry.get<PositionComponent>(client->player);
-    AnimationComponent &animation = entityRegistry.get<AnimationComponent>(client->player);
-    FlipComponent &flip = entityRegistry.get<FlipComponent>(client->player);
+    SpriteAnimationComponent &spriteAnimation = entityRegistry.get<SpriteAnimationComponent>(client->player);
+    SpriteFlipComponent &spriteFlip = entityRegistry.get<SpriteFlipComponent>(client->player);
     AimComponent &aim = entityRegistry.get<AimComponent>(client->player);
 
-    packet >> position.position >> animation.index >> flip.flipX >> aim.aim;
+    packet >> position.position >> spriteAnimation.animationIndex >> spriteFlip.flipX >> aim.aim;
 
     // TODO: Make timed polls
     Packet castPacket;

@@ -1,9 +1,8 @@
-#include "animation.h"
-#include <glm/glm.hpp>
+#include "sprite_animation.h"
 
 using namespace bf;
 
-int Animation::getFrame(float time) const {
+Box2 SpriteAnimation::getFrame(const SpriteFrames &frames, float time) const {
     // Get frame index in sequence
     int sequenceIndex;
 
@@ -16,10 +15,12 @@ int Animation::getFrame(float time) const {
     }
 
     // Get frame
-    return sequence.at(sequenceIndex);
+    int frameIndex = sequence.at(sequenceIndex);
+
+    return frames.frames.at(frameIndex);
 }
 
-Animation::Animation(const std::vector<int> sequence, float duration, bool loops) {
+SpriteAnimation::SpriteAnimation(const std::vector<int> sequence, float duration, bool loops) {
     this->sequence = sequence;
     this->duration = duration;
     this->loops = loops;

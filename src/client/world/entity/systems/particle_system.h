@@ -2,17 +2,17 @@
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include "client_entity_system.h"
-#include "gfx/sprite/sprite_set.h"
+#include "gfx/sprite/sprite_frames.h"
 
 namespace bf {
     struct ParticleSpawnProperties {
-        Box2 uvBox;
+        Box2 frame;
         glm::vec2 position{}, velocity{}, size{};
         glm::vec4 color{ 1.0f };
     };
 
     struct ParticleExplosionProperties {
-        SpriteSet &sprites;
+        SpriteFrames &frames;
         glm::vec2 position{}, size{};
         glm::vec4 color{ 1.0f };
     };
