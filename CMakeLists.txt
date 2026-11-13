@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(bitfielder LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -183,7 +183,7 @@ else()
 
     find_package(SDL2 CONFIG REQUIRED)
     find_package(EnTT CONFIG REQUIRED)
-    find_package(unofficial-enet CONFIG REQUIRED)
+    find_package(enet CONFIG REQUIRED)
     find_package(RapidJSON CONFIG REQUIRED)
     find_package(ZLIB REQUIRED)
 
@@ -195,7 +195,7 @@ else()
 
         target_link_libraries(client PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
         target_link_libraries(client PRIVATE EnTT::EnTT)
-        target_link_libraries(client PRIVATE unofficial::enet::enet)
+        target_link_libraries(client PRIVATE enet::enet)
         target_link_libraries(client PRIVATE rapidjson)
         target_link_libraries(client PRIVATE ZLIB::ZLIB)
 
@@ -212,7 +212,7 @@ else()
     if (SERVER)
         target_link_libraries(server PRIVATE $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
         target_link_libraries(server PRIVATE EnTT::EnTT)
-        target_link_libraries(server PRIVATE unofficial::enet::enet)
+        target_link_libraries(server PRIVATE enet::enet)
         target_link_libraries(server PRIVATE rapidjson)
         target_link_libraries(server PRIVATE ZLIB::ZLIB)
 
