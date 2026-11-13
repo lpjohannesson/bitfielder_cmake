@@ -8,6 +8,7 @@ libpng/1.6.59
 sdl_image/2.8.12
 glad/0.1.36
 openal-soft/1.24.3
+glm/1.0.3
 
 [generators]
 CMakeDeps
