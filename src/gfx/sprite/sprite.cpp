@@ -3,9 +3,11 @@
 using namespace bf;
 
 void Sprite::setColor(glm::vec4 color) {
-    for (glm::vec4 &cornerColor : cornerColors) {
-        cornerColor = color;
-    }
+    topLeftColor =
+        topRightColor =
+        bottomLeftColor =
+        bottomRightColor =
+        color;
 }
 
 Sprite::Sprite() {

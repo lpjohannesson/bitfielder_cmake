@@ -6,14 +6,7 @@ namespace bf {
 	class Sprite {
 	public:
 		Box2 box, uvBox;
-		float depth = 1.0f;
-
-		glm::vec4 cornerColors[4];
-
-		inline glm::vec4 &getTopLeftColor() { return cornerColors[0]; }
-		inline glm::vec4 &getTopRightColor() { return cornerColors[1]; }
-		inline glm::vec4 &getBottomLeftColor() { return cornerColors[2]; }
-		inline glm::vec4 &getBottomRightColor() { return cornerColors[3]; }
+		glm::vec4 topLeftColor, topRightColor, bottomLeftColor, bottomRightColor;
 
 		void setColor(glm::vec4 color);
 

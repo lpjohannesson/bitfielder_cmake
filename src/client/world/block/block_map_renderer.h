@@ -26,35 +26,21 @@ namespace bf {
             { 1, 1 }
         };
 
-        static constexpr int neighborIndicesTable[4][3] = {
-            { 3, 1, 0 },
-            { 4, 1, 2 },
-            { 3, 6, 5 },
-            { 4, 6, 7 }
-        };
-
         static bool isBlockOccluded(const BlockData &blockData, const WorldScene &scene);
         static BlockLightRenderData getLightData(const BlockData &blockData);
-
-        static void drawLightSprites(
-            glm::vec2 position,
-            const BlockLightRenderData center,
-            const BlockLightRenderData neighbors[],
-            SpriteBatch &lightSpriteBatch,
-            SpriteBatch &aoSpriteBatch);
+        static glm::vec4 getCornerColor(
+            int horizontalIndex,
+            int verticalIndex,
+            int diagonalIndex,
+            BlockLightRenderData data,
+            const BlockLightRenderData neighborDatas[]);
 
         void renderBlock(const BlockRenderData &data);
 
     public:
         BlockMap<BlockMesh> map;
-        SpriteBatch frontSpriteBatch, backSpriteBatch, lightSpriteBatch, aoSpriteBatch;
+        SpriteBatch frontSpriteBatch, backSpriteBatch, lightSpriteBatch;
 
-        void createMesh(
-            BlockChunk &chunk,
-            WorldScene &scene,
-            int sectionStart = 0,
-            int sectionEnd = BlockMesh::SECTION_COUNT - 1);
-
-        BlockMapRenderer();
+        void createMesh(BlockChunk &chunk, WorldScene &scene, int sectionStart = 0, int sectionEnd = BlockMesh::SECTION_COUNT - 1);
     };
 }

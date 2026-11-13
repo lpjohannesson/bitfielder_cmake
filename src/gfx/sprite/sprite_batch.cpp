@@ -7,10 +7,6 @@ using namespace bf;
 
 Sprite &SpriteBatch::createSprite() {
 	sprites.emplace_back();
-	Sprite &sprite = sprites.back();
-
-	sprite.depth = defaultDepth;
-
 	return sprites.back();
 }
 
@@ -39,7 +35,7 @@ void SpriteBatch::uploadMesh(SpriteMesh &mesh) {
 	colors.reserve(colorsWidth * 4);
 
 	for (int spriteIndex = 0; spriteIndex < spriteCount; spriteIndex++) {
-		Sprite &sprite = sprites[spriteIndex];
+		const Sprite &sprite = sprites[spriteIndex];
 
 		// Get corners, round UVs to avoid artifacts
 		glm::vec2
@@ -51,15 +47,15 @@ void SpriteBatch::uploadMesh(SpriteMesh &mesh) {
 		// Push vertices
 		float spriteIndexF = (float)spriteIndex;
 
-		vertices.push_back({ spriteIndexF, { start, sprite.depth }, uvStart, { 0.0f, 0.0f } });
-		vertices.push_back({ spriteIndexF, { end.x, start.y, sprite.depth }, { uvEnd.x, uvStart.y }, { 1.0f, 0.0f } });
-		vertices.push_back({ spriteIndexF, { start.x, end.y, sprite.depth }, { uvStart.x, uvEnd.y }, { 0.0f, 1.0f } });
-		vertices.push_back({ spriteIndexF, { end, sprite.depth }, uvEnd, { 1.0f, 1.0f } });
+		vertices.push_back({ spriteIndexF, start, uvStart, { 0.0f, 0.0f } });
+		vertices.push_back({ spriteIndexF, { end.x, start.y }, { uvEnd.x, uvStart.y }, { 1.0f, 0.0f } });
+		vertices.push_back({ spriteIndexF, { start.x, end.y }, { uvStart.x, uvEnd.y }, { 0.0f, 1.0f } });
+		vertices.push_back({ spriteIndexF, end, uvEnd, { 1.0f, 1.0f } });
 
-		addColor(sprite.getTopLeftColor(), colors);
-		addColor(sprite.getTopRightColor(), colors);
-		addColor(sprite.getBottomLeftColor(), colors);
-		addColor(sprite.getBottomRightColor(), colors);
+		addColor(sprite.topLeftColor, colors);
+		addColor(sprite.topRightColor, colors);
+		addColor(sprite.bottomLeftColor, colors);
+		addColor(sprite.bottomRightColor, colors);
 	}
 
 	// Upload mesh

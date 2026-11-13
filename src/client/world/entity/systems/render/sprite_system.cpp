@@ -38,7 +38,3 @@ void SpriteSystem::render(WorldScene &scene) {
     // Upload mesh
     spriteBatch.uploadMesh(mesh);
 }
-
-SpriteSystem::SpriteSystem() : mesh(client->spriteRenderer) {
-    spriteBatch.defaultDepth = WorldRenderer::ENTITY_DEPTH;
-}

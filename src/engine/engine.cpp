@@ -29,7 +29,7 @@ void Engine::changeScene(Scene *scene) {
 void Engine::updateSize() {
 	// Get window transform
 	glm::vec2 halfSize = glm::floor(glm::vec2(windowSize) * 0.5f);
-	windowTransform = glm::ortho(-halfSize.x, halfSize.x, halfSize.y, -halfSize.y, 0.01f, 1.0f);
+	windowTransform = glm::ortho(-halfSize.x, halfSize.x, halfSize.y, -halfSize.y);
 
 	Renderer::updateSize(windowSize);
 	
@@ -131,8 +131,6 @@ Engine::Engine() : fullscreenAction(input) {
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
 	SDL_GL_SetSwapInterval(1);
-
-	Renderer::start();
 
 	updateSize();
 
